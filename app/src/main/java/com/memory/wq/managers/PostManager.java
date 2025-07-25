@@ -19,6 +19,7 @@ import com.memory.wq.utils.GenerateJson;
 import com.memory.wq.utils.JsonParser;
 import com.memory.wq.thread.ThreadPoolManager;
 import com.memory.wq.utils.PageResult;
+import com.memory.wq.utils.ResultCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -109,7 +110,7 @@ public class PostManager {
         return uri.getPath();
     }
 
-    public void getPosts(String token, QueryPostInfo queryPostInfo){
+    public void getPosts(String token, QueryPostInfo queryPostInfo, ResultCallback<PageResult<PostInfo>> callback) {
         String json = GenerateJson.getQueryPostJson(queryPostInfo);
         ThreadPoolManager.getInstance().execute(()->{
             HttpStreamOP.postJson(AppProperties.POST_GET, token, json, new Callback() {
@@ -129,6 +130,7 @@ public class PostManager {
                     try {
                         JSONObject json = new JSONObject(response.body().string());
                         PageResult<PostInfo> postInfoPageResult = JsonParser.postParser(json);
+                        callback.onSuccess(postInfoPageResult);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

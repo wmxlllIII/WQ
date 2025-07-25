@@ -22,6 +22,8 @@ import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.managers.BannerManager;
 import com.memory.wq.managers.PostManager;
 import com.memory.wq.managers.SPManager;
+import com.memory.wq.utils.PageResult;
+import com.memory.wq.utils.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,16 +142,30 @@ public class RecommmendFragment extends Fragment {
         bannerImageList.add(R.mipmap.ic_bannertest3);
 
         postInfoList = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            postInfoList.add(new PostInfo());
-        }
+//        for (int i = 0; i < 20; i++) {
+//            postInfoList.add(new PostInfo());
+//        }
         postManager = new PostManager();
         token = SPManager.getUserInfo(getContext()).getToken();
 
         QueryPostInfo queryPostInfo = new QueryPostInfo();
         queryPostInfo.setPage(1);
         queryPostInfo.setSize(10);
-        postManager.getPosts(token,queryPostInfo);
+        postManager.getPosts(token, queryPostInfo, new ResultCallback<PageResult<PostInfo>>() {
+            @Override
+            public void onSuccess(PageResult<PostInfo> result) {
+                postInfoList.addAll(result.getResultList());
+                getActivity().runOnUiThread(()->{
+                    recommendAdapter.notifyDataSetChanged();
+                });
+
+            }
+
+            @Override
+            public void onError(String err) {
+
+            }
+        });
 
     }
 

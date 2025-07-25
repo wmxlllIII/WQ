@@ -1,5 +1,6 @@
 package com.memory.wq.utils;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.memory.wq.beans.FriendInfo;
@@ -362,10 +363,31 @@ public class JsonParser {
         PostInfo postInfo = new PostInfo();
         postInfo.setPostId(item.getInt("postId"));
         postInfo.setPoster(item.getString("userId"));
-        postInfo.setContent(item.getString("content"));
         postInfo.setCommentCoverUrl(item.getString("coverUrl"));
         postInfo.setLikeCount(item.getInt("likeCount"));
         postInfo.setTimestamp(item.getLong("createAt"));
+
+        String textContent = item.getString("content");
+        if (TextUtils.isEmpty(textContent)){
+            Log.e(TAG, "===postInfoParser: content is empty");
+            postInfo.setContent("null了");
+            postInfo.setTitle("null了");
+            return postInfo;
+        }
+
+        JSONObject textContentJson;
+        try {
+            textContentJson = new JSONObject(textContent);
+        } catch (Exception e) {
+            postInfo.setContent("null了");
+            postInfo.setTitle("null了");
+            return postInfo;
+        }
+
+        String content = textContentJson.getString("content");
+        String title = textContentJson.getString("title");
+        postInfo.setContent(content);
+        postInfo.setTitle(title);
 
         List<String> imageUrlList = new ArrayList<>();
         JSONArray imageUrlsArray = item.getJSONArray("imageUrls");
