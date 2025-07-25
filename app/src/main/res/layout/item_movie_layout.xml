@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.memory.wq.caches.SmartImageView
+        android:id="@+id/siv_cover"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:scaleType="centerCrop"
+        app:onFail="@mipmap/load_failure"
+        app:onLoading="@mipmap/loading_default" />
+    <TextView
+        android:id="@+id/tv_movie_length"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignBottom="@id/siv_cover"
+        android:layout_marginHorizontal="13dp"
+        android:layout_marginVertical="15dp"
+        android:text="95:23"
+        android:textSize="15dp"
+        android:textColor="#ff0000"/>
+    <TextView
+        android:id="@+id/tv_movie_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/siv_cover"
+        android:layout_margin="10dp"
+        android:text="电影名"
+        android:textColor="#00fff0"
+        android:textSize="20dp"/>
+
+</RelativeLayout>

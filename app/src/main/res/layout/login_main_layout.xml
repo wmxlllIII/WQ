@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@mipmap/ic_bg">
+
+    <TextView
+        android:id="@+id/tv_visitor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_margin="10dp"
+        android:background="@drawable/bg_transparent_stroke"
+        android:text="发现之旅>"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+
+    <Button
+        android:id="@+id/btn_login_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="100dp"
+        android:paddingHorizontal="50dp"
+        android:paddingVertical="10dp"
+        android:text="邮箱/ID 登录"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tv_another"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="60dp"
+        android:text="@string/another_login_method"
+        android:textColor="@color/white_80" />
+
+
+    <CheckBox
+        android:id="@+id/cb_protocol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:text="我已阅读并同意⟪服务条款⟫和⟪隐私协议⟫"
+        android:textColor="@color/white_80" />
+
+</RelativeLayout>

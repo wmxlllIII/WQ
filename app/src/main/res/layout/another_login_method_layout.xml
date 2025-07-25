@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="10sp"
+    android:paddingVertical="20sp">
+
+    <RelativeLayout
+        android:id="@+id/rl_login_wx"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/iv_wx"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/ic_wx"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10sp"
+            android:layout_toRightOf="@id/iv_wx"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:padding="10sp"
+            android:text="@string/login_method_wx"
+            android:textSize="15sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_login_qq"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10sp">
+
+        <ImageView
+            android:id="@+id/iv_qq"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/ic_qq"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/login_method_qq"
+            android:padding="10sp"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:layout_toRightOf="@id/iv_qq"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10sp"
+            android:textSize="15sp"/>
+
+    </RelativeLayout>
+
+
+
+
+
+</LinearLayout>

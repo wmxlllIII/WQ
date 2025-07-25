@@ -1,0 +1,13 @@
+<resources>
+    <declare-styleable name="FullscreenAttrs">
+        <attr name="fullscreenBackgroundColor" format="color" />
+        <attr name="fullscreenTextColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="SmartImageView">
+        <attr name="onLoading" format="reference" />
+        <attr name="onFail" format="reference" />
+    </declare-styleable>
+
+
+</resources>
