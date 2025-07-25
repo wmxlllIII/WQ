@@ -52,7 +52,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
 //        holder.iv_friend_avatar.setImageUrl(friendInfo.getAvatarUrl());
 
         Glide.with(context)
-                .load(AppProperties.HTTP_SERVER_ADDRESS+friendInfo.getAvatarUrl())
+                .load(AppProperties.HTTP_SERVER_ADDRESS + friendInfo.getAvatarUrl())
                 .placeholder(R.mipmap.loading_default)
                 .error(R.mipmap.load_failure)
                 .circleCrop()

@@ -1,5 +1,6 @@
 package com.memory.wq.adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,18 +10,25 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.PostInfo;
+import com.memory.wq.caches.SmartImageView;
+import com.memory.wq.properties.AppProperties;
 
 import java.util.List;
 
 public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    public static final String TAG = "RecommendAdapter";
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
 
     private List<PostInfo> recommentList;
     private View headerView;
+    private OnItemClickListener itemClickListener;
+    private OnLikeClickListener likeClickListener;
+
 
     public RecommendAdapter(List<PostInfo> recommentList, View headerView) {
         this.recommentList = recommentList;
@@ -44,15 +52,30 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             PostInfo postInfo = recommentList.get(itemPosition);
             ItemViewHolder itemHolder = (ItemViewHolder) holder;
             setItemHolder(itemHolder, postInfo);
+        } else if (holder instanceof HeaderViewHolder) {
+
         }
     }
 
     private void setItemHolder(ItemViewHolder holder, PostInfo postInfo) {
-        holder.iv_cover.setImageResource(R.mipmap.ic_bannertest3);
-        holder.iv_avatar.setImageResource(R.mipmap.ic_wx);
-        holder.iv_like.setImageResource(R.mipmap.ic_t2);
-        holder.tv_likescount.setText("2.1w");
-        holder.tv_title.setText("标题标题标题标题标题标题标题标题标题标题标题标题标题标题");
+        Glide.with(holder.iv_cover.getContext())
+                .load(AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl())
+                .placeholder(R.mipmap.loading_default)
+                .error(R.mipmap.load_failure)
+                .into(holder.iv_cover);
+        Log.d(TAG, "setItemHolder: ===setItemHolder #66 " + AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl());
+        /**
+         * TODO 用户头像加载
+         */
+        Glide.with(holder.iv_avatar.getContext())
+                .load(AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl())
+                .placeholder(R.mipmap.loading_default)
+                .error(R.mipmap.load_failure)
+                .into(holder.iv_avatar);
+
+        holder.iv_like.setImageResource(R.mipmap.icon_like_empty);
+        holder.tv_likescount.setText(String.valueOf(postInfo.getLikeCount()));
+        holder.tv_title.setText(postInfo.getTitle());
     }
 
     @Override
@@ -87,4 +110,21 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             tv_title = (TextView) itemView.findViewById(R.id.tv_title);
         }
     }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.itemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int position, PostInfo postInfo);
+    }
+
+    public void setOnLikeClickListener(OnLikeClickListener onLikeClickListener) {
+        this.likeClickListener = onLikeClickListener;
+    }
+
+    public interface OnLikeClickListener {
+        void OnLikeClick(int position, PostInfo postInfo, ImageView likeView);
+    }
+
 }

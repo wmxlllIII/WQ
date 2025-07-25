@@ -1,9 +1,10 @@
 package com.memory.wq.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PageResult<T> {
-    private List<T> resultList;
+    private List<T> resultList = new ArrayList<>();
     private int page;
     private int size;
     private boolean hasNext;
