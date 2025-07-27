@@ -10,12 +10,15 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.memory.wq.R;
 import com.memory.wq.adapters.BannerAdapter;
+import com.memory.wq.adapters.HeaderAdapter;
 import com.memory.wq.adapters.RecommendAdapter;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.QueryPostInfo;
@@ -59,17 +62,12 @@ public class RecommmendFragment extends Fragment {
 
     private void setRecyclerView() {
         createHeaderView();
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
-        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                return position == 0 ? 2 : 1;
-            }
-        });
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        HeaderAdapter headerAdapter = new HeaderAdapter(bannerHeader);
+        recommendAdapter = new RecommendAdapter(postInfoList);
         rv_recomment.setLayoutManager(layoutManager);
-
-        recommendAdapter = new RecommendAdapter(postInfoList, bannerHeader);
-        rv_recomment.setAdapter(recommendAdapter);
+        ConcatAdapter concatAdapter = new ConcatAdapter(headerAdapter,recommendAdapter);
+        rv_recomment.setAdapter(concatAdapter);
 
         setBanner();
     }
@@ -154,9 +152,10 @@ public class RecommmendFragment extends Fragment {
         postManager.getPosts(token, queryPostInfo, new ResultCallback<PageResult<PostInfo>>() {
             @Override
             public void onSuccess(PageResult<PostInfo> result) {
-                getActivity().runOnUiThread(()->{
+                getActivity().runOnUiThread(() -> {
                     postInfoList.addAll(result.getResultList());
-                    recommendAdapter.notifyItemInserted(1);
+//                    recommendAdapter.notifyItemInserted(1);
+                    recommendAdapter.notifyDataSetChanged();
                 });
 
             }

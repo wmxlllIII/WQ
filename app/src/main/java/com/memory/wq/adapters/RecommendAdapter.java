@@ -1,5 +1,6 @@
 package com.memory.wq.adapters;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
@@ -21,57 +23,54 @@ import java.util.List;
 public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final String TAG = "RecommendAdapter";
-    private static final int TYPE_HEADER = 0;
-    private static final int TYPE_ITEM = 1;
 
     private List<PostInfo> recommentList;
-    private View headerView;
+
     private OnItemClickListener itemClickListener;
     private OnLikeClickListener likeClickListener;
 
 
-    public RecommendAdapter(List<PostInfo> recommentList, View headerView) {
+    public RecommendAdapter(List<PostInfo> recommentList) {
         this.recommentList = recommentList;
-        this.headerView = headerView;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == TYPE_HEADER) {
-            return new HeaderViewHolder(headerView);
-        }
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recommend, parent, false);
         return new ItemViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof ItemViewHolder) {
-            int itemPosition = position - 1;
-            PostInfo postInfo = recommentList.get(itemPosition);
-            ItemViewHolder itemHolder = (ItemViewHolder) holder;
-            setItemHolder(itemHolder, postInfo);
-        } else if (holder instanceof HeaderViewHolder) {
+        PostInfo postInfo = recommentList.get(position);
+        ItemViewHolder itemHolder = (ItemViewHolder) holder;
+        setItemHolder(itemHolder, postInfo);
 
-        }
     }
 
     private void setItemHolder(ItemViewHolder holder, PostInfo postInfo) {
-        Glide.with(holder.iv_cover.getContext())
-                .load(AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl())
-                .placeholder(R.mipmap.loading_default)
-                .error(R.mipmap.load_failure)
-                .into(holder.iv_cover);
-        Log.d(TAG, "setItemHolder: ===setItemHolder #66 " + AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl());
-        /**
-         * TODO 用户头像加载
-         */
-        Glide.with(holder.iv_avatar.getContext())
-                .load(AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl())
-                .placeholder(R.mipmap.loading_default)
-                .error(R.mipmap.load_failure)
-                .into(holder.iv_avatar);
+        if (TextUtils.isEmpty(postInfo.getCommentCoverUrl())) {
+            holder.iv_cover.setVisibility(View.GONE);
+        } else {
+            Glide.with(holder.iv_cover.getContext())
+                    .load(AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl())
+                    .placeholder(R.mipmap.loading_default)
+                    .error(R.mipmap.load_failure)
+                    .into(holder.iv_cover);
+            Log.d(TAG, "setItemHolder: ===setItemHolder #70 " + AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl());
+        }
+
+        //TODO 更改成用户头像
+        if (TextUtils.isEmpty(postInfo.getCommentCoverUrl())) {
+
+        } else {
+            Glide.with(holder.iv_avatar.getContext())
+                    .load(AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl())
+                    .placeholder(R.mipmap.loading_default)
+                    .error(R.mipmap.load_failure)
+                    .into(holder.iv_avatar);
+        }
 
         holder.iv_like.setImageResource(R.mipmap.icon_like_empty);
         holder.tv_likescount.setText(String.valueOf(postInfo.getLikeCount()));
@@ -80,19 +79,9 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-        return recommentList.size() + (headerView != null ? 1 : 0);
+        return recommentList.size();
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return position == 0 ? TYPE_HEADER : TYPE_ITEM;
-    }
-
-    static class HeaderViewHolder extends RecyclerView.ViewHolder {
-        public HeaderViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
 
     static class ItemViewHolder extends RecyclerView.ViewHolder {
         ImageView iv_cover;

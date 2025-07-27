@@ -45,6 +45,7 @@ public class UserManager {
     public static final int REQUEST_ALBUM_CODE = 20;
     public static final int REQUEST_CROP_CODE = 30;
     private File tempImageFile;
+    private PermissionManager permissionManager;
 
 
     public UserManager(Context context) {
@@ -129,7 +130,7 @@ public class UserManager {
     }
 
     private void requestPermission(Context context, String permission, int requestCode) {
-        PermissionManager permissionManager = new PermissionManager(context);
+        permissionManager = new PermissionManager(context);
         permissionManager.requestPermission(new String[]{permission}, requestCode);
     }
 
@@ -149,7 +150,7 @@ public class UserManager {
     }
 
     public boolean handleRequestPermission(Context context, int[] grantResults, SelectImageType type) {
-        boolean isGranted = new PermissionManager(context).isPermissionGranted(grantResults);
+        boolean isGranted = permissionManager.isPermissionGranted(grantResults);
         if (isGranted) {
             open(context, type);
             return true;
