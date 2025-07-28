@@ -25,6 +25,7 @@ import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.managers.BannerManager;
 import com.memory.wq.managers.PostManager;
 import com.memory.wq.managers.SPManager;
+import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.PageResult;
 import com.memory.wq.utils.ResultCallback;
 
@@ -48,6 +49,9 @@ public class RecommmendFragment extends Fragment {
     private LinearLayout ll_indicator;
     private PostManager postManager;
     private String token;
+    private int currentPage = 1;
+    private final int pageSize = 15;
+    private boolean hasNextPage = true;
 
 
     @Nullable
@@ -66,10 +70,35 @@ public class RecommmendFragment extends Fragment {
         HeaderAdapter headerAdapter = new HeaderAdapter(bannerHeader);
         recommendAdapter = new RecommendAdapter(postInfoList);
         rv_recomment.setLayoutManager(layoutManager);
-        ConcatAdapter concatAdapter = new ConcatAdapter(headerAdapter,recommendAdapter);
+        ConcatAdapter concatAdapter = new ConcatAdapter(headerAdapter, recommendAdapter);
         rv_recomment.setAdapter(concatAdapter);
+        rv_recomment.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0) {
+                    StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
+                    int[] lastVisibleItems = layoutManager.findLastVisibleItemPositions(null);
+                    int lastVisibleItem = getMaxPosition(lastVisibleItems);
+                    int totalItemCount = layoutManager.getItemCount();
 
+                    if (hasNextPage && lastVisibleItem >= totalItemCount - 2) {
+                        loadNextPageData();
+                    }
+                }
+            }
+        });
         setBanner();
+    }
+
+    private int getMaxPosition(int[] positions) {
+        int max = positions[0];
+        for (int pos : positions) {
+            if (pos > max) {
+                max = pos;
+            }
+        }
+        return max;
     }
 
     private void setBanner() {
@@ -140,31 +169,36 @@ public class RecommmendFragment extends Fragment {
         bannerImageList.add(R.mipmap.ic_bannertest3);
 
         postInfoList = new ArrayList<>();
-//        for (int i = 0; i < 20; i++) {
-//            postInfoList.add(new PostInfo());
-//        }
         postManager = new PostManager();
         token = SPManager.getUserInfo(getContext()).getToken();
+        loadNextPageData();
+    }
 
-        QueryPostInfo queryPostInfo = new QueryPostInfo();
-        queryPostInfo.setPage(1);
-        queryPostInfo.setSize(10);
-        postManager.getPosts(token, queryPostInfo, new ResultCallback<PageResult<PostInfo>>() {
-            @Override
-            public void onSuccess(PageResult<PostInfo> result) {
-                getActivity().runOnUiThread(() -> {
-                    postInfoList.addAll(result.getResultList());
-//                    recommendAdapter.notifyItemInserted(1);
-                    recommendAdapter.notifyDataSetChanged();
-                });
+    private void loadNextPageData() {
+        if (hasNextPage) {
+            QueryPostInfo queryPostInfo = new QueryPostInfo();
+            queryPostInfo.setPage(currentPage);
+            queryPostInfo.setSize(pageSize);
+            postManager.getPosts(token, queryPostInfo, new ResultCallback<PageResult<PostInfo>>() {
+                @Override
+                public void onSuccess(PageResult<PostInfo> result) {
+                    getActivity().runOnUiThread(() -> {
+                        currentPage = result.getPage();
+                        hasNextPage = result.isHasNext();
+                        postInfoList.addAll(result.getResultList());
+                        recommendAdapter.notifyDataSetChanged();
+                    });
 
-            }
+                }
 
-            @Override
-            public void onError(String err) {
-
-            }
-        });
+                @Override
+                public void onError(String err) {
+                }
+            });
+        } else {
+            //TODO 没有下一页了
+            MyToast.showToast(getContext(), "没有更多数据了");
+        }
 
     }
 
