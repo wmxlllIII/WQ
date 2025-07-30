@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ConcatAdapter;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -35,7 +34,7 @@ import java.util.List;
 public class RecommmendFragment extends Fragment {
 
 
-    private BannerManager manager;
+    private BannerManager bannerManager;
 
     private List<Integer> bannerImageList;
 
@@ -107,9 +106,9 @@ public class RecommmendFragment extends Fragment {
 
         initIndicator();
         setViewPagerListener();
-        manager = new BannerManager(vp_banner);
-        manager.setupWithAdapter(bannerAdapter);
-        manager.startAutoScroll();
+        bannerManager = new BannerManager(vp_banner);
+        bannerManager.setupWithAdapter(bannerAdapter);
+        bannerManager.startAutoScroll();
     }
 
     private void createHeaderView() {
@@ -153,9 +152,9 @@ public class RecommmendFragment extends Fragment {
             @Override
             public void onPageScrollStateChanged(int state) {
                 if (state == ViewPager2.SCROLL_STATE_DRAGGING) {
-                    manager.pauseAutoScroll();
+                    bannerManager.pauseAutoScroll();
                 } else if (state == ViewPager2.SCROLL_STATE_IDLE) {
-                    manager.startAutoScroll();
+                    bannerManager.startAutoScroll();
                 }
             }
         });
@@ -212,25 +211,25 @@ public class RecommmendFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (manager != null) {
-            manager.startAutoScroll();
+        if (bannerManager != null) {
+            bannerManager.startAutoScroll();
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (manager != null) {
-            manager.pauseAutoScroll();
+        if (bannerManager != null) {
+            bannerManager.pauseAutoScroll();
         }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (manager != null) {
-            manager.stopAutoScroll();
-            manager = null;
+        if (bannerManager != null) {
+            bannerManager.stopAutoScroll();
+            bannerManager = null;
         }
         if (bannerHeader != null) {
             bannerHeader = null;
