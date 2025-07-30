@@ -10,12 +10,14 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.memory.wq.R;
+import com.memory.wq.RecommendViewModel;
 import com.memory.wq.adapters.BannerAdapter;
 import com.memory.wq.adapters.HeaderAdapter;
 import com.memory.wq.adapters.RecommendAdapter;
@@ -33,11 +35,9 @@ import java.util.List;
 
 public class RecommmendFragment extends Fragment {
 
-
-    private BannerManager bannerManager;
-
+    public static final String TAG = "RecommmendFragment";
+    private BannerManager manager;
     private List<Integer> bannerImageList;
-
     private List<ImageView> indicatorsList = new ArrayList<>();
     private RecyclerView rv_recomment;
     private List<PostInfo> postInfoList;
@@ -49,25 +49,43 @@ public class RecommmendFragment extends Fragment {
     private PostManager postManager;
     private String token;
     private int currentPage = 1;
-    private final int pageSize = 15;
+    private final int pageSize = 10;
     private boolean hasNextPage = true;
+    private boolean isLoading = false; // 是否正在加载数据
+    private RecommendViewModel recommendVM;
 
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        recommendVM = new ViewModelProvider(this).get(RecommendViewModel.class);
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.recommend_layout, null, false);
         initView(view);
-        initData();
+        if (recommendVM.postInfoList.isEmpty()) {
+            initData();
+        } else {
+            restoreData();
+        }
         setRecyclerView();
         return view;
+    }
+
+    private void restoreData() {
+        postInfoList = recommendVM.postInfoList;
+        currentPage = recommendVM.currentPage;
+        hasNextPage = recommendVM.hasNextPage;
     }
 
     private void setRecyclerView() {
         createHeaderView();
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         HeaderAdapter headerAdapter = new HeaderAdapter(bannerHeader);
-        recommendAdapter = new RecommendAdapter(postInfoList);
+        recommendAdapter = new RecommendAdapter(recommendVM.postInfoList);
         rv_recomment.setLayoutManager(layoutManager);
         ConcatAdapter concatAdapter = new ConcatAdapter(headerAdapter, recommendAdapter);
         rv_recomment.setAdapter(concatAdapter);
@@ -75,13 +93,13 @@ public class RecommmendFragment extends Fragment {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) {
+                if (dy > 0 && !recommendVM.isLoading && recommendVM.hasNextPage) {
                     StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
                     int[] lastVisibleItems = layoutManager.findLastVisibleItemPositions(null);
                     int lastVisibleItem = getMaxPosition(lastVisibleItems);
                     int totalItemCount = layoutManager.getItemCount();
 
-                    if (hasNextPage && lastVisibleItem >= totalItemCount - 2) {
+                    if (hasNextPage && lastVisibleItem >= totalItemCount - 4) {
                         loadNextPageData();
                     }
                 }
@@ -106,9 +124,9 @@ public class RecommmendFragment extends Fragment {
 
         initIndicator();
         setViewPagerListener();
-        bannerManager = new BannerManager(vp_banner);
-        bannerManager.setupWithAdapter(bannerAdapter);
-        bannerManager.startAutoScroll();
+        manager = new BannerManager(vp_banner);
+        manager.setupWithAdapter(bannerAdapter);
+        manager.startAutoScroll();
     }
 
     private void createHeaderView() {
@@ -152,9 +170,9 @@ public class RecommmendFragment extends Fragment {
             @Override
             public void onPageScrollStateChanged(int state) {
                 if (state == ViewPager2.SCROLL_STATE_DRAGGING) {
-                    bannerManager.pauseAutoScroll();
+                    manager.pauseAutoScroll();
                 } else if (state == ViewPager2.SCROLL_STATE_IDLE) {
-                    bannerManager.startAutoScroll();
+                    manager.startAutoScroll();
                 }
             }
         });
@@ -162,42 +180,50 @@ public class RecommmendFragment extends Fragment {
 
     private void initData() {
         //TODO
-        bannerImageList = new ArrayList<>();
-        bannerImageList.add(R.mipmap.ic_bannertest1);
-        bannerImageList.add(R.mipmap.ic_bannertest2);
-        bannerImageList.add(R.mipmap.ic_bannertest3);
+        if (recommendVM.bannerImageList.isEmpty()) {
+            recommendVM.bannerImageList.add(R.mipmap.ic_bannertest1);
+            recommendVM.bannerImageList.add(R.mipmap.ic_bannertest2);
+            recommendVM.bannerImageList.add(R.mipmap.ic_bannertest3);
+        }
+        bannerImageList = recommendVM.bannerImageList;
 
-        postInfoList = new ArrayList<>();
         postManager = new PostManager();
         token = SPManager.getUserInfo(getContext()).getToken();
         loadNextPageData();
     }
 
     private void loadNextPageData() {
-        if (hasNextPage) {
-            QueryPostInfo queryPostInfo = new QueryPostInfo();
-            queryPostInfo.setPage(currentPage);
-            queryPostInfo.setSize(pageSize);
-            postManager.getPosts(token, queryPostInfo, new ResultCallback<PageResult<PostInfo>>() {
-                @Override
-                public void onSuccess(PageResult<PostInfo> result) {
-                    getActivity().runOnUiThread(() -> {
-                        currentPage = result.getPage();
-                        hasNextPage = result.isHasNext();
-                        postInfoList.addAll(result.getResultList());
-                        recommendAdapter.notifyDataSetChanged();
-                    });
+        if (recommendVM.isLoading || !recommendVM.hasNextPage)
+            return;
 
-                }
+        recommendVM.isLoading = true;
+        QueryPostInfo queryPostInfo = new QueryPostInfo();
+        queryPostInfo.setPage(recommendVM.currentPage);
+        queryPostInfo.setSize(pageSize);
+        postManager.getPosts(token, queryPostInfo, new ResultCallback<PageResult<PostInfo>>() {
+            @Override
+            public void onSuccess(PageResult<PostInfo> result) {
+                getActivity().runOnUiThread(() -> {
+                    int oldSize = recommendVM.postInfoList.size();
+                    List<PostInfo> newData = result.getResultList();
+                    if (newData != null && !newData.isEmpty()) {
+                        recommendVM.postInfoList.addAll(newData);
+                        recommendAdapter.notifyItemRangeInserted(oldSize, newData.size());
+                        recommendVM.currentPage++;
+                    }
+                    recommendVM.hasNextPage = result.isHasNext();
+                    recommendVM.isLoading = false;
+                });
 
-                @Override
-                public void onError(String err) {
-                }
-            });
-        } else {
-            //TODO 没有下一页了
-            MyToast.showToast(getContext(), "没有更多数据了");
-        }
+
+            }
+
+            @Override
+            public void onError(String err) {
+                recommendVM.isLoading = false;
+            }
+        });
+
 
     }
 
@@ -211,25 +237,25 @@ public class RecommmendFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (bannerManager != null) {
-            bannerManager.startAutoScroll();
+        if (manager != null) {
+            manager.startAutoScroll();
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (bannerManager != null) {
-            bannerManager.pauseAutoScroll();
+        if (manager != null) {
+            manager.pauseAutoScroll();
         }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (bannerManager != null) {
-            bannerManager.stopAutoScroll();
-            bannerManager = null;
+        if (manager != null) {
+            manager.stopAutoScroll();
+            manager = null;
         }
         if (bannerHeader != null) {
             bannerHeader = null;
