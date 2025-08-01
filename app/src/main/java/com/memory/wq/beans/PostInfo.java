@@ -20,6 +20,32 @@ public class PostInfo implements Parcelable {
     private int likeCount;
     private long timestamp;
 
+    public PostInfo() {
+    }
+
+    protected PostInfo(Parcel in) {
+        postId = in.readInt();
+        poster = in.readString();
+        title = in.readString();
+        commentCoverUrl = in.readString();
+        content = in.readString();
+        contentImagesUrlList = in.createStringArrayList();
+        likeCount = in.readInt();
+        timestamp = in.readLong();
+    }
+
+    public static final Creator<PostInfo> CREATOR = new Creator<PostInfo>() {
+        @Override
+        public PostInfo createFromParcel(Parcel in) {
+            return new PostInfo(in);
+        }
+
+        @Override
+        public PostInfo[] newArray(int size) {
+            return new PostInfo[size];
+        }
+    };
+
     public int getLikeCount() {
         return likeCount;
     }
@@ -91,6 +117,13 @@ public class PostInfo implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
-
+        parcel.writeInt(postId);
+        parcel.writeString(poster);
+        parcel.writeString(title);
+        parcel.writeString(commentCoverUrl);
+        parcel.writeString(content);
+        parcel.writeStringList(contentImagesUrlList);
+        parcel.writeInt(likeCount);
+        parcel.writeLong(timestamp);
     }
 }
