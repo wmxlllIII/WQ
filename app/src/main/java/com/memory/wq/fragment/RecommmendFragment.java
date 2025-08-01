@@ -1,5 +1,6 @@
 package com.memory.wq.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.memory.wq.R;
 import com.memory.wq.RecommendViewModel;
+import com.memory.wq.activities.PostInfoActivity;
 import com.memory.wq.adapters.BannerAdapter;
 import com.memory.wq.adapters.HeaderAdapter;
 import com.memory.wq.adapters.RecommendAdapter;
@@ -26,6 +28,7 @@ import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.managers.BannerManager;
 import com.memory.wq.managers.PostManager;
 import com.memory.wq.managers.SPManager;
+import com.memory.wq.properties.AppProperties;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.PageResult;
 import com.memory.wq.utils.ResultCallback;
@@ -89,6 +92,16 @@ public class RecommmendFragment extends Fragment {
         rv_recomment.setLayoutManager(layoutManager);
         ConcatAdapter concatAdapter = new ConcatAdapter(headerAdapter, recommendAdapter);
         rv_recomment.setAdapter(concatAdapter);
+
+        recommendAdapter.setOnItemClickListener(new RecommendAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position, PostInfo postInfo) {
+                Intent intent = new Intent(getContext(), PostInfoActivity.class);
+                intent.putExtra(AppProperties.POSTINFO,postInfo);
+                startActivity(intent);
+            }
+        });
+
         rv_recomment.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -229,7 +242,6 @@ public class RecommmendFragment extends Fragment {
 
     private void initView(View view) {
         rv_recomment = (RecyclerView) view.findViewById(R.id.rv_recomment);
-
 
     }
 

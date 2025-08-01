@@ -1,8 +1,13 @@
 package com.memory.wq.beans;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
-public class PostInfo {
+public class PostInfo implements Parcelable {
     //TODO 暂时先用邮箱查,改为使用用户数字id查发布者信息
 //    private String uuNumber;
 
@@ -79,4 +84,13 @@ public class PostInfo {
         this.timestamp = timestamp;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+
+    }
 }

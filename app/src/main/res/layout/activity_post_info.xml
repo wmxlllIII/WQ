@@ -59,6 +59,7 @@
     </RelativeLayout>
 
     <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vp_post_images"
         android:layout_width="match_parent"
         android:layout_height="320dp" />
 
@@ -95,7 +96,7 @@
         android:padding="12dp">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/inputLayout"
+            android:id="@+id/tv_input"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -128,6 +129,7 @@
                 android:padding="8dp">
 
                 <ImageView
+                    android:id="@+id/iv_like"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:src="@mipmap/icon_like_full" />
