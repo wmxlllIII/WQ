@@ -27,9 +27,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.memory.wq.R;
-import com.memory.wq.adapters.CommentAdapter;
+import com.memory.wq.adapters.MovieCommentAdapter;
 import com.memory.wq.adapters.ShareFriendsAdapter;
-import com.memory.wq.beans.CommentInfo;
+import com.memory.wq.beans.MovieCommentInfo;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.MsgInfo;
@@ -64,7 +64,7 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
             Manifest.permission.CAMERA,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-    private List<CommentInfo> commentList = new ArrayList<>();
+    private List<MovieCommentInfo> commentList = new ArrayList<>();
 
 
     private ImageView btn_play_pause;
@@ -84,7 +84,7 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
     private String token;
     private Button btn_send;
     private EditText et_comment;
-    private CommentAdapter adapter;
+    private MovieCommentAdapter adapter;
     private RelativeLayout rl_controllers;
     private RelativeLayout rl_video_container;
     private RelativeLayout rl_portrait_layout;
@@ -111,7 +111,7 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
     }
 
     private void initCommentList() {
-        adapter = new CommentAdapter(this, commentList);
+        adapter = new MovieCommentAdapter(this, commentList);
         lv_comment.setAdapter(adapter);
     }
 
@@ -577,11 +577,11 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
     }
 
     private void addComment(String userId, String comment, long timestamp) {
-        CommentInfo commentInfo = new CommentInfo();
-        commentInfo.setContent(comment);
-        commentInfo.setSender(userId);
-        commentInfo.setTimestamp(timestamp);
-        commentList.add(commentInfo);
+        MovieCommentInfo movieCommentInfo = new MovieCommentInfo();
+        movieCommentInfo.setContent(comment);
+        movieCommentInfo.setSender(userId);
+        movieCommentInfo.setTimestamp(timestamp);
+        commentList.add(movieCommentInfo);
         adapter.notifyDataSetChanged();
         lv_comment.smoothScrollToPosition(commentList.size() - 1);
     }
