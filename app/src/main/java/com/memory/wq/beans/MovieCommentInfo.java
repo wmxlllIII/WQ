@@ -1,6 +1,6 @@
 package com.memory.wq.beans;
 
-public class CommentInfo {
+public class MovieCommentInfo {
     private String sender;
     private String content;
     private long timestamp;;
@@ -38,11 +38,11 @@ public class CommentInfo {
         this.timestamp = timestamp;
     }
 
-    public CommentInfo() {
+    public MovieCommentInfo() {
 
     }
 
-    public CommentInfo(String sender, String content, long timestamp) {
+    public MovieCommentInfo(String sender, String content, long timestamp) {
         this.sender = sender;
         this.content = content;
         this.timestamp = timestamp;

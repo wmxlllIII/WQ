@@ -29,7 +29,6 @@ import com.memory.wq.managers.BannerManager;
 import com.memory.wq.managers.PostManager;
 import com.memory.wq.managers.SPManager;
 import com.memory.wq.properties.AppProperties;
-import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.PageResult;
 import com.memory.wq.utils.ResultCallback;
 
@@ -97,7 +96,7 @@ public class RecommmendFragment extends Fragment {
             @Override
             public void onItemClick(int position, PostInfo postInfo) {
                 Intent intent = new Intent(getContext(), PostInfoActivity.class);
-                intent.putExtra(AppProperties.POSTINFO,postInfo);
+                intent.putExtra(AppProperties.POSTINFO, postInfo);
                 startActivity(intent);
             }
         });

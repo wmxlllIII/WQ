@@ -4,19 +4,18 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.memory.wq.R;
-import com.memory.wq.beans.CommentInfo;
+import com.memory.wq.beans.MovieCommentInfo;
 
 import java.util.List;
 
-public class CommentAdapter extends BaseAdapter {
+public class MovieCommentAdapter extends BaseAdapter {
     private Context context;
-    private List<CommentInfo> commentList;
+    private List<MovieCommentInfo> commentList;
 
-    public CommentAdapter(Context context, List<CommentInfo> commentList) {
+    public MovieCommentAdapter(Context context, List<MovieCommentInfo> commentList) {
         this.context = context;
         this.commentList = commentList;
     }
@@ -39,20 +38,21 @@ public class CommentAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
-        if (convertView==null){
-            convertView= View.inflate(context, R.layout.item_commment_layout, null);
-            viewHolder=new ViewHolder(convertView);
+        if (convertView == null) {
+            convertView = View.inflate(context, R.layout.item_commment_layout, null);
+            viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
-        }else {
-            viewHolder=(ViewHolder) convertView.getTag();
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
-        CommentInfo comment = commentList.get(position);
+        MovieCommentInfo comment = commentList.get(position);
         viewHolder.tv_sender.setText(comment.getSender());
         viewHolder.tv_content.setText(comment.getContent());
-        viewHolder.tv_timestamp.setText(comment.getTimestamp()+"");
+        viewHolder.tv_timestamp.setText(comment.getTimestamp() + "");
         return convertView;
     }
-    class ViewHolder{
+
+    class ViewHolder {
         private TextView tv_sender;
         private TextView tv_content;
         private TextView tv_timestamp;

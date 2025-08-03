@@ -46,6 +46,14 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         PostInfo postInfo = recommentList.get(position);
         ItemViewHolder itemHolder = (ItemViewHolder) holder;
         setItemHolder(itemHolder, postInfo);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (itemClickListener != null && position != RecyclerView.NO_POSITION) {
+                    itemClickListener.onItemClick(position, recommentList.get(position));
+                }
+            }
+        });
 
     }
 
