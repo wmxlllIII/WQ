@@ -2,6 +2,7 @@ package com.memory.wq.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,6 +28,8 @@ import java.util.List;
 
 public class PostInfoActivity extends BaseActivity {
 
+    public static final String TAG = "PostInfoActivity";
+
     private ImageView iv_back;
     private ImageView iv_avatar;
     private ImageView iv_share;
@@ -50,9 +53,16 @@ public class PostInfoActivity extends BaseActivity {
     private void initData() {
         Intent intent = getIntent();
         postInfo = (PostInfo) intent.getParcelableExtra(AppProperties.POSTINFO);
+        // 判断 postInfo 是否为 null 防止崩溃
+        if (postInfo == null) {
+            Log.d(TAG, "===[x] initData #58");
+            MyToast.showToast(this, "帖子数据加载失败");
+            return;
+        }
+
         setData();
 
-// 创建子评论列表
+        // 创建子评论列表
         List<ReplyCommentInfo> replyInfoList = new ArrayList<>();
         ReplyCommentInfo info = new ReplyCommentInfo();
         info.setUserName("ReplyInfo_name");
@@ -99,11 +109,17 @@ public class PostInfoActivity extends BaseActivity {
                 .placeholder(R.mipmap.loading_default)
                 .error(R.mipmap.load_failure)
                 .into(iv_avatar);
+        //标题
         tv_post_title.setText(postInfo.getTitle());
+        //内容
         tv_post_content.setText(postInfo.getContent());
+        //图片列表
         PostImagesAdapter imagesAdapter = new PostImagesAdapter(this, postInfo.getContentImagesUrlList());
         vp_post_images.setAdapter(imagesAdapter);
         vp_post_images.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
+        //喜欢数量
+        tv_likecount.setText(String.valueOf(postInfo.getLikeCount()));
+
 
 
     }
@@ -120,12 +136,10 @@ public class PostInfoActivity extends BaseActivity {
         rv_comments = (RecyclerView) findViewById(R.id.rv_comments);
         EditText et_comment = (EditText) findViewById(R.id.et_comment);
 
-        LinearLayout ll_Like = (LinearLayout) findViewById(R.id.ll_Like);
+        LinearLayout ll_Like = (LinearLayout) findViewById(R.id.ll_like);
         ImageView iv_like = (ImageView) findViewById(R.id.iv_like);
         tv_likecount = (TextView) findViewById(R.id.tv_likecount);
 
-        LinearLayout ll_comment = (LinearLayout) findViewById(R.id.ll_comment);
-        TextView tv_commentcount = (TextView) findViewById(R.id.tv_commentcount);
 
     }
 }
