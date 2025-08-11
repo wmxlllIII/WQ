@@ -1,7 +1,6 @@
 package com.memory.wq.adapters;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,8 +14,12 @@ import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.ReplyCommentInfo;
+import com.memory.wq.properties.AppProperties;
+import com.memory.wq.utils.TimeUtils;
 
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.CommentVH> {
 
@@ -42,15 +45,22 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
         PostCommentInfo commentInfo = commentInfoList.get(position);
 
         // 设置父评论数据
+        Glide.with(context)
+                .load(AppProperties.HTTP_SERVER_ADDRESS)
+                .placeholder(R.mipmap.loading_default)
+                .error(R.mipmap.loading_failure)
+                .into(holder.iv_avatar);
+
         holder.tv_user.setText(commentInfo.getUserName());
         holder.tv_content.setText(commentInfo.getContent());
-        holder.tv_time.setText("1分钟前");
+        //TODO 时间
+        holder.tv_time.setText(TimeUtils.convertTime(commentInfo.getTimestamp()));
         holder.tv_reply.setOnClickListener(view -> {
             if (listener != null) listener.onReplyToComment(commentInfo);
         });
 
         // 子评论列表
-        if (commentInfo.getReplies() != null && commentInfo.getReplies().size() > 0) {
+        if (commentInfo.getReplies() != null && !commentInfo.getReplies().isEmpty()) {
             holder.tv_toggle_replies.setVisibility(View.VISIBLE);
             holder.tv_toggle_replies.setText(commentInfo.isExpanded() ?
                     "收起回复" : "查看全部 " + commentInfo.getReplies().size() + " 条回复");
@@ -88,7 +98,7 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
 
     static class CommentVH extends RecyclerView.ViewHolder {
 
-        ImageView iv_avatar;
+        CircleImageView iv_avatar;
         TextView tv_user;
         TextView tv_time;
         TextView tv_content;
@@ -98,7 +108,7 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
 
         public CommentVH(@NonNull View view) {
             super(view);
-            iv_avatar = (ImageView) view.findViewById(R.id.iv_avatar);
+            iv_avatar = (CircleImageView) view.findViewById(R.id.iv_avatar);
             tv_user = (TextView) view.findViewById(R.id.tv_user);
             tv_time = (TextView) view.findViewById(R.id.tv_time);
             tv_content = (TextView) view.findViewById(R.id.tv_content);

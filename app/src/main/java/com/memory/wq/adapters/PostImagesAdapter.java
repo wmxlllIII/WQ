@@ -37,7 +37,7 @@ public class PostImagesAdapter extends RecyclerView.Adapter<PostImagesAdapter.Im
         Glide.with(context)
                 .load(AppProperties.HTTP_SERVER_ADDRESS + imageUrl)
                 .placeholder(R.mipmap.loading_default)
-                .error(R.mipmap.load_failure)
+                .error(R.mipmap.loading_failure)
                 .into(holder.iv_image);
     }
 

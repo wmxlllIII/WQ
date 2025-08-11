@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.textfield.TextInputEditText;
 import com.memory.wq.R;
 import com.memory.wq.adapters.PostCommentAdapter;
 import com.memory.wq.adapters.PostImagesAdapter;
@@ -26,12 +25,14 @@ import com.memory.wq.utils.MyToast;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class PostInfoActivity extends BaseActivity {
 
     public static final String TAG = "PostInfoActivity";
 
     private ImageView iv_back;
-    private ImageView iv_avatar;
+    private CircleImageView iv_avatar;
     private ImageView iv_share;
     private TextView tv_nickname;
     private TextView tv_follow;
@@ -40,7 +41,8 @@ public class PostInfoActivity extends BaseActivity {
     private ViewPager2 vp_post_images;
     private TextView tv_post_title;
     private TextView tv_post_content;
-    private TextView tv_likecount;
+    private TextView tv_like_count;
+    private TextView tv_msg_count;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +67,9 @@ public class PostInfoActivity extends BaseActivity {
         // 创建子评论列表
         List<ReplyCommentInfo> replyInfoList = new ArrayList<>();
         ReplyCommentInfo info = new ReplyCommentInfo();
-        info.setUserName("ReplyInfo_name");
-        info.setReplyToUser("ReplyInfo_toUser");
-        info.setContent("reply content");
+        info.setUserName("子评论用户名");
+        info.setReplyToUser("被回复者");
+        info.setContent("回复的消息");
         replyInfoList.add(info);
         replyInfoList.add(info);
 
@@ -76,8 +78,8 @@ public class PostInfoActivity extends BaseActivity {
         PostCommentInfo commentInfo = new PostCommentInfo();
         commentInfo.setContent("主评论");
         commentInfo.setReplies(replyInfoList);
-        commentInfo.setExpanded(true);
-        commentInfo.setUserName("comm name");
+        commentInfo.setExpanded(false);
+        commentInfo.setUserName("评论人");
         commentInfoList.add(commentInfo);
         commentInfoList.add(commentInfo);
         commentInfoList.add(commentInfo);
@@ -107,7 +109,7 @@ public class PostInfoActivity extends BaseActivity {
         Glide.with(this)
                 .load(postInfo.getPoster())
                 .placeholder(R.mipmap.loading_default)
-                .error(R.mipmap.load_failure)
+                .error(R.mipmap.loading_failure)
                 .into(iv_avatar);
         //标题
         tv_post_title.setText(postInfo.getTitle());
@@ -118,15 +120,14 @@ public class PostInfoActivity extends BaseActivity {
         vp_post_images.setAdapter(imagesAdapter);
         vp_post_images.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
         //喜欢数量
-        tv_likecount.setText(String.valueOf(postInfo.getLikeCount()));
-
+        tv_like_count.setText(String.valueOf(postInfo.getLikeCount()));
 
 
     }
 
     private void initView() {
         iv_back = (ImageView) findViewById(R.id.iv_back);
-        iv_avatar = (ImageView) findViewById(R.id.iv_avatar);
+        iv_avatar = (CircleImageView) findViewById(R.id.iv_avatar);
         iv_share = (ImageView) findViewById(R.id.iv_share);
         tv_nickname = (TextView) findViewById(R.id.tv_nickname);
         tv_follow = (TextView) findViewById(R.id.tv_follow);
@@ -138,8 +139,15 @@ public class PostInfoActivity extends BaseActivity {
 
         LinearLayout ll_Like = (LinearLayout) findViewById(R.id.ll_like);
         ImageView iv_like = (ImageView) findViewById(R.id.iv_like);
-        tv_likecount = (TextView) findViewById(R.id.tv_likecount);
+        tv_like_count = (TextView) findViewById(R.id.tv_like_count);
 
+        LinearLayout ll_msg = (LinearLayout) findViewById(R.id.ll_msg);
+        ImageView iv_msg = (ImageView) findViewById(R.id.iv_msg);
+        tv_msg_count = (TextView) findViewById(R.id.tv_msg_count);
+
+        iv_back.setOnClickListener(View -> {
+            finish();
+        });
 
     }
 }

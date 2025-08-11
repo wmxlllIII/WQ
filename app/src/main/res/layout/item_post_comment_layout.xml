@@ -11,23 +11,19 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <!-- 用户头像 -->
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/iv_avatar"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="8dp"
-            android:scaleType="centerCrop"
-            android:src="#E40B0B" />
+            android:scaleType="centerCrop" />
 
-        <!-- 右侧内容 -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <!-- 用户名 + 时间 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,7 +57,7 @@
                 android:text="评论内容"
                 android:textSize="14sp" />
 
-            <!-- 回复/展开 -->
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -91,19 +87,14 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- 子评论 RecyclerView -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_replies"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginTop="5dp"
         android:nestedScrollingEnabled="false"
         android:visibility="gone" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginTop="8dp"
-        android:background="#E0E0E0" />
 </LinearLayout>

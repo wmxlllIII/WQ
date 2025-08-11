@@ -10,6 +10,14 @@ public class PostCommentInfo {
     private boolean expanded;
     private long timestamp;
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public String getId() {
         return id;
     }

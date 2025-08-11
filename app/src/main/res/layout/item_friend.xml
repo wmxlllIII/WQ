@@ -11,7 +11,7 @@
         android:layout_height="70dp"
         android:src="@mipmap/ic_t2"
         app:onLoading="@mipmap/loading_default"
-        app:onFail="@mipmap/load_failure"/>
+        app:onFail="@mipmap/loading_failure"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_online_state"

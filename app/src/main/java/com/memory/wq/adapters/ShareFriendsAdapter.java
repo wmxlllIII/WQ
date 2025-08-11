@@ -1,7 +1,6 @@
 package com.memory.wq.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
-import com.memory.wq.activities.MsgActivity;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.properties.AppProperties;
 
@@ -47,7 +45,7 @@ public class ShareFriendsAdapter extends RecyclerView.Adapter<ShareFriendsAdapte
         Glide.with(context)
                 .load(AppProperties.HTTP_SERVER_ADDRESS + friendInfo.getAvatarUrl())
                 .placeholder(R.mipmap.loading_default)
-                .error(R.mipmap.load_failure)
+                .error(R.mipmap.loading_failure)
                 .circleCrop()
                 .into(holder.iv_friend_avatar);
         holder.tv_friend_nickname.setText(friendInfo.getNickname());

@@ -25,7 +25,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.memory.wq.R;
 import com.memory.wq.activities.AvatarActivity;
 import com.memory.wq.activities.BaseActivity;
-import com.memory.wq.activities.EditRecommendActivity;
+import com.memory.wq.activities.EditPostActivity;
 import com.memory.wq.activities.LaunchActivity;
 import com.memory.wq.activities.UserInfoActivity;
 import com.memory.wq.caches.SmartImageView;
@@ -102,7 +102,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
                     .load(AppProperties.HTTP_SERVER_ADDRESS + avatarUrl)
                     .circleCrop()
                     .placeholder(R.mipmap.loading_default)
-                    .error(R.mipmap.load_failure)
+                    .error(R.mipmap.loading_failure)
                     .into(iv_open_drawer);
 
         tv_nickname.setText(userName);
@@ -200,7 +200,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
 
                 break;
             case R.id.iv_edit:
-                startActivity(new Intent(getContext(), EditRecommendActivity.class));
+                startActivity(new Intent(getContext(), EditPostActivity.class));
                 break;
 
         }

@@ -12,7 +12,7 @@
             android:src="#888888"
             android:layout_margin="10dp"
             app:onLoading="@mipmap/loading_default"
-            app:onFail="@mipmap/load_failure"/>
+            app:onFail="@mipmap/loading_failure"/>
         <TextView
             android:id="@+id/tv_nickName"
             android:layout_width="wrap_content"

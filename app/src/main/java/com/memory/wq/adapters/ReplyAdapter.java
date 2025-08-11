@@ -35,8 +35,10 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHol
     @Override
     public void onBindViewHolder(@NonNull ReplyViewHolder holder, int position) {
         ReplyCommentInfo reply = replyList.get(position);
-        String text = reply.getUserName() + " 回复 @" + reply.getReplyToUser() + "：" + reply.getContent();
+        String text = reply.getUserName() + " 回复 @" + reply.getReplyToUser() + "：";
         holder.tv_reply.setText(text);
+        holder.tv_content.setText(reply.getContent());
+
         holder.itemView.setOnClickListener(v -> {
             if (listener != null)
                 listener.onClick(reply);
@@ -50,10 +52,12 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHol
 
     static class ReplyViewHolder extends RecyclerView.ViewHolder {
         TextView tv_reply;
+        TextView tv_content;
 
         public ReplyViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_reply = (TextView) itemView.findViewById(R.id.tv_reply);
+            tv_content = (TextView) itemView.findViewById(R.id.tv_content);
         }
     }
 

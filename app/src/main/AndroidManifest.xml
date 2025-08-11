@@ -27,7 +27,7 @@
             android:name=".activities.PostInfoActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.EditRecommendActivity"
+            android:name=".activities.EditPostActivity"
             android:exported="true" />
         <activity
             android:name=".activities.RegisterActivity"

@@ -19,7 +19,7 @@
             android:layout_height="40dp"
             android:layout_margin="5dp"
             android:src="#000000"
-            app:onFail="@mipmap/load_failure"
+            app:onFail="@mipmap/loading_failure"
             app:onLoading="@mipmap/loading_default"/>
 
         <androidx.cardview.widget.CardView
@@ -39,7 +39,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
                     android:scaleType="centerCrop"
-                    app:onFail="@mipmap/load_failure"
+                    app:onFail="@mipmap/loading_failure"
                     app:onLoading="@mipmap/loading_default"/>
 
                 <LinearLayout
@@ -96,7 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
                     android:scaleType="centerCrop"
-                    app:onFail="@mipmap/load_failure"
+                    app:onFail="@mipmap/loading_failure"
                     app:onLoading="@mipmap/loading_default"/>
 
                 <LinearLayout
@@ -132,7 +132,7 @@
             android:layout_height="40dp"
             android:layout_margin="5dp"
             android:src="#000000"
-            app:onFail="@mipmap/load_failure"
+            app:onFail="@mipmap/loading_failure"
             app:onLoading="@mipmap/loading_default"/>
     </LinearLayout>
 </RelativeLayout>

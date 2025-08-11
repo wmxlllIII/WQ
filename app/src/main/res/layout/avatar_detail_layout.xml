@@ -24,7 +24,7 @@
         android:scaleType="centerCrop"
         android:src="@mipmap/ic_bannertest1"
         app:onLoading="@mipmap/loading_default"
-        app:onFail="@mipmap/load_failure"/>
+        app:onFail="@mipmap/loading_failure"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

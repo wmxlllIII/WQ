@@ -2,7 +2,6 @@ package com.memory.wq.activities;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,12 +32,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditRecommendActivity extends BaseActivity implements View.OnClickListener {
+public class EditPostActivity extends BaseActivity implements View.OnClickListener {
 
-    public static final String TAG = "EditRecommendActivity";
+    public static final String TAG = "EditPostActivity";
 
     private TextView tv_publish;
     private EditText et_content;
+    private EditText et_title;
     private String token;
     private List<File> postImagesList = new ArrayList<>();
     private PostManager postManager;
@@ -89,6 +89,7 @@ public class EditRecommendActivity extends BaseActivity implements View.OnClickL
     private void initView() {
         tv_publish = (TextView) findViewById(R.id.tv_publish);
         et_content = (EditText) findViewById(R.id.et_content);
+        et_title = (EditText) findViewById(R.id.et_title);
         rv_select_images = (RecyclerView) findViewById(R.id.rv_select_images);
         tv_publish.setOnClickListener(this);
 
@@ -121,12 +122,11 @@ public class EditRecommendActivity extends BaseActivity implements View.OnClickL
 
     private void publishPost() {
         String content = et_content.getText().toString().trim();
-        if (TextUtils.isEmpty(content))
+        String title = et_title.getText().toString().trim();
+        if (TextUtils.isEmpty(content) || TextUtils.isEmpty(title)) {
+            Log.d(TAG, "===[x] publishPost #127");
             return;
-
-        int maxTitleLength = 30;
-        String title;
-        title = content.length() > maxTitleLength ? content.substring(0, maxTitleLength) : content;
+        }
 
         PostInfo postInfo = new PostInfo();
         postInfo.setContent(content);
@@ -135,14 +135,14 @@ public class EditRecommendActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onSuccess(Boolean result) {
                 runOnUiThread(() -> {
-                    MyToast.showToast(EditRecommendActivity.this, "发布成功");
+                    MyToast.showToast(EditPostActivity.this, "发布成功");
                     finish();
                 });
             }
 
             @Override
             public void onError(String err) {
-                Log.d(TAG, "===[x] publishPost #133");
+                Log.d(TAG, "===[x] publishPost #145");
             }
         });
     }

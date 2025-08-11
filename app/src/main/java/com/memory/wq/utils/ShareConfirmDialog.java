@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -50,7 +49,7 @@ public class ShareConfirmDialog extends BottomSheetDialog {
         Glide.with(getContext())
                 .load(AppProperties.HTTP_SERVER_ADDRESS + friendInfo.getAvatarUrl())
                 .placeholder(R.mipmap.loading_default)
-                .error(R.mipmap.load_failure)
+                .error(R.mipmap.loading_failure)
                 .into(iv_friend_avatar);
 
         tv_share_friend_name.setText(friendInfo.getNickname());
@@ -60,7 +59,7 @@ public class ShareConfirmDialog extends BottomSheetDialog {
         Glide.with(getContext())
                 .load(AppProperties.HTTP_SERVER_ADDRESS + linkInfo.getLinkImageUrl())
                 .placeholder(R.mipmap.loading_default)
-                .error(R.mipmap.load_failure)
+                .error(R.mipmap.loading_failure)
                 .into(iv_cover);
 
         tv_share.setOnClickListener(new View.OnClickListener() {

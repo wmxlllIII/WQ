@@ -48,13 +48,13 @@ public class SelectImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             Glide.with(imageHolder.iv_image.getContext())
                     .load(file)
                     .placeholder(R.mipmap.loading_default)
-                    .error(R.mipmap.load_failure)
+                    .error(R.mipmap.loading_failure)
                     .into(imageHolder.iv_image);
 
             Glide.with(imageHolder.iv_remove.getContext())
                     .load(R.mipmap.icon_cancel)
                     .placeholder(R.mipmap.loading_default)
-                    .error(R.mipmap.load_failure)
+                    .error(R.mipmap.loading_failure)
                     .into(imageHolder.iv_remove);
 
             imageHolder.iv_remove.setOnClickListener(new View.OnClickListener() {

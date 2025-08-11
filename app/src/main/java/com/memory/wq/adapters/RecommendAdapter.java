@@ -10,12 +10,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.PostInfo;
-import com.memory.wq.caches.SmartImageView;
 import com.memory.wq.properties.AppProperties;
 
 import java.util.List;
@@ -64,7 +62,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             Glide.with(holder.iv_cover.getContext())
                     .load(AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl())
                     .placeholder(R.mipmap.loading_default)
-                    .error(R.mipmap.load_failure)
+                    .error(R.mipmap.loading_failure)
                     .into(holder.iv_cover);
             Log.d(TAG, "setItemHolder: ===setItemHolder #70 " + AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl());
         }
@@ -76,7 +74,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             Glide.with(holder.iv_avatar.getContext())
                     .load(AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl())
                     .placeholder(R.mipmap.loading_default)
-                    .error(R.mipmap.load_failure)
+                    .error(R.mipmap.loading_failure)
                     .into(holder.iv_avatar);
         }
 

@@ -21,7 +21,7 @@
             android:layout_height="40dp"
             android:layout_margin="5dp"
             android:src="#000000"
-            app:onFail="@mipmap/load_failure"
+            app:onFail="@mipmap/loading_failure"
             app:onLoading="@mipmap/loading_default"/>
 
         <TextView
@@ -57,7 +57,7 @@
             android:layout_height="40dp"
             android:layout_margin="5dp"
             android:src="#000000"
-            app:onFail="@mipmap/load_failure"
+            app:onFail="@mipmap/loading_failure"
             app:onLoading="@mipmap/loading_default"/>
 
     </LinearLayout>
