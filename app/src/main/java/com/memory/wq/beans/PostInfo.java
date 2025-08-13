@@ -15,6 +15,7 @@ public class PostInfo implements Parcelable {
     private String poster;
     private String title;
     private String commentCoverUrl;
+    private String posterAvatar;
     private String content;
     private List<String> contentImagesUrlList;
     private int likeCount;
@@ -28,6 +29,7 @@ public class PostInfo implements Parcelable {
         poster = in.readString();
         title = in.readString();
         commentCoverUrl = in.readString();
+        posterAvatar = in.readString();
         content = in.readString();
         contentImagesUrlList = in.createStringArrayList();
         likeCount = in.readInt();
@@ -45,6 +47,14 @@ public class PostInfo implements Parcelable {
             return new PostInfo[size];
         }
     };
+
+    public String getPosterAvatar() {
+        return posterAvatar;
+    }
+
+    public void setPosterAvatar(String posterAvatar) {
+        this.posterAvatar = posterAvatar;
+    }
 
     public int getLikeCount() {
         return likeCount;
@@ -116,14 +126,18 @@ public class PostInfo implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(@NonNull Parcel parcel, int i) {
-        parcel.writeInt(postId);
-        parcel.writeString(poster);
-        parcel.writeString(title);
-        parcel.writeString(commentCoverUrl);
-        parcel.writeString(content);
-        parcel.writeStringList(contentImagesUrlList);
-        parcel.writeInt(likeCount);
-        parcel.writeLong(timestamp);
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+
+        dest.writeInt(postId);
+        dest.writeString(poster);
+        dest.writeString(title);
+        dest.writeString(commentCoverUrl);
+        dest.writeString(posterAvatar);
+        dest.writeString(content);
+        dest.writeStringList(contentImagesUrlList);
+        dest.writeInt(likeCount);
+        dest.writeLong(timestamp);
     }
+
+
 }

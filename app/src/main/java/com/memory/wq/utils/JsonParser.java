@@ -7,6 +7,7 @@ import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.MsgInfo;
+import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.RoomInfo;
 import com.memory.wq.beans.RtcInfo;
@@ -406,5 +407,14 @@ public class JsonParser {
         }
         postInfo.setContentImagesUrlList(imageUrlList);
         return postInfo;
+    }
+
+    public static List<PostCommentInfo> commentParser(JSONObject json) {
+
+        return null;
+    }
+    private static PostCommentInfo parseCommentInfo(JSONObject item){
+
+        return null;
     }
 }

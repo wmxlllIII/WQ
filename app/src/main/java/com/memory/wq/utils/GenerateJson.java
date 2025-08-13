@@ -170,4 +170,8 @@ public class GenerateJson {
         }
         return object.toString();
     }
+
+    public static String getCommentJson(int postId) {
+        return null;
+    }
 }

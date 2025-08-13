@@ -35,6 +35,7 @@ public class AppProperties {
     public static final String SHARE_ROOM = HTTP_SERVER_ADDRESS + "/auth/message/shareroom";
     public static final String POST_PUBLISH = HTTP_SERVER_ADDRESS + "/auth/post";
     public static final String POST_GET = HTTP_SERVER_ADDRESS + "/auth/getpost";
+    public static final String COMMENT_GET = HTTP_SERVER_ADDRESS + "/auth/getComment";
 
     public static final String AGORA_TOKEN = HTTP_SERVER_ADDRESS + "/api/token";
 

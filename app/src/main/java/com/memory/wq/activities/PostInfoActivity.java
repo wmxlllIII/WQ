@@ -43,6 +43,7 @@ public class PostInfoActivity extends BaseActivity {
     private TextView tv_post_content;
     private TextView tv_like_count;
     private TextView tv_msg_count;
+    private List<PostCommentInfo> mCommentInfoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,13 +56,6 @@ public class PostInfoActivity extends BaseActivity {
     private void initData() {
         Intent intent = getIntent();
         postInfo = (PostInfo) intent.getParcelableExtra(AppProperties.POSTINFO);
-        // 判断 postInfo 是否为 null 防止崩溃
-        if (postInfo == null) {
-            Log.d(TAG, "===[x] initData #58");
-            MyToast.showToast(this, "帖子数据加载失败");
-            return;
-        }
-
         setData();
 
         // 创建子评论列表
@@ -74,18 +68,23 @@ public class PostInfoActivity extends BaseActivity {
         replyInfoList.add(info);
 
         // 创建主评论列表
-        List<PostCommentInfo> commentInfoList = new ArrayList<>();
+        mCommentInfoList = new ArrayList<>();
         PostCommentInfo commentInfo = new PostCommentInfo();
         commentInfo.setContent("主评论");
         commentInfo.setReplies(replyInfoList);
         commentInfo.setExpanded(false);
         commentInfo.setUserName("评论人");
-        commentInfoList.add(commentInfo);
-        commentInfoList.add(commentInfo);
-        commentInfoList.add(commentInfo);
+        mCommentInfoList.add(commentInfo);
+        mCommentInfoList.add(commentInfo);
+        mCommentInfoList.add(commentInfo);
 
+        setCommentData();
+
+    }
+
+    private void setCommentData() {
         // 绑定适配器
-        PostCommentAdapter adapter = new PostCommentAdapter(this, commentInfoList);
+        PostCommentAdapter adapter = new PostCommentAdapter(this, mCommentInfoList);
         rv_comments.setLayoutManager(new LinearLayoutManager(this));
         rv_comments.setAdapter(adapter);
 
@@ -106,6 +105,12 @@ public class PostInfoActivity extends BaseActivity {
     }
 
     private void setData() {
+        if (postInfo == null) {
+            Log.d(TAG, "===[x] initData #106");
+            MyToast.showToast(this, "帖子数据加载失败");
+            return;
+        }
+
         Glide.with(this)
                 .load(postInfo.getPoster())
                 .placeholder(R.mipmap.loading_default)

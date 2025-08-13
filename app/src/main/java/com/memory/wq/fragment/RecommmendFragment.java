@@ -54,13 +54,13 @@ public class RecommmendFragment extends Fragment {
     private final int pageSize = 10;
     private boolean hasNextPage = true;
     private boolean isLoading = false; // 是否正在加载数据
-    private RecommendViewModel recommendVM;
+    private RecommendViewModel mRecommendVM;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        recommendVM = new ViewModelProvider(this).get(RecommendViewModel.class);
+        mRecommendVM = new ViewModelProvider(this).get(RecommendViewModel.class);
     }
 
     @Nullable
@@ -68,7 +68,7 @@ public class RecommmendFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.recommend_layout, null, false);
         initView(view);
-        if (recommendVM.postInfoList.isEmpty()) {
+        if (mRecommendVM.postInfoList.isEmpty()) {
             initData();
         } else {
             restoreData();
@@ -78,16 +78,16 @@ public class RecommmendFragment extends Fragment {
     }
 
     private void restoreData() {
-        postInfoList = recommendVM.postInfoList;
-        currentPage = recommendVM.currentPage;
-        hasNextPage = recommendVM.hasNextPage;
+        postInfoList = mRecommendVM.postInfoList;
+        currentPage = mRecommendVM.currentPage;
+        hasNextPage = mRecommendVM.hasNextPage;
     }
 
     private void setRecyclerView() {
         createHeaderView();
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         HeaderAdapter headerAdapter = new HeaderAdapter(bannerHeader);
-        recommendAdapter = new RecommendAdapter(recommendVM.postInfoList);
+        recommendAdapter = new RecommendAdapter(mRecommendVM.postInfoList);
         rv_recomment.setLayoutManager(layoutManager);
         ConcatAdapter concatAdapter = new ConcatAdapter(headerAdapter, recommendAdapter);
         rv_recomment.setAdapter(concatAdapter);
@@ -105,7 +105,7 @@ public class RecommmendFragment extends Fragment {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0 && !recommendVM.isLoading && recommendVM.hasNextPage) {
+                if (dy > 0 && !mRecommendVM.isLoading && mRecommendVM.hasNextPage) {
                     StaggeredGridLayoutManager layoutManager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
                     int[] lastVisibleItems = layoutManager.findLastVisibleItemPositions(null);
                     int lastVisibleItem = getMaxPosition(lastVisibleItems);
@@ -192,12 +192,12 @@ public class RecommmendFragment extends Fragment {
 
     private void initData() {
         //TODO
-        if (recommendVM.bannerImageList.isEmpty()) {
-            recommendVM.bannerImageList.add(R.mipmap.ic_bannertest1);
-            recommendVM.bannerImageList.add(R.mipmap.ic_bannertest2);
-            recommendVM.bannerImageList.add(R.mipmap.ic_bannertest3);
+        if (mRecommendVM.bannerImageList.isEmpty()) {
+            mRecommendVM.bannerImageList.add(R.mipmap.ic_bannertest1);
+            mRecommendVM.bannerImageList.add(R.mipmap.ic_bannertest2);
+            mRecommendVM.bannerImageList.add(R.mipmap.ic_bannertest3);
         }
-        bannerImageList = recommendVM.bannerImageList;
+        bannerImageList = mRecommendVM.bannerImageList;
 
         postManager = new PostManager();
         token = SPManager.getUserInfo(getContext()).getToken();
@@ -205,26 +205,26 @@ public class RecommmendFragment extends Fragment {
     }
 
     private void loadNextPageData() {
-        if (recommendVM.isLoading || !recommendVM.hasNextPage)
+        if (mRecommendVM.isLoading || !mRecommendVM.hasNextPage)
             return;
 
-        recommendVM.isLoading = true;
+        mRecommendVM.isLoading = true;
         QueryPostInfo queryPostInfo = new QueryPostInfo();
-        queryPostInfo.setPage(recommendVM.currentPage);
+        queryPostInfo.setPage(mRecommendVM.currentPage);
         queryPostInfo.setSize(pageSize);
         postManager.getPosts(token, queryPostInfo, new ResultCallback<PageResult<PostInfo>>() {
             @Override
             public void onSuccess(PageResult<PostInfo> result) {
                 getActivity().runOnUiThread(() -> {
-                    int oldSize = recommendVM.postInfoList.size();
+                    int oldSize = mRecommendVM.postInfoList.size();
                     List<PostInfo> newData = result.getResultList();
                     if (newData != null && !newData.isEmpty()) {
-                        recommendVM.postInfoList.addAll(newData);
+                        mRecommendVM.postInfoList.addAll(newData);
                         recommendAdapter.notifyItemRangeInserted(oldSize, newData.size());
-                        recommendVM.currentPage++;
+                        mRecommendVM.currentPage++;
                     }
-                    recommendVM.hasNextPage = result.isHasNext();
-                    recommendVM.isLoading = false;
+                    mRecommendVM.hasNextPage = result.isHasNext();
+                    mRecommendVM.isLoading = false;
                 });
 
 
@@ -232,7 +232,7 @@ public class RecommmendFragment extends Fragment {
 
             @Override
             public void onError(String err) {
-                recommendVM.isLoading = false;
+                mRecommendVM.isLoading = false;
             }
         });
 
