@@ -10,6 +10,7 @@
         android:layout_height="100dp"
         android:layout_margin="5dp"
         android:scaleType="centerInside"
+        android:background="#130E1E"
         android:src="@mipmap/icon_addphoto" />
 
 

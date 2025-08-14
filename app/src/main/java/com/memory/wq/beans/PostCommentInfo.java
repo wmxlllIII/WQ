@@ -4,11 +4,20 @@ import java.util.List;
 
 public class PostCommentInfo {
     private String id;
+    private String userId;
     private String userName;
     private String content;
     private List<ReplyCommentInfo> replies;
     private boolean expanded;
     private long timestamp;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public long getTimestamp() {
         return timestamp;

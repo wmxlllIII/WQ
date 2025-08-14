@@ -3,6 +3,7 @@ package com.memory.wq.utils;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.beans.PostInfo;
+import com.memory.wq.beans.ReplyCommentInfo;
 import com.memory.wq.beans.UserInfo;
 import com.memory.wq.enumertions.JsonType;
 import com.memory.wq.enumertions.SearchUserType;
@@ -171,7 +172,28 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getCommentJson(int postId) {
-        return null;
+    public static String getCommentJson(int postId, QueryPostInfo queryPostInfo) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("page", queryPostInfo.getPage());
+            object.put("postId", postId);
+            object.put("size", queryPostInfo.getSize());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return object.toString();
+    }
+
+    public static String getAddCommentJson(ReplyCommentInfo replyCommentInfo,){
+        JSONObject object = new JSONObject();
+        try {
+            object.put("content", replyCommentInfo.getContent());
+            object.put("postId", replyCommentInfo.getPostId());
+            object.put("replyToUserId", replyCommentInfo.getReplyToUser());
+            object.put("parentId", );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return object.toString();
     }
 }

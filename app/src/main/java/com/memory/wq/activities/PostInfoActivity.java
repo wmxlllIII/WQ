@@ -18,9 +18,13 @@ import com.memory.wq.adapters.PostCommentAdapter;
 import com.memory.wq.adapters.PostImagesAdapter;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.PostInfo;
+import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.beans.ReplyCommentInfo;
+import com.memory.wq.managers.CommentManager;
+import com.memory.wq.managers.SPManager;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.utils.MyToast;
+import com.memory.wq.utils.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,31 +58,50 @@ public class PostInfoActivity extends BaseActivity {
     }
 
     private void initData() {
+        String token = SPManager.getUserInfo(this).getToken();
         Intent intent = getIntent();
         postInfo = (PostInfo) intent.getParcelableExtra(AppProperties.POSTINFO);
         setData();
 
-        // 创建子评论列表
-        List<ReplyCommentInfo> replyInfoList = new ArrayList<>();
-        ReplyCommentInfo info = new ReplyCommentInfo();
-        info.setUserName("子评论用户名");
-        info.setReplyToUser("被回复者");
-        info.setContent("回复的消息");
-        replyInfoList.add(info);
-        replyInfoList.add(info);
+//        // 创建子评论列表
+//        List<ReplyCommentInfo> replyInfoList = new ArrayList<>();
+//        ReplyCommentInfo info = new ReplyCommentInfo();
+//        info.setUserName("子评论用户名");
+//        info.setReplyToUser("被回复者");
+//        info.setContent("回复的消息");
+//        replyInfoList.add(info);
+//        replyInfoList.add(info);
+//
+//        // 创建主评论列表
+//        mCommentInfoList = new ArrayList<>();
+//        PostCommentInfo commentInfo = new PostCommentInfo();
+//        commentInfo.setContent("主评论");
+//        commentInfo.setReplies(replyInfoList);
+//        commentInfo.setExpanded(false);
+//        commentInfo.setUserName("评论人");
+//        mCommentInfoList.add(commentInfo);
+//        mCommentInfoList.add(commentInfo);
+//        mCommentInfoList.add(commentInfo);
+        CommentManager commentManager = new CommentManager();
+        QueryPostInfo queryPostInfo = new QueryPostInfo();
+        queryPostInfo.setPage(1);
+        queryPostInfo.setSize(10);
+        commentManager.getCommentByPostId(token, postInfo.getPostId(), queryPostInfo, new ResultCallback<List<PostCommentInfo>>() {
+            @Override
+            public void onSuccess(List<PostCommentInfo> result) {
+                if (result != null && result.size() > 0) {
+                    mCommentInfoList.addAll(result);
+                    setCommentData();
+                }
 
-        // 创建主评论列表
-        mCommentInfoList = new ArrayList<>();
-        PostCommentInfo commentInfo = new PostCommentInfo();
-        commentInfo.setContent("主评论");
-        commentInfo.setReplies(replyInfoList);
-        commentInfo.setExpanded(false);
-        commentInfo.setUserName("评论人");
-        mCommentInfoList.add(commentInfo);
-        mCommentInfoList.add(commentInfo);
-        mCommentInfoList.add(commentInfo);
+            }
 
-        setCommentData();
+            @Override
+            public void onError(String err) {
+
+            }
+        });
+
 
     }
 

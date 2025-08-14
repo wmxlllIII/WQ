@@ -9,6 +9,7 @@ import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.PostInfo;
+import com.memory.wq.beans.ReplyCommentInfo;
 import com.memory.wq.beans.RoomInfo;
 import com.memory.wq.beans.RtcInfo;
 import com.memory.wq.beans.UserInfo;
@@ -410,11 +411,51 @@ public class JsonParser {
     }
 
     public static List<PostCommentInfo> commentParser(JSONObject json) {
-
-        return null;
+        List<PostCommentInfo> postCommentInfoList = new ArrayList<>();
+        try {
+            JSONArray resultList = json.getJSONArray("resultList");
+            for (int i = 0; i < resultList.length(); i++) {
+                JSONObject item = resultList.getJSONObject(i);
+                PostCommentInfo commentInfo = parseCommentInfo(item);
+                postCommentInfoList.add(commentInfo);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return postCommentInfoList;
     }
-    private static PostCommentInfo parseCommentInfo(JSONObject item){
 
-        return null;
+    private static PostCommentInfo parseCommentInfo(JSONObject item) throws JSONException {
+        PostCommentInfo comment = new PostCommentInfo();
+        comment.setId(String.valueOf(item.getInt("id")));
+        comment.setUserId(item.optString("userId"));
+        comment.setUserName(item.optString("userName"));
+        comment.setContent(item.optString("content"));
+        comment.setTimestamp(item.optLong("createAt"));
+        comment.setExpanded(false);
+
+        JSONArray childArray = item.optJSONArray("childCommentList");
+        if (childArray != null && childArray.length() > 0) {
+            List<ReplyCommentInfo> replies = new ArrayList<>();
+            for (int i = 0; i < childArray.length(); i++) {
+                JSONObject replyObj = childArray.getJSONObject(i);
+                replies.add(parseReplyInfo(replyObj));
+            }
+            comment.setReplies(replies);
+        }
+
+        return comment;
+    }
+
+    private static ReplyCommentInfo parseReplyInfo(JSONObject replyObj) throws JSONException {
+        ReplyCommentInfo reply = new ReplyCommentInfo();
+        reply.setId(String.valueOf(replyObj.getInt("id")));
+        reply.setUserId(replyObj.optString("userId"));
+        reply.setPostId(replyObj.optInt("postId"));
+        reply.setUserName(replyObj.optString("userName"));
+        reply.setContent(replyObj.optString("content"));
+        reply.setReplyToUser(replyObj.optString("replyToUserId"));
+        reply.setCreateAt(replyObj.optLong("createAt"));
+        return reply;
     }
 }
