@@ -3,6 +3,7 @@ package com.memory.wq.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,7 +32,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class PostInfoActivity extends BaseActivity {
+public class PostInfoActivity extends BaseActivity implements View.OnClickListener {
 
     public static final String TAG = "PostInfoActivity";
 
@@ -48,6 +49,10 @@ public class PostInfoActivity extends BaseActivity {
     private TextView tv_like_count;
     private TextView tv_msg_count;
     private List<PostCommentInfo> mCommentInfoList;
+    private TextView tv_send;
+    private EditText et_comment;
+    private CommentManager commentManager;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +63,7 @@ public class PostInfoActivity extends BaseActivity {
     }
 
     private void initData() {
-        String token = SPManager.getUserInfo(this).getToken();
+        token = SPManager.getUserInfo(this).getToken();
         Intent intent = getIntent();
         postInfo = (PostInfo) intent.getParcelableExtra(AppProperties.POSTINFO);
         setData();
@@ -82,7 +87,7 @@ public class PostInfoActivity extends BaseActivity {
 //        mCommentInfoList.add(commentInfo);
 //        mCommentInfoList.add(commentInfo);
 //        mCommentInfoList.add(commentInfo);
-        CommentManager commentManager = new CommentManager();
+        commentManager = new CommentManager();
         QueryPostInfo queryPostInfo = new QueryPostInfo();
         queryPostInfo.setPage(1);
         queryPostInfo.setSize(10);
@@ -163,7 +168,8 @@ public class PostInfoActivity extends BaseActivity {
         tv_post_title = (TextView) findViewById(R.id.tv_post_title);
         tv_post_content = (TextView) findViewById(R.id.tv_post_content);
         rv_comments = (RecyclerView) findViewById(R.id.rv_comments);
-        EditText et_comment = (EditText) findViewById(R.id.et_comment);
+        et_comment = (EditText) findViewById(R.id.et_comment);
+        tv_send = (TextView) findViewById(R.id.tv_send);
 
         LinearLayout ll_Like = (LinearLayout) findViewById(R.id.ll_like);
         ImageView iv_like = (ImageView) findViewById(R.id.iv_like);
@@ -177,5 +183,28 @@ public class PostInfoActivity extends BaseActivity {
             finish();
         });
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.tv_send:
+                String commentContent = et_comment.getText().toString().trim();
+                ReplyCommentInfo replyCommentInfo = new ReplyCommentInfo();
+                replyCommentInfo.setContent(commentContent);
+                replyCommentInfo.setPostId(postInfo.getPostId());
+                replyCommentInfo.setReplyToUser(postInfo.getPoster());
+//                commentManager.addComment(token, replyCommentInfo, new ResultCallback<Boolean>() {
+//                    @Override
+//                    public void onSuccess(Boolean result) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(String err) {
+//
+//                    }
+//                });
+        }
     }
 }

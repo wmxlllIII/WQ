@@ -184,16 +184,16 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getAddCommentJson(ReplyCommentInfo replyCommentInfo,){
-        JSONObject object = new JSONObject();
-        try {
-            object.put("content", replyCommentInfo.getContent());
-            object.put("postId", replyCommentInfo.getPostId());
-            object.put("replyToUserId", replyCommentInfo.getReplyToUser());
-            object.put("parentId", );
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return object.toString();
-    }
+//    public static String getAddCommentJson(ReplyCommentInfo replyCommentInfo,){
+//        JSONObject object = new JSONObject();
+//        try {
+//            object.put("content", replyCommentInfo.getContent());
+//            object.put("postId", replyCommentInfo.getPostId());
+//            object.put("replyToUserId", replyCommentInfo.getReplyToUser());
+//            object.put("parentId", );
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        return object.toString();
+//    }
 }

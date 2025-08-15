@@ -61,33 +61,33 @@ public class CommentManager {
         });
     }
 
-    public void addComment(String token, ReplyCommentInfo replyCommentInfo,ResultCallback<Boolean> callback) {
-        String json = GenerateJson.getAddCommentJson(replyCommentInfo);
-        ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.COMMENT_ADD, token, json, new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
-                }
-
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    if (!response.isSuccessful()){
-                        Log.d(TAG,"[x] addComment #76");
-                        callback.onError("");
-                        return;
-                    }
-                    try {
-                        JSONObject json = new JSONObject(response.body().string());
-                        int code = json.getInt("code");
-                        if (code==1){
-                            callback.onSuccess(true);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        });
-    }
+//    public void addComment(String token, ReplyCommentInfo replyCommentInfo,ResultCallback<Boolean> callback) {
+////        String json = GenerateJson.getAddCommentJson(replyCommentInfo);
+//        ThreadPoolManager.getInstance().execute(() -> {
+//            HttpStreamOP.postJson(AppProperties.COMMENT_ADD, token, json, new Callback() {
+//                @Override
+//                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+//
+//                }
+//
+//                @Override
+//                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+//                    if (!response.isSuccessful()){
+//                        Log.d(TAG,"[x] addComment #76");
+//                        callback.onError("");
+//                        return;
+//                    }
+//                    try {
+//                        JSONObject json = new JSONObject(response.body().string());
+//                        int code = json.getInt("code");
+//                        if (code==1){
+//                            callback.onSuccess(true);
+//                        }
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
+//        });
+//    }
 }
