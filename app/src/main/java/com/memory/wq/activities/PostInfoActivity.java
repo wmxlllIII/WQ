@@ -92,19 +92,16 @@ public class PostInfoActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void setCommentData() {
-        // 绑定适配器
         PostCommentAdapter adapter = new PostCommentAdapter(this, mCommentInfoList);
         rv_comments.setLayoutManager(new LinearLayoutManager(this));
         rv_comments.setAdapter(adapter);
 
-        // 设置监听器（如果需要）
         adapter.setOnCommentActionListener(new PostCommentAdapter.OnCommentActionListener() {
             @Override
             public void onReplyToComment(PostCommentInfo comment) {
-                et_comment.requestFocus();
                 PostInfoActivity.this.comment = comment;
-
-                MyToast.showToast(PostInfoActivity.this, "点击主评论的“回复" + comment);
+                showKeyboard(et_comment);
+                MyToast.showToast(PostInfoActivity.this, "点击了回复" + comment.getReplyToUserName());
             }
         });
     }
@@ -173,10 +170,10 @@ public class PostInfoActivity extends BaseActivity implements View.OnClickListen
                     return;
                 }
 
-                if (replyToComment == null) {
-                    sendComment(commentContent); // 一级评论
+                if (comment == null) {
+                    sendComment(commentContent);
                 } else {
-                    sendReplyComment(replyToComment, content); // 二级评论
+                    sendReplyComment(commentContent);
                 }
         }
     }
@@ -186,6 +183,20 @@ public class PostInfoActivity extends BaseActivity implements View.OnClickListen
         postCommentInfo.setPostId(postInfo.getPostId());
         postCommentInfo.setParentId(-1);
         postCommentInfo.setContent(content);
+        addComment(postCommentInfo);
+    }
+
+    private void sendReplyComment(String content) {
+        PostCommentInfo postCommentInfo = new PostCommentInfo();
+        postCommentInfo.setPostId(comment.getPostId());
+        postCommentInfo.setParentId(comment.getCommentId());
+        postCommentInfo.setReplyToUserId(comment.getUserId());
+        postCommentInfo.setContent(content);
+
+        addComment(postCommentInfo);
+    }
+
+    private void addComment(PostCommentInfo postCommentInfo) {
         commentManager.addComment(token, postCommentInfo, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
@@ -200,9 +211,5 @@ public class PostInfoActivity extends BaseActivity implements View.OnClickListen
                 MyToast.showToast(PostInfoActivity.this, "发布失败");
             }
         });
-    }
-
-    private void sendReplyComment(ReplyCommentInfo replyCommentInfo) {
-        String commentContent = et_comment.getText().toString().trim();
     }
 }

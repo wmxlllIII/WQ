@@ -32,6 +32,18 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    public void showKeyboard(View focusView) {
+        if (focusView != null) {
+            focusView.requestFocus(); // 获取焦点
+            focusView.post(() -> {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.showSoftInput(focusView, InputMethodManager.SHOW_IMPLICIT);
+                }
+            });
+        }
+    }
+
     public static void addActivity(Activity activity) {
 
         activityList.add(activity);

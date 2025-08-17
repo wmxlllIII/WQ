@@ -189,7 +189,7 @@ public class GenerateJson {
         try {
             object.put("content", postCommentInfo.getContent());
             object.put("postId", postCommentInfo.getPostId());
-            object.put("replyToUserId", null);
+            object.put("replyToUserId", postCommentInfo.getReplyToUserId());
             object.put("parentId", postCommentInfo.getParentId());
         } catch (JSONException e) {
             e.printStackTrace();

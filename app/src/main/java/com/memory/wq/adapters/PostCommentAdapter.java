@@ -1,6 +1,7 @@
 package com.memory.wq.adapters;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -34,7 +35,7 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
     @NonNull
     @Override
     public PostCommentAdapter.CommentVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = View.inflate(parent.getContext(), R.layout.item_post_comment_layout, null);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post_comment_layout, parent, false);
         return new CommentVH(view);
 
     }
@@ -58,7 +59,6 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
             if (listener != null) listener.onReplyToComment(commentInfo);
         });
 
-        // 子评论列表
         if (commentInfo.getChildCommentList() != null && !commentInfo.getChildCommentList().isEmpty()) {
             holder.tv_toggle_replies.setVisibility(View.VISIBLE);
             holder.tv_toggle_replies.setText(commentInfo.isExpanded() ?
@@ -66,14 +66,8 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
 
             holder.rv_replies.setVisibility(commentInfo.isExpanded() ? View.VISIBLE : View.GONE);
             if (commentInfo.isExpanded()) {
-                ReplyAdapter adapter = new ReplyAdapter(context, commentInfo.getChildCommentList());
-                adapter.setOnReplyClickListener(new ReplyAdapter.OnReplyClickListener() {
-                    @Override
-                    public void onClick(ReplyCommentInfo reply) {
-                        if (listener != null)
-                            listener.onReplyToComment(reply);
-                    }
-                });
+                ReplyAdapter adapter = new ReplyAdapter(context, commentInfo.getChildCommentList(),listener);
+
                 holder.rv_replies.setLayoutManager(new LinearLayoutManager(context));
                 holder.rv_replies.setAdapter(adapter);
             }

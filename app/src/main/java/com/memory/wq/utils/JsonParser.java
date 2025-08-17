@@ -432,6 +432,7 @@ public class JsonParser {
         comment.setUserId(item.optString("userId"));
         comment.setUserName(item.optString("userName"));
         comment.setReplyToUserId(item.optString("replyToUserId"));
+        comment.setReplyToUserName(item.optString("replyToUserName"));
         comment.setContent(item.optString("content"));
         comment.setTimestamp(item.optLong("createAt"));
         comment.setExpanded(false);

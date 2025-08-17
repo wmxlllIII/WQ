@@ -10,10 +10,19 @@ public class PostCommentInfo {
     private int parentId;
     private String userName;
     private String replyToUserId;
+    private String replyToUserName;
     private String content;
     private List<PostCommentInfo> childCommentList;
     private boolean expanded;
     private long timestamp;
+
+    public String getReplyToUserName() {
+        return replyToUserName;
+    }
+
+    public void setReplyToUserName(String replyToUserName) {
+        this.replyToUserName = replyToUserName;
+    }
 
     public int getCommentId() {
         return commentId;
