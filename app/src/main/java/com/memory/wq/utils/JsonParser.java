@@ -369,7 +369,8 @@ public class JsonParser {
         if ("null".equals(coverUrl))
             coverUrl = null;
         postInfo.setCommentCoverUrl(coverUrl);
-
+        String userAvatarUrl = item.getString("userAvatarUrl");
+        postInfo.setPosterAvatar(userAvatarUrl);
         postInfo.setLikeCount(item.getInt("likeCount"));
         postInfo.setTimestamp(item.getLong("createAt"));
 
@@ -427,8 +428,9 @@ public class JsonParser {
 
     private static PostCommentInfo parseCommentInfo(JSONObject item) throws JSONException {
         PostCommentInfo comment = new PostCommentInfo();
-        comment.setId(String.valueOf(item.getInt("id")));
+        comment.setPostId(item.getInt("postId"));
         comment.setUserId(item.optString("userId"));
+        comment.setParentId(item.optInt("parentId"));
         comment.setUserName(item.optString("userName"));
         comment.setContent(item.optString("content"));
         comment.setTimestamp(item.optLong("createAt"));

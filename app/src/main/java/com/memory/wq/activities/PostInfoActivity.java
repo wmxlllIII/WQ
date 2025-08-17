@@ -48,7 +48,7 @@ public class PostInfoActivity extends BaseActivity implements View.OnClickListen
     private TextView tv_post_content;
     private TextView tv_like_count;
     private TextView tv_msg_count;
-    private List<PostCommentInfo> mCommentInfoList;
+    private List<PostCommentInfo> mCommentInfoList = new ArrayList<>();
     private TextView tv_send;
     private EditText et_comment;
     private CommentManager commentManager;
@@ -68,25 +68,6 @@ public class PostInfoActivity extends BaseActivity implements View.OnClickListen
         postInfo = (PostInfo) intent.getParcelableExtra(AppProperties.POSTINFO);
         setData();
 
-//        // 创建子评论列表
-//        List<ReplyCommentInfo> replyInfoList = new ArrayList<>();
-//        ReplyCommentInfo info = new ReplyCommentInfo();
-//        info.setUserName("子评论用户名");
-//        info.setReplyToUser("被回复者");
-//        info.setContent("回复的消息");
-//        replyInfoList.add(info);
-//        replyInfoList.add(info);
-//
-//        // 创建主评论列表
-//        mCommentInfoList = new ArrayList<>();
-//        PostCommentInfo commentInfo = new PostCommentInfo();
-//        commentInfo.setContent("主评论");
-//        commentInfo.setReplies(replyInfoList);
-//        commentInfo.setExpanded(false);
-//        commentInfo.setUserName("评论人");
-//        mCommentInfoList.add(commentInfo);
-//        mCommentInfoList.add(commentInfo);
-//        mCommentInfoList.add(commentInfo);
         commentManager = new CommentManager();
         QueryPostInfo queryPostInfo = new QueryPostInfo();
         queryPostInfo.setPage(1);
@@ -120,6 +101,11 @@ public class PostInfoActivity extends BaseActivity implements View.OnClickListen
         adapter.setOnCommentActionListener(new PostCommentAdapter.OnCommentActionListener() {
             @Override
             public void onReplyToComment(PostCommentInfo comment) {
+                et_comment.requestFocus();
+                PostCommentInfo postCommentInfo=new PostCommentInfo();
+                postCommentInfo.setParentId(comment.getCommentId());
+                postCommentInfo.setPostId(comment.getPostId());
+
                 // 点击主评论的“回复”
                 MyToast.showToast(PostInfoActivity.this, "点击主评论的“回复" + comment);
             }
@@ -170,6 +156,7 @@ public class PostInfoActivity extends BaseActivity implements View.OnClickListen
         rv_comments = (RecyclerView) findViewById(R.id.rv_comments);
         et_comment = (EditText) findViewById(R.id.et_comment);
         tv_send = (TextView) findViewById(R.id.tv_send);
+        tv_send.setOnClickListener(this);
 
         LinearLayout ll_Like = (LinearLayout) findViewById(R.id.ll_like);
         ImageView iv_like = (ImageView) findViewById(R.id.iv_like);
@@ -187,24 +174,34 @@ public class PostInfoActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.tv_send:
-                String commentContent = et_comment.getText().toString().trim();
-                ReplyCommentInfo replyCommentInfo = new ReplyCommentInfo();
-                replyCommentInfo.setContent(commentContent);
-                replyCommentInfo.setPostId(postInfo.getPostId());
-                replyCommentInfo.setReplyToUser(postInfo.getPoster());
-//                commentManager.addComment(token, replyCommentInfo, new ResultCallback<Boolean>() {
-//                    @Override
-//                    public void onSuccess(Boolean result) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onError(String err) {
-//
-//                    }
-//                });
+
         }
+    }
+
+    private void send(PostCommentInfo postCommentInfo){
+        String commentContent = et_comment.getText().toString().trim();
+        postCommentInfo.setContent(commentContent);
+        postCommentInfo.setPostId(postInfo.getPostId());
+        postCommentInfo.setParentId(-1);
+        commentManager.addComment(token, postCommentInfo, new ResultCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                et_comment.setText("");
+                hideKeyboard();
+                MyToast.showToast(PostInfoActivity.this, "发布成功");
+
+            }
+
+            @Override
+            public void onError(String err) {
+                MyToast.showToast(PostInfoActivity.this, "发布失败");
+            }
+        });
+    }
+
+    private void send(ReplyCommentInfo replyCommentInfo){
+        String commentContent = et_comment.getText().toString().trim();
     }
 }

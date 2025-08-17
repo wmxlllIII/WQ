@@ -1,6 +1,7 @@
 package com.memory.wq.utils;
 
 import com.memory.wq.beans.MsgInfo;
+import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.ReplyCommentInfo;
@@ -184,16 +185,16 @@ public class GenerateJson {
         return object.toString();
     }
 
-//    public static String getAddCommentJson(ReplyCommentInfo replyCommentInfo,){
-//        JSONObject object = new JSONObject();
-//        try {
-//            object.put("content", replyCommentInfo.getContent());
-//            object.put("postId", replyCommentInfo.getPostId());
-//            object.put("replyToUserId", replyCommentInfo.getReplyToUser());
-//            object.put("parentId", );
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        return object.toString();
-//    }
+    public static String getAddCommentJson(PostCommentInfo postCommentInfo){
+        JSONObject object = new JSONObject();
+        try {
+            object.put("content", postCommentInfo.getContent());
+            object.put("postId", postCommentInfo.getPostId());
+            object.put("replyToUserId", null);
+            object.put("parentId", postCommentInfo.getParentId());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return object.toString();
+    }
 }

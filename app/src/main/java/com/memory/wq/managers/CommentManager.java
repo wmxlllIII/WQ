@@ -1,5 +1,7 @@
 package com.memory.wq.managers;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -26,6 +28,7 @@ import okhttp3.Response;
 
 public class CommentManager {
     public static final String TAG = "CommentManager";
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     public void getCommentByPostId(String token, int postId, QueryPostInfo queryPostInfo, ResultCallback<List<PostCommentInfo>> callback) {
         String json = GenerateJson.getCommentJson(postId, queryPostInfo);
@@ -42,7 +45,10 @@ public class CommentManager {
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
                         Log.d(TAG, "[x] getCommentByPostId #36");
-                        callback.onError(response.message());
+                        handler.post(() -> {
+                            callback.onError(response.message());
+                        });
+
                         return;
                     }
 
@@ -51,7 +57,10 @@ public class CommentManager {
 //                        int code = json.getInt("code");
 //                        if (code==1){
                         List<PostCommentInfo> commentInfoList = JsonParser.commentParser(json);
-                        callback.onSuccess(commentInfoList);
+                        handler.post(() -> {
+                            callback.onSuccess(commentInfoList);
+                        });
+
 //                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -61,33 +70,37 @@ public class CommentManager {
         });
     }
 
-//    public void addComment(String token, ReplyCommentInfo replyCommentInfo,ResultCallback<Boolean> callback) {
-////        String json = GenerateJson.getAddCommentJson(replyCommentInfo);
-//        ThreadPoolManager.getInstance().execute(() -> {
-//            HttpStreamOP.postJson(AppProperties.COMMENT_ADD, token, json, new Callback() {
-//                @Override
-//                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-//
-//                }
-//
-//                @Override
-//                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-//                    if (!response.isSuccessful()){
-//                        Log.d(TAG,"[x] addComment #76");
-//                        callback.onError("");
-//                        return;
-//                    }
-//                    try {
-//                        JSONObject json = new JSONObject(response.body().string());
-//                        int code = json.getInt("code");
-//                        if (code==1){
-//                            callback.onSuccess(true);
-//                        }
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            });
-//        });
-//    }
+    public void addComment(String token, PostCommentInfo postCommentInfo, ResultCallback<Boolean> callback) {
+        String json = GenerateJson.getAddCommentJson(postCommentInfo);
+        ThreadPoolManager.getInstance().execute(() -> {
+            HttpStreamOP.postJson(AppProperties.COMMENT_ADD, token, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] addComment #76");
+                        handler.post(()->{
+                            callback.onError("");
+                        });
+                        return;
+                    }
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            handler.post(()->{
+                                callback.onSuccess(true);
+                            });
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        });
+    }
 }

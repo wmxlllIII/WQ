@@ -1,15 +1,34 @@
 package com.memory.wq.beans;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public class PostCommentInfo {
-    private String id;
+    private int commentId;
+    private int postId;
     private String userId;
+    private int parentId;
     private String userName;
     private String content;
     private List<ReplyCommentInfo> replies;
     private boolean expanded;
     private long timestamp;
+
+    public int getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(int commentId) {
+        this.commentId = commentId;
+    }
+
+    public int getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
+    }
 
     public String getUserId() {
         return userId;
@@ -27,12 +46,12 @@ public class PostCommentInfo {
         this.timestamp = timestamp;
     }
 
-    public String getId() {
-        return id;
+    public int getPostId() {
+        return postId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setPostId(int postId) {
+        this.postId = postId;
     }
 
     public String getUserName() {

@@ -1,6 +1,7 @@
 package com.memory.wq.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -23,6 +24,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.CommentVH> {
 
+    private static final String TAG = PostCommentAdapter.class.getName();
     private Context context;
     private List<PostCommentInfo> commentInfoList;
     private OnCommentActionListener listener;
@@ -53,7 +55,7 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
 
         holder.tv_user.setText(commentInfo.getUserName());
         holder.tv_content.setText(commentInfo.getContent());
-        //TODO 时间
+
         holder.tv_time.setText(TimeUtils.convertTime(commentInfo.getTimestamp()));
         holder.tv_reply.setOnClickListener(view -> {
             if (listener != null) listener.onReplyToComment(commentInfo);

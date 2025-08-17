@@ -72,7 +72,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         } else {
             Glide.with(holder.iv_avatar.getContext())
-                    .load(AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl())
+                    .load(AppProperties.HTTP_SERVER_ADDRESS + postInfo.getPosterAvatar())
                     .placeholder(R.mipmap.loading_default)
                     .error(R.mipmap.loading_failure)
                     .into(holder.iv_avatar);

@@ -1,16 +1,20 @@
 package com.memory.wq.activities;
 
+import android.app.Activity;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.WindowManager;
 import com.memory.wq.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
 public class BaseActivity extends AppCompatActivity {
-    public static List<Activity> activityList=new ArrayList<>();
+    public static List<Activity> activityList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,18 +24,27 @@ public class BaseActivity extends AppCompatActivity {
 
     }
 
+    public void hideKeyboard() {
+        View focusView = getCurrentFocus();
+        if (focusView != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
+        }
+    }
 
-    public static void addActivity(Activity activity){
+    public static void addActivity(Activity activity) {
 
         activityList.add(activity);
     }
-    public static void removeActivity(Activity activity){
+
+    public static void removeActivity(Activity activity) {
 
         activityList.remove(activity);
     }
-    public static void finishAll(){
-        for (Activity activity:activityList) {
-            if ( !activity.isFinishing()){
+
+    public static void finishAll() {
+        for (Activity activity : activityList) {
+            if (!activity.isFinishing()) {
                 activity.finish();
             }
         }
