@@ -4,7 +4,6 @@ import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.beans.PostInfo;
-import com.memory.wq.beans.ReplyCommentInfo;
 import com.memory.wq.beans.UserInfo;
 import com.memory.wq.enumertions.JsonType;
 import com.memory.wq.enumertions.SearchUserType;

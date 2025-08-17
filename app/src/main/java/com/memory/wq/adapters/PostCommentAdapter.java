@@ -1,10 +1,8 @@
 package com.memory.wq.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.PostCommentInfo;
-import com.memory.wq.beans.ReplyCommentInfo;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.utils.TimeUtils;
 
@@ -43,7 +40,7 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PostCommentAdapter.CommentVH holder, int position) {
+    public void onBindViewHolder(@NonNull CommentVH holder, int position) {
         PostCommentInfo commentInfo = commentInfoList.get(position);
 
         // 设置父评论数据
@@ -62,19 +59,19 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
         });
 
         // 子评论列表
-        if (commentInfo.getReplies() != null && !commentInfo.getReplies().isEmpty()) {
+        if (commentInfo.getChildCommentList() != null && !commentInfo.getChildCommentList().isEmpty()) {
             holder.tv_toggle_replies.setVisibility(View.VISIBLE);
             holder.tv_toggle_replies.setText(commentInfo.isExpanded() ?
-                    "收起回复" : "查看全部 " + commentInfo.getReplies().size() + " 条回复");
+                    "收起回复" : "查看全部 " + commentInfo.getChildCommentList().size() + " 条回复");
 
             holder.rv_replies.setVisibility(commentInfo.isExpanded() ? View.VISIBLE : View.GONE);
             if (commentInfo.isExpanded()) {
-                ReplyAdapter adapter = new ReplyAdapter(context, commentInfo.getReplies());
+                ReplyAdapter adapter = new ReplyAdapter(context, commentInfo.getChildCommentList());
                 adapter.setOnReplyClickListener(new ReplyAdapter.OnReplyClickListener() {
                     @Override
                     public void onClick(ReplyCommentInfo reply) {
                         if (listener != null)
-                            listener.onReplyToReply(reply);
+                            listener.onReplyToComment(reply);
                     }
                 });
                 holder.rv_replies.setLayoutManager(new LinearLayoutManager(context));
@@ -127,7 +124,5 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
 
     public interface OnCommentActionListener {
         void onReplyToComment(PostCommentInfo commentInfo);
-
-        void onReplyToReply(ReplyCommentInfo replyInfo);
     }
 }

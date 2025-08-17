@@ -9,8 +9,9 @@ public class PostCommentInfo {
     private String userId;
     private int parentId;
     private String userName;
+    private String replyToUserId;
     private String content;
-    private List<ReplyCommentInfo> replies;
+    private List<PostCommentInfo> childCommentList;
     private boolean expanded;
     private long timestamp;
 
@@ -22,12 +23,12 @@ public class PostCommentInfo {
         this.commentId = commentId;
     }
 
-    public int getParentId() {
-        return parentId;
+    public int getPostId() {
+        return postId;
     }
 
-    public void setParentId(int parentId) {
-        this.parentId = parentId;
+    public void setPostId(int postId) {
+        this.postId = postId;
     }
 
     public String getUserId() {
@@ -38,20 +39,12 @@ public class PostCommentInfo {
         this.userId = userId;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public int getParentId() {
+        return parentId;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public int getPostId() {
-        return postId;
-    }
-
-    public void setPostId(int postId) {
-        this.postId = postId;
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
     }
 
     public String getUserName() {
@@ -62,6 +55,14 @@ public class PostCommentInfo {
         this.userName = userName;
     }
 
+    public String getReplyToUserId() {
+        return replyToUserId;
+    }
+
+    public void setReplyToUserId(String replyToUserId) {
+        this.replyToUserId = replyToUserId;
+    }
+
     public String getContent() {
         return content;
     }
@@ -70,12 +71,12 @@ public class PostCommentInfo {
         this.content = content;
     }
 
-    public List<ReplyCommentInfo> getReplies() {
-        return replies;
+    public List<PostCommentInfo> getChildCommentList() {
+        return childCommentList;
     }
 
-    public void setReplies(List<ReplyCommentInfo> replies) {
-        this.replies = replies;
+    public void setChildCommentList(List<PostCommentInfo> childCommentList) {
+        this.childCommentList = childCommentList;
     }
 
     public boolean isExpanded() {
@@ -84,5 +85,13 @@ public class PostCommentInfo {
 
     public void setExpanded(boolean expanded) {
         this.expanded = expanded;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 }

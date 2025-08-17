@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.QueryPostInfo;
-import com.memory.wq.beans.ReplyCommentInfo;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.thread.ThreadPoolManager;

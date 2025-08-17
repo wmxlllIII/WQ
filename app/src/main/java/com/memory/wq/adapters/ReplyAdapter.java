@@ -9,17 +9,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.memory.wq.R;
-import com.memory.wq.beans.ReplyCommentInfo;
+import com.memory.wq.beans.PostCommentInfo;
 
 import java.util.List;
 
 public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHolder> {
 
     private Context context;
-    private List<ReplyCommentInfo> replyList;
+    private List<PostCommentInfo> replyList;
     private OnReplyClickListener listener;
 
-    public ReplyAdapter(Context context, List<ReplyCommentInfo> replyList) {
+    public ReplyAdapter(Context context, List<PostCommentInfo> replyList) {
         this.context = context;
         this.replyList = replyList;
     }
@@ -34,8 +34,8 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHol
 
     @Override
     public void onBindViewHolder(@NonNull ReplyViewHolder holder, int position) {
-        ReplyCommentInfo reply = replyList.get(position);
-        String text = reply.getUserName() + " 回复 @" + reply.getReplyToUser() + "：";
+        PostCommentInfo reply = replyList.get(position);
+        String text = reply.getUserName() + " 回复 @" + reply.getReplyToUserId() + "：";
         holder.tv_reply.setText(text);
         holder.tv_content.setText(reply.getContent());
 
@@ -66,6 +66,6 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHol
     }
 
     public interface OnReplyClickListener {
-        void onClick(ReplyCommentInfo reply);
+        void onClick(PostCommentInfo reply);
     }
 }

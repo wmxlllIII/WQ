@@ -20,7 +20,6 @@ import com.memory.wq.adapters.PostImagesAdapter;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.QueryPostInfo;
-import com.memory.wq.beans.ReplyCommentInfo;
 import com.memory.wq.managers.CommentManager;
 import com.memory.wq.managers.SPManager;
 import com.memory.wq.properties.AppProperties;
@@ -53,6 +52,7 @@ public class PostInfoActivity extends BaseActivity implements View.OnClickListen
     private EditText et_comment;
     private CommentManager commentManager;
     private String token;
+    private PostCommentInfo comment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,18 +102,9 @@ public class PostInfoActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onReplyToComment(PostCommentInfo comment) {
                 et_comment.requestFocus();
-                PostCommentInfo postCommentInfo=new PostCommentInfo();
-                postCommentInfo.setParentId(comment.getCommentId());
-                postCommentInfo.setPostId(comment.getPostId());
+                PostInfoActivity.this.comment = comment;
 
-                // 点击主评论的“回复”
                 MyToast.showToast(PostInfoActivity.this, "点击主评论的“回复" + comment);
-            }
-
-            @Override
-            public void onReplyToReply(ReplyCommentInfo reply) {
-                // 点击子评论的“回复”
-                MyToast.showToast(PostInfoActivity.this, "点击子评论的“回复" + reply);
             }
         });
     }
@@ -176,15 +167,25 @@ public class PostInfoActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_send:
+                String commentContent = et_comment.getText().toString().trim();
+                if (commentContent.isEmpty()) {
+                    MyToast.showToast(PostInfoActivity.this, "评论内容不能为空");
+                    return;
+                }
 
+                if (replyToComment == null) {
+                    sendComment(commentContent); // 一级评论
+                } else {
+                    sendReplyComment(replyToComment, content); // 二级评论
+                }
         }
     }
 
-    private void send(PostCommentInfo postCommentInfo){
-        String commentContent = et_comment.getText().toString().trim();
-        postCommentInfo.setContent(commentContent);
+    private void sendComment(String content) {
+        PostCommentInfo postCommentInfo = new PostCommentInfo();
         postCommentInfo.setPostId(postInfo.getPostId());
         postCommentInfo.setParentId(-1);
+        postCommentInfo.setContent(content);
         commentManager.addComment(token, postCommentInfo, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
@@ -201,7 +202,7 @@ public class PostInfoActivity extends BaseActivity implements View.OnClickListen
         });
     }
 
-    private void send(ReplyCommentInfo replyCommentInfo){
+    private void sendReplyComment(ReplyCommentInfo replyCommentInfo) {
         String commentContent = et_comment.getText().toString().trim();
     }
 }
