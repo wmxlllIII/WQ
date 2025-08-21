@@ -11,28 +11,31 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.memory.wq.R;
 import com.memory.wq.adapters.MoviesAdapter;
 import com.memory.wq.beans.MovieInfo;
+import com.memory.wq.databinding.ActivityChooseMovieBinding;
 import com.memory.wq.managers.MovieManager;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.utils.ResultCallback;
 
 import java.util.List;
 
-public class ChooseMovieActivity extends BaseActivity {
+public class ChooseMovieActivity extends BaseActivity<ActivityChooseMovieBinding> {
 
-    private EditText et_search_movie;
-    private RecyclerView rv_movies;
     private MoviesAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choose_movie);
         initView();
         initData();
     }
 
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_choose_movie;
+    }
+
     private void initData() {
-        rv_movies.setLayoutManager(new LinearLayoutManager(this,RecyclerView.VERTICAL,false));
+        mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this,RecyclerView.VERTICAL,false));
 
 
         MovieManager movieManager = new MovieManager();
@@ -44,7 +47,7 @@ public class ChooseMovieActivity extends BaseActivity {
 
                 runOnUiThread(()->{
                     adapter = new MoviesAdapter(ChooseMovieActivity.this,result);
-                    rv_movies.setAdapter(adapter);
+                    mBinding.rvMovies.setAdapter(adapter);
                 });
             }
 
@@ -58,8 +61,6 @@ public class ChooseMovieActivity extends BaseActivity {
     }
 
     private void initView() {
-        et_search_movie = (EditText) findViewById(R.id.et_search_movie);
-        rv_movies = (RecyclerView) findViewById(R.id.rv_movies);
     }
 
 

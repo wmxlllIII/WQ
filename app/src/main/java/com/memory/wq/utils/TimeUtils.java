@@ -16,7 +16,7 @@ public class TimeUtils {
 
     public static String convertTime(long timestamp) {
         long now = System.currentTimeMillis() / 1000;
-        long gap = now - timestamp;
+        long gap = now - timestamp/1000;
         String timeGap;
         if (gap > 24 * 60 * 60) {
             timeGap = gap / (24 * 60 * 60) + "天前";

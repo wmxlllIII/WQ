@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.memory.wq.R;
 import com.memory.wq.beans.PostCommentInfo;
+import com.memory.wq.utils.TimeUtils;
 
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHol
         holder.tv_replyee.setText(reply.getUserName());
         holder.tv_replyer.setText(reply.getReplyToUserName());
         holder.tv_content.setText(reply.getContent());
+        holder.tv_time.setText(TimeUtils.convertTime(reply.getTimestamp()));
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onReplyToComment(reply);
@@ -68,6 +70,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHol
         TextView tv_replyee;
         TextView tv_replyer;
         TextView tv_content;
+        TextView tv_time;
         RecyclerView rv_sub_comment;
 
         public ReplyViewHolder(@NonNull View itemView) {
@@ -75,6 +78,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHol
             tv_replyee = (TextView) itemView.findViewById(R.id.tv_replyee);
             tv_replyer = (TextView) itemView.findViewById(R.id.tv_replyer);
             tv_content = (TextView) itemView.findViewById(R.id.tv_content);
+            tv_time = (TextView) itemView.findViewById(R.id.tv_time);
             rv_sub_comment = (RecyclerView) itemView.findViewById(R.id.rv_sub_comment);
         }
     }

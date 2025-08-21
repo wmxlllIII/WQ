@@ -21,6 +21,8 @@ import com.luck.picture.lib.entity.LocalMedia;
 import com.memory.wq.R;
 import com.memory.wq.adapters.SelectImageAdapter;
 import com.memory.wq.beans.PostInfo;
+import com.memory.wq.databinding.ActivityEditRecommendBinding;
+import com.memory.wq.databinding.ActivityMainBinding;
 import com.memory.wq.managers.PermissionManager;
 import com.memory.wq.managers.PostManager;
 import com.memory.wq.managers.SPManager;
@@ -32,35 +34,41 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditPostActivity extends BaseActivity implements View.OnClickListener {
+public class EditPostActivity extends BaseActivity<ActivityEditRecommendBinding> {
 
     public static final String TAG = "EditPostActivity";
 
-    private TextView tv_publish;
-    private EditText et_content;
-    private EditText et_title;
+
+
     private String token;
     private List<File> postImagesList = new ArrayList<>();
     private PostManager postManager;
-    private RecyclerView rv_select_images;
-    private SelectImageAdapter adapter;
+
+    private SelectImageAdapter mAdapter;
     private PermissionManager permissionManager;
     public static final int PERMISSION_REQUEST_CODE = 0;
+
+    public EditPostActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_recommend);
         initView();
         initData();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_edit_recommend;
     }
 
     private void initData() {
         permissionManager = new PermissionManager(this);
         postManager = new PostManager();
         token = SPManager.getUserInfo(this).getToken();
-        adapter = new SelectImageAdapter(postImagesList);
-        adapter.setOnAddClickListener(new SelectImageAdapter.OnAddOrRemoveClickListener() {
+        mAdapter = new SelectImageAdapter(postImagesList);
+        mAdapter.setOnAddClickListener(new SelectImageAdapter.OnAddOrRemoveClickListener() {
             @Override
             public void onAddClick() {
                 if (hasPermission()) {
@@ -73,13 +81,13 @@ public class EditPostActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onRemoveClick(int position) {
                 postImagesList.remove(position);
-                adapter.notifyItemRemoved(position);
-                adapter.notifyItemRangeChanged(position, postImagesList.size() - position);
+                mAdapter.notifyItemRemoved(position);
+                mAdapter.notifyItemRangeChanged(position, postImagesList.size() - position);
             }
         });
 
-        rv_select_images.setLayoutManager(new GridLayoutManager(this, 3));
-        rv_select_images.setAdapter(adapter);
+        mBinding.rvSelectImages.setLayoutManager(new GridLayoutManager(this, 3));
+        mBinding.rvSelectImages.setAdapter(mAdapter);
     }
 
     private boolean hasPermission() {
@@ -87,23 +95,15 @@ public class EditPostActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void initView() {
-        tv_publish = (TextView) findViewById(R.id.tv_publish);
-        et_content = (EditText) findViewById(R.id.et_content);
-        et_title = (EditText) findViewById(R.id.et_title);
-        rv_select_images = (RecyclerView) findViewById(R.id.rv_select_images);
-        tv_publish.setOnClickListener(this);
+
+        mBinding.tvPublish.setOnClickListener(v -> {
+            mBinding.tvPublish.setEnabled(false);
+            publishPost();
+        });
 
 
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.tv_publish:
-                publishPost();
-                break;
-        }
-    }
 
     private void selectPostImages() {
         int remainCount = 9 - postImagesList.size();
@@ -121,8 +121,8 @@ public class EditPostActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void publishPost() {
-        String content = et_content.getText().toString().trim();
-        String title = et_title.getText().toString().trim();
+        String content = mBinding.etContent.getText().toString().trim();
+        String title = mBinding.etTitle.getText().toString().trim();
         if (TextUtils.isEmpty(content) || TextUtils.isEmpty(title)) {
             Log.d(TAG, "===[x] publishPost #127");
             return;
@@ -137,12 +137,14 @@ public class EditPostActivity extends BaseActivity implements View.OnClickListen
                 runOnUiThread(() -> {
                     MyToast.showToast(EditPostActivity.this, "发布成功");
                     finish();
+                    mBinding.tvPublish.setEnabled(true);
                 });
             }
 
             @Override
             public void onError(String err) {
                 Log.d(TAG, "===[x] publishPost #145");
+                mBinding.tvPublish.setEnabled(true);
             }
         });
     }
@@ -160,7 +162,7 @@ public class EditPostActivity extends BaseActivity implements View.OnClickListen
                             postImagesList.add(new File(path));
                         }
                     }
-                    adapter.notifyDataSetChanged();
+                    mAdapter.notifyDataSetChanged();
                 }
                 break;
         }
