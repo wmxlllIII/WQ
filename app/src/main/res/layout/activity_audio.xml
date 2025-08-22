@@ -1,133 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".activities.AudioActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <RelativeLayout
-        android:id="@+id/rl_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingVertical="5dp">
-
-        <TextView
-            android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-            android:text="Xxxx" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-            android:layout_toRightOf="@id/tv_title"
-            android:text="的派对" />
-
-        <ImageView
-            android:id="@+id/iv_menu"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="10dp"
-            android:src="@color/black" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rl_video_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/rl_title">
-
-        <FrameLayout
-            android:id="@+id/remote_video_view_container"
-            android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:background="@color/black" />
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
         <RelativeLayout
-            android:id="@+id/rl_controllers"
+            android:id="@+id/rl_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/remote_video_view_container"
-            android:layout_marginHorizontal="10dp"
-            android:paddingHorizontal="10dp"
-            android:paddingBottom="15dp">
+            android:paddingVertical="5dp">
 
-            <ImageView
-                android:id="@+id/btn_play_pause"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="#ff0000" />
-
-            <SeekBar
-                android:id="@+id/seekBar"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
-                android:layout_toLeftOf="@id/iv_landscape"
-                android:layout_toRightOf="@id/btn_play_pause" />
+                android:text="Xxxx" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_toRightOf="@id/tv_title"
+                android:text="的派对" />
 
             <ImageView
-                android:id="@+id/iv_landscape"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:id="@+id/iv_menu"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_alignParentRight="true"
-                android:src="#ff0000" />
+                android:layout_marginRight="10dp"
+                android:src="@color/black" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_video_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rl_title">
+
+            <FrameLayout
+                android:id="@+id/remote_video_view_container"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:background="@color/black" />
+
+            <RelativeLayout
+                android:id="@+id/rl_controllers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/remote_video_view_container"
+                android:layout_marginHorizontal="10dp"
+                android:paddingHorizontal="10dp"
+                android:paddingBottom="15dp">
+
+                <ImageView
+                    android:id="@+id/btn_play_pause"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="#ff0000" />
+
+                <SeekBar
+                    android:id="@+id/seekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_toLeftOf="@id/iv_landscape"
+                    android:layout_toRightOf="@id/btn_play_pause" />
+
+                <ImageView
+                    android:id="@+id/iv_landscape"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentRight="true"
+                    android:src="#ff0000" />
+
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingLeft="8dp"
+                android:text="准备中..."
+                android:textColor="#FFFFFF" />
 
 
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/tv_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:paddingLeft="8dp"
-            android:text="准备中..."
-            android:textColor="#FFFFFF" />
-
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rl_portrait_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/rl_video_container">
-
-        <ListView
-            android:id="@+id/lv_comment"
+        <RelativeLayout
+            android:id="@+id/rl_portrait_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/bottom_input_container" />
+            android:layout_below="@id/rl_video_container">
 
-        <LinearLayout
-            android:id="@+id/bottom_input_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="#ffffff"
-            android:orientation="horizontal"
-            android:padding="8dp">
+            <ListView
+                android:id="@+id/lv_comment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/bottom_input_container" />
 
-            <EditText
-                android:id="@+id/et_comment"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/bottom_input_container"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="评论" />
+                android:layout_alignParentBottom="true"
+                android:background="#ffffff"
+                android:orientation="horizontal"
+                android:padding="8dp">
 
-            <Button
-                android:id="@+id/btn_send"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="发送" />
-        </LinearLayout>
+                <EditText
+                    android:id="@+id/et_comment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="评论" />
+
+                <Button
+                    android:id="@+id/btn_send"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="发送" />
+            </LinearLayout>
+        </RelativeLayout>
+
+
     </RelativeLayout>
-
-
-</RelativeLayout>
+</layout>

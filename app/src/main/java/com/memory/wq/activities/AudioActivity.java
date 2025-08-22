@@ -15,25 +15,20 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import com.memory.wq.R;
 import com.memory.wq.adapters.MovieCommentAdapter;
 import com.memory.wq.adapters.ShareFriendsAdapter;
-import com.memory.wq.beans.MovieCommentInfo;
 import com.memory.wq.beans.FriendInfo;
+import com.memory.wq.beans.MovieCommentInfo;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.RtcInfo;
+import com.memory.wq.databinding.ActivityAudioBinding;
 import com.memory.wq.enumertions.RoleType;
 import com.memory.wq.managers.AgoraManager;
 import com.memory.wq.managers.FriendManager;
@@ -42,7 +37,6 @@ import com.memory.wq.managers.PermissionManager;
 import com.memory.wq.managers.SPManager;
 import com.memory.wq.managers.TokenManager;
 import com.memory.wq.properties.AppProperties;
-
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.ShareFunctionMenu;
@@ -55,7 +49,7 @@ import java.util.List;
 
 import io.agora.mediaplayer.Constants;
 
-public class AudioActivity extends BaseActivity implements View.OnClickListener, AgoraManager.AgoraEventListener {
+public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements View.OnClickListener, AgoraManager.AgoraEventListener {
     private static final String TAG = AudioActivity.class.getName();
 
     private static final int PERMISSION_REQ_ID = 22;
@@ -66,53 +60,42 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
     };
     private List<MovieCommentInfo> commentList = new ArrayList<>();
 
-
-    private ImageView btn_play_pause;
-    private SeekBar seekBar;
-    private TextView tv_status;
-    private ListView lv_comment;
     private List<FriendInfo> friendList = new ArrayList<>();
 
     private AgoraManager agoraManager;
 
 
     private RoleType roleType;
-    private String roomId;
+    private String mRoomId;
     private MovieManager movieManager;
     private PermissionManager permissionManager;
-    private String userId;
+    private String mUserId;
     private String token;
-    private Button btn_send;
-    private EditText et_comment;
-    private MovieCommentAdapter adapter;
-    private RelativeLayout rl_controllers;
-    private RelativeLayout rl_video_container;
-    private RelativeLayout rl_portrait_layout;
-    private ImageView iv_landscape;
+    private MovieCommentAdapter mAdapter;
     private boolean isFullScreen = false;
-    private FrameLayout remote_video_view_container;
 
     private ViewGroup.LayoutParams rl_video_containerParams;
     private ViewGroup.LayoutParams rl_controllersParams;
     private ViewGroup.LayoutParams remote_video_view_containerParams;
-    private TextView tv_title;
-    private ImageView iv_menu;
     private MovieInfo movieInfo;
-    private RelativeLayout rl_title;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_audio);
         initView();
         initCommentList();
         initPermissions();
     }
 
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_audio;
+    }
+
     private void initCommentList() {
-        adapter = new MovieCommentAdapter(this, commentList);
-        lv_comment.setAdapter(adapter);
+        mAdapter = new MovieCommentAdapter(this, commentList);
+        mBinding.lvComment.setAdapter(mAdapter);
     }
 
     private void initPermissions() {
@@ -128,22 +111,22 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
 
         SharedPreferences sp = getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
         token = sp.getString("token", "");
-        userId = sp.getString("userId", "");
+        mUserId = sp.getString("userId", "");
 
         Intent intent = getIntent();
         roleType = (RoleType) intent.getSerializableExtra(AppProperties.ROLE_TYPE);
-        roomId = roleType == RoleType.ROLE_TYPE_BROADCASTER ? userId : intent.getStringExtra(AppProperties.ROOM_ID);
+        mRoomId = roleType == RoleType.ROLE_TYPE_BROADCASTER ? mUserId : intent.getStringExtra(AppProperties.ROOM_ID);
 
 
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
             movieInfo = (MovieInfo) intent.getSerializableExtra(AppProperties.MOVIE_PATH);
             movieManager = new MovieManager();
-            movieManager.saveRoom(token, userId, movieInfo.getMovieId());
+            movieManager.saveRoom(token, mUserId, movieInfo.getMovieId());
         }
 
         TokenManager tokenManager = new TokenManager();
         int role = roleType == RoleType.ROLE_TYPE_BROADCASTER ? 1 : 2;
-        tokenManager.getToken(userId, token, roomId, role, new ResultCallback<RtcInfo>() {
+        tokenManager.getToken(mUserId, token, mRoomId, role, new ResultCallback<RtcInfo>() {
             @Override
             public void onSuccess(RtcInfo result) {
                 runOnUiThread(() -> {
@@ -160,7 +143,7 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
     }
 
     private void initAgoraManager(RtcInfo rtcInfo) {
-        agoraManager = new AgoraManager(this, userId, roomId, rtcInfo);
+        agoraManager = new AgoraManager(this, mUserId, mRoomId, rtcInfo);
         agoraManager.setEventListener(this);
 
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
@@ -169,21 +152,21 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
 
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
             setBroadcasterUI();
-            tv_status.setText("准备媒体中...");
+            mBinding.tvStatus.setText("准备媒体中...");
             agoraManager.prepareMediaPlayer();
         } else {
             setAudienceUI();
-            tv_status.setText("准备加入...");
+            mBinding.tvStatus.setText("准备加入...");
         }
         agoraManager.loginRtm(new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
                 runOnUiThread(() -> {
                     if (roleType == RoleType.ROLE_TYPE_AUDIENCE) {
-                        tv_status.setText("等待主播视频流...");
+                        mBinding.tvStatus.setText("等待主播视频流...");
                         agoraManager.joinChannel(false);
                     } else {
-                        tv_status.setText("媒体加载中...");
+                        mBinding.tvStatus.setText("媒体加载中...");
                     }
                 });
             }
@@ -199,17 +182,21 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
         Log.d(TAG, "setBroadcasterUI: ===设置主播端ui");
         SurfaceView localView = new SurfaceView(this);
         localView.setZOrderMediaOverlay(true);
-        remote_video_view_container.addView(localView);
+        mBinding.remoteVideoViewContainer.addView(localView);
         agoraManager.setupLocalVideo(localView);
-        btn_play_pause.setEnabled(true);
-        seekBar.setEnabled(true);
+
+        mBinding.btnPlayPause.setEnabled(true);
+
+        mBinding.seekBar.setEnabled(true);
     }
 
 
     private void setAudienceUI() {
-        btn_play_pause.setEnabled(false);
-        seekBar.setEnabled(false);
-        tv_status.setText("等待主播加入...");
+
+        mBinding.btnPlayPause.setEnabled(false);
+        mBinding.seekBar.setEnabled(false);
+
+        mBinding.tvStatus.setText("等待主播加入...");
     }
 
     private boolean checkSelfPermissions() {
@@ -223,37 +210,19 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
 
 
     private void initView() {
-        btn_play_pause = (ImageView) findViewById(R.id.btn_play_pause);
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
-        tv_status = (TextView) findViewById(R.id.tv_status);
-        lv_comment = (ListView) findViewById(R.id.lv_comment);
-        btn_send = (Button) findViewById(R.id.btn_send);
-        et_comment = (EditText) findViewById(R.id.et_comment);
-        tv_title = (TextView) findViewById(R.id.tv_title);
-        iv_menu = (ImageView) findViewById(R.id.iv_menu);
-        rl_title = (RelativeLayout) findViewById(R.id.rl_title);
+        remote_video_view_containerParams = mBinding.remoteVideoViewContainer.getLayoutParams();
+        rl_controllersParams = mBinding.rlControllers.getLayoutParams();
+        rl_video_containerParams = mBinding.rlVideoContainer.getLayoutParams();
 
-        remote_video_view_container = (FrameLayout) findViewById(R.id.remote_video_view_container);
-        remote_video_view_containerParams = remote_video_view_container.getLayoutParams();
-
-        rl_controllers = (RelativeLayout) findViewById(R.id.rl_controllers);
-        rl_controllersParams = rl_controllers.getLayoutParams();
-
-        rl_video_container = (RelativeLayout) findViewById(R.id.rl_video_container);
-        rl_video_containerParams = rl_video_container.getLayoutParams();
-
-        rl_portrait_layout = (RelativeLayout) findViewById(R.id.rl_portrait_layout);
-        iv_landscape = (ImageView) findViewById(R.id.iv_landscape);
-
-        remote_video_view_container.setOnClickListener(this);
-        rl_controllers.setVisibility(View.GONE);
-        btn_play_pause.setOnClickListener(this);
-        btn_send.setOnClickListener(this);
-        iv_landscape.setOnClickListener(this);
-        iv_menu.setOnClickListener(this);
+        mBinding.remoteVideoViewContainer.setOnClickListener(this);
+        mBinding.rlControllers.setVisibility(View.GONE);
+        mBinding.btnPlayPause.setOnClickListener(this);
+        mBinding.btnSend.setOnClickListener(this);
+        mBinding.ivLandscape.setOnClickListener(this);
+        mBinding.ivMenu.setOnClickListener(this);
 
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mBinding.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser && agoraManager != null) {
@@ -305,11 +274,12 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
 
         runOnUiThread(() -> {
             if (roleType == RoleType.ROLE_TYPE_AUDIENCE) {
-                tv_status.setText("已连接房主: " + uid);
+
+                mBinding.tvStatus.setText("已连接房主: " + uid);
 
                 SurfaceView remoteView = new SurfaceView(this);
-                remote_video_view_container.removeAllViews();
-                remote_video_view_container.addView(remoteView);
+                mBinding.remoteVideoViewContainer.removeAllViews();
+                mBinding.remoteVideoViewContainer.addView(remoteView);
                 agoraManager.setupRemoteVideo(uid, remoteView);
             }
         });
@@ -323,17 +293,17 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
 
             switch (cmd) {
                 case "play":
-                    runOnUiThread(() -> tv_status.setText("播放中"));
+                    runOnUiThread(() -> mBinding.tvStatus.setText("播放中"));
                     break;
                 case "pause":
-                    runOnUiThread(() -> tv_status.setText("已暂停"));
+                    runOnUiThread(() -> mBinding.tvStatus.setText("已暂停"));
                     break;
                 case "sync":
                     int progress = json.getInt("progress");
 //                    long timestamp = json.getLong("timestamp");
                     runOnUiThread(() -> {
-                        if (Math.abs(seekBar.getProgress() - progress) > 2) {
-                            seekBar.setProgress(progress);
+                        if (Math.abs(mBinding.seekBar.getProgress() - progress) > 2) {
+                            mBinding.seekBar.setProgress(progress);
                         }
                     });
                     break;
@@ -342,7 +312,7 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
                     String content = json.getString("content");
                     long timestamp = json.getLong("timestamp");
                     runOnUiThread(() -> {
-                        if (!userId.equals(sender)) {
+                        if (!mUserId.equals(sender)) {
                             addComment(sender, content, timestamp);
                         }
                     });
@@ -363,7 +333,7 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
             runOnUiThread(() -> {
                 setBroadcasterUI();
                 agoraManager.joinChannel(true);
-                tv_status.setText("等待观众加入...");
+                mBinding.tvStatus.setText("等待观众加入...");
             });
 
         }
@@ -378,8 +348,8 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
     @Override
     public void onPlaybackProgress(int progress) {
         runOnUiThread(() -> {
-            if (Math.abs(seekBar.getProgress() - progress) > 2) {
-                seekBar.setProgress(progress);
+            if (Math.abs(mBinding.seekBar.getProgress() - progress) > 2) {
+                mBinding.seekBar.setProgress(progress);
             }
         });
     }
@@ -411,34 +381,34 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
         if (agoraManager.isPlaying()) {
             agoraManager.pause();
             agoraManager.sendControlCommand("pause");
-            tv_status.setText("已暂停");
+            mBinding.tvStatus.setText("已暂停");
         } else {
             agoraManager.play();
             agoraManager.sendControlCommand("play");
-            tv_status.setText("播放中");
+            mBinding.tvStatus.setText("播放中");
         }
     }
 
     private void sendComment() {
-        String comment = et_comment.getText().toString();
+        String comment = mBinding.etComment.getText().toString();
         if (!TextUtils.isEmpty(comment)) {
-            addComment(userId, comment, System.currentTimeMillis());
+            addComment(mUserId, comment, System.currentTimeMillis());
             agoraManager.sendComment(comment);
-            et_comment.setText("");
+            mBinding.etComment.setText("");
         }
     }
 
     private void adjustControlBar() {
-        if (rl_controllers.getVisibility() == View.GONE) {
-            rl_controllers.setVisibility(View.VISIBLE);
+        if (mBinding.rlControllers.getVisibility() == View.GONE) {
+            mBinding.rlControllers.setVisibility(View.VISIBLE);
 
             new Handler().postDelayed(() -> {
-                if (rl_controllers.getVisibility() == View.VISIBLE) {
-                    rl_controllers.setVisibility(View.GONE);
+                if (mBinding.rlControllers.getVisibility() == View.VISIBLE) {
+                    mBinding.rlControllers.setVisibility(View.GONE);
                 }
             }, 3000);
         } else {
-            rl_controllers.setVisibility(View.GONE);
+            mBinding.rlControllers.setVisibility(View.GONE);
         }
     }
 
@@ -483,7 +453,7 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
         shareMsg.setMsgType(1);
         shareMsg.setLinkTitle("加入共享房间");
         shareMsg.setContent("点击链接加入观看" + movieInfo.getTitle());
-        shareMsg.setLinkContent(roomId);
+        shareMsg.setLinkContent(mRoomId);
 
         shareMsg.setLinkImageUrl(movieInfo.getCoverUrl());
         shareMsg.setSenderEmail(SPManager.getUserInfo(this).getEmail());
@@ -519,8 +489,8 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
         try {
             Log.d(TAG, "enterFullScreenMode: ===进入全屏");
             isFullScreen = true;
-            rl_portrait_layout.setVisibility(View.GONE);
-            rl_title.setVisibility(View.GONE);
+            mBinding.rlPortraitLayout.setVisibility(View.GONE);
+            mBinding.rlTitle.setVisibility(View.GONE);
 
 
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -529,13 +499,13 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
             RelativeLayout.LayoutParams videoParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            remote_video_view_container.setLayoutParams(videoParams);
+            mBinding.remoteVideoViewContainer.setLayoutParams(videoParams);
 
             RelativeLayout.LayoutParams controllerParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             controllerParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            rl_controllers.setLayoutParams(controllerParams);
+            mBinding.rlControllers.setLayoutParams(controllerParams);
 
-            iv_landscape.setImageResource(R.mipmap.wyf);
+            mBinding.ivLandscape.setImageResource(R.mipmap.wyf);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -547,17 +517,17 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
         try {
             Log.d(TAG, "exitFullScreenMode: ===退出全屏");
             isFullScreen = false;
-            rl_portrait_layout.setVisibility(View.VISIBLE);
-            rl_title.setVisibility(View.VISIBLE);
+            mBinding.rlPortraitLayout.setVisibility(View.VISIBLE);
+            mBinding.rlTitle.setVisibility(View.VISIBLE);
 
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-            remote_video_view_container.setLayoutParams(remote_video_view_containerParams);
-            rl_controllers.setLayoutParams(rl_controllersParams);
+            mBinding.remoteVideoViewContainer.setLayoutParams(remote_video_view_containerParams);
+            mBinding.rlControllers.setLayoutParams(rl_controllersParams);
 
-            iv_landscape.setImageResource(R.mipmap.wyf);
+            mBinding.ivLandscape.setImageResource(R.mipmap.wyf);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -582,8 +552,8 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
         movieCommentInfo.setSender(userId);
         movieCommentInfo.setTimestamp(timestamp);
         commentList.add(movieCommentInfo);
-        adapter.notifyDataSetChanged();
-        lv_comment.smoothScrollToPosition(commentList.size() - 1);
+        mAdapter.notifyDataSetChanged();
+        mBinding.lvComment.smoothScrollToPosition(commentList.size() - 1);
     }
 
     @Override
@@ -595,7 +565,7 @@ public class AudioActivity extends BaseActivity implements View.OnClickListener,
         }
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
             MovieManager movieManager = new MovieManager();
-            movieManager.releaseRoom(token, roomId);
+            movieManager.releaseRoom(token, mRoomId);
         }
     }
 
