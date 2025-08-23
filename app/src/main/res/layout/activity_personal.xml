@@ -1,185 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="5dp"
-    tools:context=".activities.PersonalActivity">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="15dp"
-        android:paddingBottom="24dp">
-
-        <com.memory.wq.caches.SmartImageView
-            android:id="@+id/siv_avatar"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_centerHorizontal="true"
-            android:src="#0ffff0" />
-
-        <TextView
-            android:id="@+id/tv_remarks"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/siv_avatar"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
-            android:text="备注"
-            android:textColor="#000000"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-    </RelativeLayout>
-
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:background="#FAFAFA"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="15dp">
+        android:padding="5dp"
+        tools:context=".activities.PersonalActivity">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="15dp"
+            android:paddingBottom="24dp">
+
+            <com.memory.wq.caches.SmartImageView
+                android:id="@+id/siv_avatar"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:src="#0ffff0" />
+
+            <TextView
+                android:id="@+id/tv_remarks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/siv_avatar"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp"
+                android:text="备注"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginBottom="15dp"
+            android:background="#FAFAFA"
+            android:orientation="vertical"
+            android:padding="15dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="昵称："
-                android:textColor="#666666"
-                android:textSize="15dp" />
-
-            <TextView
-                android:id="@+id/tv_nickname"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="逆转时间的公式就是珍惜当下"
-                android:textColor="#666666"
-                android:textSize="15dp" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="昵称："
+                    android:textColor="#666666"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/tv_nickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="逆转时间的公式就是珍惜当下"
+                    android:textColor="#666666"
+                    android:textSize="15dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="邮箱："
+                    android:textColor="#666666"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/tv_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="2351641616@163.com"
+                    android:textColor="#666666"
+                    android:textSize="15dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="wq号："
+                    android:textColor="#666666"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/tv_uunum"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="2506071526"
+                    android:textColor="#666666"
+                    android:textSize="15dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="地区："
+                    android:textColor="#666666"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/tv_region"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="辽宁大连"
+                    android:textColor="#666666"
+                    android:textSize="15dp" />
+            </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="邮箱："
-                android:textColor="#666666"
-                android:textSize="15dp" />
-
-            <TextView
-                android:id="@+id/tv_email"
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="2351641616@163.com"
-                android:textColor="#666666"
-                android:textSize="15dp" />
+                android:layout_height="1dp"
+                android:background="#EEEEEE" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#EEEEEE" />
+
         </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginTop="25dp"
+            android:padding="15dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/btn_message"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="wq号："
-                android:textColor="#666666"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginEnd="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_weight="1"
+                android:text="发消息"
+                android:textColor="#0ff0ff"
                 android:textSize="15dp" />
 
-            <TextView
-                android:id="@+id/tv_uunum"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="2506071526"
-                android:textColor="#666666"
-                android:textSize="15dp" />
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/btn_call"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="地区："
-                android:textColor="#666666"
-                android:textSize="15dp" />
-
-            <TextView
-                android:id="@+id/tv_region"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="辽宁大连"
-                android:textColor="#666666"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginStart="1dp"
+                android:layout_marginLeft="1dp"
+                android:layout_weight="1"
+                android:text="音视频通话"
+                android:textColor="#0f00f0"
                 android:textSize="15dp" />
         </LinearLayout>
+
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#EEEEEE" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#EEEEEE" />
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:padding="15dp">
-
-        <Button
-            android:id="@+id/btn_message"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginEnd="1dp"
-            android:layout_marginRight="1dp"
-            android:layout_weight="1"
-            android:text="发消息"
-            android:textColor="#0ff0ff"
-            android:textSize="15dp" />
-
-
-        <Button
-            android:id="@+id/btn_call"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginStart="1dp"
-            android:layout_marginLeft="1dp"
-            android:layout_weight="1"
-            android:text="音视频通话"
-            android:textColor="#0f00f0"
-            android:textSize="15dp" />
-    </LinearLayout>
-
-
-</LinearLayout>
+</layout>

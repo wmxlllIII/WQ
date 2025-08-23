@@ -58,17 +58,14 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
             Manifest.permission.CAMERA,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-    private List<MovieCommentInfo> commentList = new ArrayList<>();
+    private final List<MovieCommentInfo> commentList = new ArrayList<>();
+    private final List<FriendInfo> friendList = new ArrayList<>();
 
-    private List<FriendInfo> friendList = new ArrayList<>();
-
-    private AgoraManager agoraManager;
-
-
+    private AgoraManager mAgoraManager;
     private RoleType roleType;
     private String mRoomId;
-    private MovieManager movieManager;
-    private PermissionManager permissionManager;
+    private MovieManager mMovieManager;
+    private PermissionManager mPermissionManager;
     private String mUserId;
     private String token;
     private MovieCommentAdapter mAdapter;
@@ -78,7 +75,6 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
     private ViewGroup.LayoutParams rl_controllersParams;
     private ViewGroup.LayoutParams remote_video_view_containerParams;
     private MovieInfo movieInfo;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,9 +95,9 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
     }
 
     private void initPermissions() {
-        permissionManager = new PermissionManager(this);
+        mPermissionManager = new PermissionManager(this);
         if (!checkSelfPermissions()) {
-            permissionManager.requestPermission(REQUESTED_PERMISSIONS, PERMISSION_REQ_ID);
+            mPermissionManager.requestPermission(REQUESTED_PERMISSIONS, PERMISSION_REQ_ID);
         } else {
             initData();
         }
@@ -120,8 +116,8 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
 
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
             movieInfo = (MovieInfo) intent.getSerializableExtra(AppProperties.MOVIE_PATH);
-            movieManager = new MovieManager();
-            movieManager.saveRoom(token, mUserId, movieInfo.getMovieId());
+            mMovieManager = new MovieManager();
+            mMovieManager.saveRoom(token, mUserId, movieInfo.getMovieId());
         }
 
         TokenManager tokenManager = new TokenManager();
@@ -143,28 +139,28 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
     }
 
     private void initAgoraManager(RtcInfo rtcInfo) {
-        agoraManager = new AgoraManager(this, mUserId, mRoomId, rtcInfo);
-        agoraManager.setEventListener(this);
+        mAgoraManager = new AgoraManager(this, mUserId, mRoomId, rtcInfo);
+        mAgoraManager.setEventListener(this);
 
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
-            agoraManager.setMoviePath(movieInfo.getMovieUrl());
+            mAgoraManager.setMoviePath(movieInfo.getMovieUrl());
         }
 
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
             setBroadcasterUI();
             mBinding.tvStatus.setText("准备媒体中...");
-            agoraManager.prepareMediaPlayer();
+            mAgoraManager.prepareMediaPlayer();
         } else {
             setAudienceUI();
             mBinding.tvStatus.setText("准备加入...");
         }
-        agoraManager.loginRtm(new ResultCallback<Boolean>() {
+        mAgoraManager.loginRtm(new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
                 runOnUiThread(() -> {
                     if (roleType == RoleType.ROLE_TYPE_AUDIENCE) {
                         mBinding.tvStatus.setText("等待主播视频流...");
-                        agoraManager.joinChannel(false);
+                        mAgoraManager.joinChannel(false);
                     } else {
                         mBinding.tvStatus.setText("媒体加载中...");
                     }
@@ -183,7 +179,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
         SurfaceView localView = new SurfaceView(this);
         localView.setZOrderMediaOverlay(true);
         mBinding.remoteVideoViewContainer.addView(localView);
-        agoraManager.setupLocalVideo(localView);
+        mAgoraManager.setupLocalVideo(localView);
 
         mBinding.btnPlayPause.setEnabled(true);
 
@@ -201,7 +197,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
 
     private boolean checkSelfPermissions() {
         for (String permission : REQUESTED_PERMISSIONS) {
-            if (permissionManager.isPermitPermission(permission)) {
+            if (mPermissionManager.isPermitPermission(permission)) {
                 return false;
             }
         }
@@ -225,11 +221,11 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
         mBinding.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser && agoraManager != null) {
-                    agoraManager.seek((long) (progress * 1000));
+                if (fromUser && mAgoraManager != null) {
+                    mAgoraManager.seek((long) (progress * 1000));
 
                     if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
-                        agoraManager.sendSyncCommand(progress, System.currentTimeMillis());
+                        mAgoraManager.sendSyncCommand(progress, System.currentTimeMillis());
                     }
                 }
             }
@@ -280,7 +276,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
                 SurfaceView remoteView = new SurfaceView(this);
                 mBinding.remoteVideoViewContainer.removeAllViews();
                 mBinding.remoteVideoViewContainer.addView(remoteView);
-                agoraManager.setupRemoteVideo(uid, remoteView);
+                mAgoraManager.setupRemoteVideo(uid, remoteView);
             }
         });
     }
@@ -332,7 +328,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
         if (state == Constants.MediaPlayerState.PLAYER_STATE_OPEN_COMPLETED) {
             runOnUiThread(() -> {
                 setBroadcasterUI();
-                agoraManager.joinChannel(true);
+                mAgoraManager.joinChannel(true);
                 mBinding.tvStatus.setText("等待观众加入...");
             });
 
@@ -378,13 +374,13 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
     }
 
     private void switchPlayPause() {
-        if (agoraManager.isPlaying()) {
-            agoraManager.pause();
-            agoraManager.sendControlCommand("pause");
+        if (mAgoraManager.isPlaying()) {
+            mAgoraManager.pause();
+            mAgoraManager.sendControlCommand("pause");
             mBinding.tvStatus.setText("已暂停");
         } else {
-            agoraManager.play();
-            agoraManager.sendControlCommand("play");
+            mAgoraManager.play();
+            mAgoraManager.sendControlCommand("play");
             mBinding.tvStatus.setText("播放中");
         }
     }
@@ -393,7 +389,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
         String comment = mBinding.etComment.getText().toString();
         if (!TextUtils.isEmpty(comment)) {
             addComment(mUserId, comment, System.currentTimeMillis());
-            agoraManager.sendComment(comment);
+            mAgoraManager.sendComment(comment);
             mBinding.etComment.setText("");
         }
     }
@@ -559,9 +555,9 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (agoraManager != null) {
-            agoraManager.leaveChannel();
-            agoraManager.destroy();
+        if (mAgoraManager != null) {
+            mAgoraManager.leaveChannel();
+            mAgoraManager.destroy();
         }
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
             MovieManager movieManager = new MovieManager();

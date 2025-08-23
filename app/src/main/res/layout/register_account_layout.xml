@@ -1,65 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:fitsSystemWindows="true">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- 邮箱输入 -->
-    <EditText
-        android:id="@+id/et_register_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="20sp"
-        android:paddingVertical="10sp"
-        android:hint="请输入邮箱"/>
-
-<!--    TODO 密码可见按钮-->
-    <EditText
-        android:id="@+id/et_register_pwd1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="20sp"
-        android:paddingVertical="10sp"
-        android:hint="请输入密码"/>
-    <EditText
-        android:id="@+id/et_register_pwd2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="20sp"
-        android:paddingVertical="10sp"
-        android:hint="确认密码"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 邮箱输入 -->
+        <EditText
+            android:id="@+id/et_register_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入邮箱"
+            android:paddingHorizontal="20sp"
+            android:paddingVertical="10sp" />
+
+        <!--    TODO 密码可见按钮-->
+        <EditText
+            android:id="@+id/et_register_pwd1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入密码"
+            android:paddingHorizontal="20sp"
+            android:paddingVertical="10sp" />
 
         <EditText
-            android:id="@+id/et_code"
-            android:layout_width="0dp"
-            android:layout_weight="9"
+            android:id="@+id/et_register_pwd2"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="请输入验证码"
-            android:layout_marginHorizontal="10sp"
-            android:layout_marginVertical="5dp"/>
+            android:hint="确认密码"
+            android:paddingHorizontal="20sp"
+            android:paddingVertical="10sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/et_code"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10sp"
+                android:layout_marginVertical="5dp"
+                android:layout_weight="9"
+                android:hint="请输入验证码" />
+
+            <Button
+                android:id="@+id/btn_getcode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_weight="1"
+                android:text="获取验证码" />
+
+        </LinearLayout>
+
         <Button
-            android:id="@+id/btn_getcode"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
+            android:id="@+id/btn_submitcode"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:text="获取验证码"/>
-
+            android:layout_marginHorizontal="20sp"
+            android:layout_marginVertical="10sp"
+            android:text="立即注册" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btn_submitcode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20sp"
-        android:layout_marginVertical="10sp"
-        android:text="立即注册"/>
-
-
-</LinearLayout>
+</layout>

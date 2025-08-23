@@ -5,14 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.luck.picture.lib.basic.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
@@ -22,7 +18,6 @@ import com.memory.wq.R;
 import com.memory.wq.adapters.SelectImageAdapter;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.databinding.ActivityEditRecommendBinding;
-import com.memory.wq.databinding.ActivityMainBinding;
 import com.memory.wq.managers.PermissionManager;
 import com.memory.wq.managers.PostManager;
 import com.memory.wq.managers.SPManager;
@@ -38,12 +33,9 @@ public class EditPostActivity extends BaseActivity<ActivityEditRecommendBinding>
 
     public static final String TAG = "EditPostActivity";
 
-
-
     private String token;
-    private List<File> postImagesList = new ArrayList<>();
-    private PostManager postManager;
-
+    private final List<File> postImagesList = new ArrayList<>();
+    private PostManager mPostManager;
     private SelectImageAdapter mAdapter;
     private PermissionManager permissionManager;
     public static final int PERMISSION_REQUEST_CODE = 0;
@@ -65,7 +57,7 @@ public class EditPostActivity extends BaseActivity<ActivityEditRecommendBinding>
 
     private void initData() {
         permissionManager = new PermissionManager(this);
-        postManager = new PostManager();
+        mPostManager = new PostManager();
         token = SPManager.getUserInfo(this).getToken();
         mAdapter = new SelectImageAdapter(postImagesList);
         mAdapter.setOnAddClickListener(new SelectImageAdapter.OnAddOrRemoveClickListener() {
@@ -131,7 +123,7 @@ public class EditPostActivity extends BaseActivity<ActivityEditRecommendBinding>
         PostInfo postInfo = new PostInfo();
         postInfo.setContent(content);
         postInfo.setTitle(title);
-        postManager.publishPost(token, postInfo, postImagesList, new ResultCallback<Boolean>() {
+        mPostManager.publishPost(token, postInfo, postImagesList, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
                 runOnUiThread(() -> {

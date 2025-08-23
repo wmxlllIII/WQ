@@ -16,41 +16,6 @@ public class HttpStreamOP {
 
     private static final OkHttpClient client = new OkHttpClient();
 
-    //http传统派
-//    public static void sendHttpRequest(final String address, final HttpCallbackListener listener) {
-//        ThreadPoolManager.getInstance().execute(() -> {
-//            HttpURLConnection connection = null;
-//            try {
-//                URL url = new URL(address);
-//                connection = (HttpURLConnection) url.openConnection();
-//
-//                connection.setRequestMethod("POST");
-//                connection.setConnectTimeout(5000);
-//                connection.setDoInput(true);
-//                connection.setDoOutput(true);
-//
-//                InputStream in = connection.getInputStream();
-//                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-//                StringBuilder response = new StringBuilder();
-//                String line;
-//                while ((line = reader.readLine()) != null) {
-//                    response.append(line);
-//                }
-//                if (listener != null) {
-//                    listener.onFinish(response.toString());
-//                }
-//
-//            } catch (Exception e) {
-//                listener.onError(e);
-//            } finally {
-//                if (connection != null)
-//                    connection.disconnect();
-//            }
-//        });
-//
-//    }
-
-    //http维新派
     private static void sendOkhttpRequest(Request request, Callback okhttpCallback) {
 
         client.newCall(request).enqueue(okhttpCallback);

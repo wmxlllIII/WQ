@@ -11,11 +11,9 @@ import android.os.Bundle;
 
 import android.os.IBinder;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.memory.wq.R;
+import com.memory.wq.databinding.ActivityMainBinding;
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.enumertions.Page;
 import com.memory.wq.fragment.CowatchFragment;
@@ -29,39 +27,31 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, WebService.WebSocketListener {
+public class MainActivity extends BaseActivity<ActivityMainBinding> implements  WebService.WebSocketListener {
 
-    private final List<Fragment> fragmentList = new ArrayList<>();
-    private Fragment currentFragment;
-    private LinearLayout ll_discover;
-    private LinearLayout ll_coWatch;
-    private LinearLayout ll_msg;
-    private LinearLayout ll_history;
-    private TextView tv_discover;
-    private TextView tv_coWatch;
-    private TextView tv_msg;
-    private TextView tv_history;
+    private final List<Fragment> mFragmentList = new ArrayList<>();
+    private Fragment mCurrentFragment;
 
     private final int PAGE_DISCOVER = 0;
     private final int PAGE_COWATCH = 1;
     private final int PAGE_MESSAGE = 2;
     private final int PAGE_HISTORY = 3;
-    private final EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_REQUEST_FRIEND);
-    private TextView tv_discoverNum;
-    private ImageView iv_historynum;
-    private TextView tv_msgnum;
-    private TextView tv_coWatchNum;
-    private WebService webService;
+    private final EnumSet<EventType> mEventTypes = EnumSet.of(EventType.EVENT_TYPE_REQUEST_FRIEND);
+    private WebService mWebService;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         initView();
         initFragment();
-        ll_discover.performClick();
+        mBinding.llDiscover.performClick();
         startMyService();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_main;
     }
 
     private void startMyService() {
@@ -74,7 +64,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public EnumSet<EventType> getEvents() {
-        return eventTypes;
+        return mEventTypes;
     }
 
     @Override
@@ -82,8 +72,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         runOnUiThread(() -> {
             switch (eventType) {
                 case EVENT_TYPE_REQUEST_FRIEND:
-                    if (!(currentFragment instanceof MessageFragment))
-                        tv_msgnum.setVisibility(View.VISIBLE);
+                    if (!(mCurrentFragment instanceof MessageFragment))
+                        mBinding.tvMsgnum.setVisibility(View.VISIBLE);
                     break;
             }
         });
@@ -98,8 +88,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            webService = ((IWebSocketService) service).getService();
-            webService.registerListener(MainActivity.this);
+            mWebService = ((IWebSocketService) service).getService();
+            mWebService.registerListener(MainActivity.this);
         }
 
         @Override
@@ -112,53 +102,49 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fl_bottom, fragment);
         transaction.commit();
-        currentFragment = fragment;
+        mCurrentFragment = fragment;
     }
 
     private void initView() {
+        mBinding.llDiscover.setOnClickListener(view -> {
+            switchBar(Page.PAGE_DISCOVER.getValue());
+            switchFragment(mFragmentList.get(0));
+        });
 
+        mBinding.llCoWatch.setOnClickListener(view -> {
+            switchBar(Page.PAGE_COWATCH.getValue());
+            switchFragment(mFragmentList.get(1));
+        });
 
-        ll_discover = (LinearLayout) findViewById(R.id.ll_discover);
-        ll_coWatch = (LinearLayout) findViewById(R.id.ll_coWatch);
-        ll_msg = (LinearLayout) findViewById(R.id.ll_msg);
-        ll_history = (LinearLayout) findViewById(R.id.ll_history);
+        mBinding.llMsg.setOnClickListener(view -> {
+            switchBar(Page.PAGE_MESSAGE.getValue());
+            switchFragment(mFragmentList.get(2));
+        });
 
-        tv_discover = (TextView) findViewById(R.id.tv_discover);
-        tv_coWatch = (TextView) findViewById(R.id.tv_coWatch);
-        tv_msg = (TextView) findViewById(R.id.tv_msg);
-        tv_history = (TextView) findViewById(R.id.tv_history);
-
-        tv_discoverNum = (TextView) findViewById(R.id.tv_discoverNum);
-        tv_coWatchNum = (TextView) findViewById(R.id.tv_coWatchNum);
-        tv_msgnum = (TextView) findViewById(R.id.tv_msgnum);
-        iv_historynum = (ImageView) findViewById(R.id.iv_historynum);
-
-
-        ll_discover.setOnClickListener(this);
-        ll_coWatch.setOnClickListener(this);
-        ll_msg.setOnClickListener(this);
-        ll_history.setOnClickListener(this);
-
+        mBinding.llHistory.setOnClickListener(view -> {
+            switchBar(Page.PAGE_HISTORY.getValue());
+            switchFragment(mFragmentList.get(3));
+        });
     }
 
     private void updateBottomBar(int position) {
         resetTextColor();
         switch (position) {
             case PAGE_DISCOVER:
-                tv_discover.setSelected(true);
-                tv_discover.setTextColor(getResources().getColor(R.color.red));
+                mBinding.tvDiscover.setSelected(true);
+                mBinding.tvDiscover.setTextColor(getResources().getColor(R.color.red));
                 break;
             case PAGE_COWATCH:
-                tv_coWatch.setSelected(true);
-                tv_coWatch.setTextColor(getResources().getColor(R.color.red));
+                mBinding.tvCoWatch.setSelected(true);
+                mBinding.tvCoWatch.setTextColor(getResources().getColor(R.color.red));
                 break;
             case PAGE_MESSAGE:
-                tv_msg.setSelected(true);
-                tv_msg.setTextColor(getResources().getColor(R.color.red));
+                mBinding.tvMsg.setSelected(true);
+                mBinding.tvMsg.setTextColor(getResources().getColor(R.color.red));
                 break;
             case PAGE_HISTORY:
-                tv_history.setSelected(true);
-                tv_history.setTextColor(getResources().getColor(R.color.red));
+                mBinding.tvHistory.setSelected(true);
+                mBinding.tvHistory.setTextColor(getResources().getColor(R.color.red));
                 break;
             default:
                 break;
@@ -167,48 +153,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void resetTextColor() {
-        tv_discover.setSelected(false);
-        tv_coWatch.setSelected(false);
-        tv_msg.setSelected(false);
-        tv_history.setSelected(false);
-        tv_discover.setTextColor(getResources().getColor(R.color.white_80));
-        tv_coWatch.setTextColor(getResources().getColor(R.color.white_80));
-        tv_msg.setTextColor(getResources().getColor(R.color.white_80));
-        tv_history.setTextColor(getResources().getColor(R.color.white_80));
+        mBinding.tvDiscover.setSelected(false);
+        mBinding.tvCoWatch.setSelected(false);
+        mBinding.tvMsg.setSelected(false);
+        mBinding.tvHistory.setSelected(false);
+        mBinding.tvDiscover.setTextColor(getResources().getColor(R.color.white_80));
+        mBinding.tvCoWatch.setTextColor(getResources().getColor(R.color.white_80));
+        mBinding.tvMsg.setTextColor(getResources().getColor(R.color.white_80));
+        mBinding.tvHistory.setTextColor(getResources().getColor(R.color.white_80));
     }
 
-    private List<Fragment> initFragment() {
-
-        fragmentList.add(new DiscoverFragment());
-        fragmentList.add(new CowatchFragment());
-        fragmentList.add(new MessageFragment());
-        fragmentList.add(new HistoryFragment());
-        return fragmentList;
-    }
-
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.ll_discover:
-                switchBar(Page.PAGE_DISCOVER.getValue());
-                switchFragment(fragmentList.get(0));
-                break;
-            case R.id.ll_coWatch:
-                switchBar(Page.PAGE_COWATCH.getValue());
-                switchFragment(fragmentList.get(1));
-                break;
-            case R.id.ll_msg:
-                switchBar(Page.PAGE_MESSAGE.getValue());
-                switchFragment(fragmentList.get(2));
-                break;
-            case R.id.ll_history:
-                switchBar(Page.PAGE_HISTORY.getValue());
-                switchFragment(fragmentList.get(3));
-                break;
-            default:
-                break;
-        }
+    private void initFragment() {
+        mFragmentList.add(new DiscoverFragment());
+        mFragmentList.add(new CowatchFragment());
+        mFragmentList.add(new MessageFragment());
+        mFragmentList.add(new HistoryFragment());
     }
 
     private void switchBar(int position) {
@@ -218,6 +177,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        webService.unregisterListener(this);
+        mWebService.unregisterListener(this);
     }
 }

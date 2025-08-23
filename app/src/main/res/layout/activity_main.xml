@@ -1,171 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:fitsSystemWindows="true"
-    android:layout_height="match_parent"
-    android:background="@drawable/drawable_bg_gradient_main"
-    tools:context=".activities.MainActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:id="@+id/dl_main"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/drawable_bg_gradient_main"
+        android:fitsSystemWindows="true">
 
-
-        <RelativeLayout
+        <androidx.drawerlayout.widget.DrawerLayout
+            android:id="@+id/dl_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <FrameLayout
-                android:id="@+id/fl_bottom"
+
+            <RelativeLayout
                 android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <FrameLayout
+                    android:id="@+id/fl_bottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@id/view_splitLine" />
+
+
+                <View
+                    android:id="@+id/view_splitLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_above="@id/ll_bottom" />
+
+                <LinearLayout
+                    android:id="@+id/ll_bottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/ll_discover"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:padding="5dp">
+
+                            <TextView
+                                android:id="@+id/tv_discover"
+                                style="@style/tab_text"
+                                android:drawableTop="@drawable/tab_one"
+                                android:text="发现" />
+
+                            <TextView
+                                android:id="@+id/tv_discoverNum"
+                                style="@style/tab_tvnum"
+                                android:layout_toRightOf="@+id/tv_discover"
+                                android:text="99+"
+                                android:visibility="gone" />
+                        </RelativeLayout>
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/ll_coWatch"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:padding="5dp">
+
+                            <TextView
+                                android:id="@+id/tv_coWatch"
+                                style="@style/tab_text"
+                                android:text="一起看"
+                                app:drawableTopCompat="@drawable/tab_two" />
+
+                            <TextView
+                                android:id="@+id/tv_coWatchNum"
+                                style="@style/tab_tvnum"
+                                android:layout_toRightOf="@+id/tv_coWatch"
+                                android:text="33"
+                                android:visibility="gone" />
+                        </RelativeLayout>
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/ll_msg"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:padding="5dp">
+
+                            <TextView
+                                android:id="@+id/tv_msg"
+                                style="@style/tab_text"
+                                android:text="消息"
+                                app:drawableTopCompat="@drawable/tab_three" />
+
+                            <TextView
+                                android:id="@+id/tv_msgnum"
+                                style="@style/tab_tvnum"
+                                android:layout_toRightOf="@+id/tv_msg"
+                                android:text="99+"
+                                android:visibility="gone" />
+                        </RelativeLayout>
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/ll_history"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:padding="5dp">
+
+                            <TextView
+                                android:id="@+id/tv_history"
+                                style="@style/tab_text"
+                                android:text="历史"
+                                app:drawableTopCompat="@drawable/tab_four" />
+
+                            <ImageView
+                                android:id="@+id/iv_historynum"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:layout_marginLeft="-5dp"
+                                android:layout_toRightOf="@id/tv_history"
+                                android:src="@drawable/redpoint"
+                                android:visibility="gone" />
+
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </RelativeLayout>
+
+
+            <com.google.android.material.navigation.NavigationView
+                android:id="@+id/nv_side"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_above="@id/view_splitLine"/>
+                android:layout_gravity="left"
+                app:headerLayout="@layout/sidehead_layout"
+                app:menu="@menu/side_menu" />
+
+        </androidx.drawerlayout.widget.DrawerLayout>
 
 
-            <View
-                android:id="@+id/view_splitLine"
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_above="@id/ll_bottom" />
+    </RelativeLayout>
 
-            <LinearLayout
-                android:id="@+id/ll_bottom"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:id="@+id/ll_discover"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center">
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:padding="5dp">
-
-                        <TextView
-                            android:id="@+id/tv_discover"
-                            style="@style/tab_text"
-                            android:drawableTop="@drawable/tab_one"
-                            android:text="发现" />
-
-                        <TextView
-                            android:id="@+id/tv_discoverNum"
-                            style="@style/tab_tvnum"
-                            android:layout_toRightOf="@+id/tv_discover"
-                            android:text="99+"
-                            android:visibility="gone" />
-                    </RelativeLayout>
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:id="@+id/ll_coWatch"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center">
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:padding="5dp">
-
-                        <TextView
-                            android:id="@+id/tv_coWatch"
-                            style="@style/tab_text"
-                            android:text="一起看"
-                            app:drawableTopCompat="@drawable/tab_two" />
-
-                        <TextView
-                            android:id="@+id/tv_coWatchNum"
-                            style="@style/tab_tvnum"
-                            android:layout_toRightOf="@+id/tv_coWatch"
-                            android:text="33"
-                            android:visibility="gone" />
-                    </RelativeLayout>
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:id="@+id/ll_msg"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center">
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:padding="5dp">
-
-                        <TextView
-                            android:id="@+id/tv_msg"
-                            style="@style/tab_text"
-                            android:text="消息"
-                            app:drawableTopCompat="@drawable/tab_three" />
-
-                        <TextView
-                            android:id="@+id/tv_msgnum"
-                            style="@style/tab_tvnum"
-                            android:layout_toRightOf="@+id/tv_msg"
-                            android:text="99+"
-                            android:visibility="gone" />
-                    </RelativeLayout>
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:id="@+id/ll_history"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center">
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:padding="5dp">
-
-                        <TextView
-                            android:id="@+id/tv_history"
-                            style="@style/tab_text"
-                            android:text="历史"
-                            app:drawableTopCompat="@drawable/tab_four" />
-
-                        <ImageView
-                            android:id="@+id/iv_historynum"
-                            android:layout_width="12dp"
-                            android:layout_height="12dp"
-                            android:layout_marginLeft="-5dp"
-                            android:layout_toRightOf="@id/tv_history"
-                            android:visibility="gone"
-                            android:src="@drawable/redpoint" />
-
-                    </RelativeLayout>
-                </LinearLayout>
-
-            </LinearLayout>
-        </RelativeLayout>
-
-
-
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/nv_side"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="left"
-            app:headerLayout="@layout/sidehead_layout"
-            app:menu="@menu/side_menu"/>
-
-    </androidx.drawerlayout.widget.DrawerLayout>
-
-
-</RelativeLayout>
+</layout>

@@ -10,99 +10,88 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.adapters.MsgAdapter;
 import com.memory.wq.beans.FriendInfo;
-import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.MsgInfo;
-import com.memory.wq.beans.RoomInfo;
+import com.memory.wq.databinding.ActivityMsgBinding;
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.enumertions.RoleType;
 import com.memory.wq.managers.MovieManager;
 import com.memory.wq.managers.MsgManager;
 import com.memory.wq.properties.AppProperties;
-import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
 import com.memory.wq.utils.MyToast;
+import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.ShareConfirmDialog;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class MsgActivity extends BaseActivity implements View.OnClickListener, WebService.WebSocketListener, ResultCallback<List<MsgInfo>>, MsgAdapter.OnLinkClickListener {
+public class MsgActivity extends BaseActivity<ActivityMsgBinding> implements WebService.WebSocketListener, ResultCallback<List<MsgInfo>>, MsgAdapter.OnLinkClickListener {
     public static final String TAG = MsgActivity.class.getName();
-
-    private EditText et_inputText;
-    private Button btn_send;
-    private RecyclerView rv_msg;
-    private EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_MSG);
-    private MsgAdapter adapter;
-    private List<MsgInfo> msgInfoList = new ArrayList<>();
-    private WebService msgService;
-    private MsgConn msgConn;
-    private MsgManager msgManager;
+    private final EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_MSG);
+    private MsgAdapter mAdapter;
+    private final List<MsgInfo> mMsgInfoList = new ArrayList<>();
+    private WebService mMsgService;
+    private MsgConn mMsgConn;
+    private MsgManager mMsgManager;
 
     private String token;
     private SharedPreferences sp;
-    private FriendInfo friendInfo;
-    private TextView tv_nickname;
-    private MsgInfo linkInfo;
-    private MovieManager movieManager;
+    private FriendInfo mFriendInfo;
+    private MsgInfo mLinkInfo;
+    private MovieManager mMovieManager;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_msg);
         initView();
         initData();
         show();
     }
 
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_msg;
+    }
+
     private void initData() {
         sp = getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
         token = sp.getString("token", "");
-        adapter = new MsgAdapter(this, msgInfoList);
-        adapter.setOnLinkClickListener(this);
+        mAdapter = new MsgAdapter(this, mMsgInfoList);
+        mAdapter.setOnLinkClickListener(this);
         Intent intent = new Intent(this, WebService.class);
-        if (msgConn == null)
-            msgConn = new MsgConn();
-        bindService(intent, msgConn, BIND_AUTO_CREATE);
-        msgManager = new MsgManager(this);
+        if (mMsgConn == null)
+            mMsgConn = new MsgConn();
+        bindService(intent, mMsgConn, BIND_AUTO_CREATE);
+        mMsgManager = new MsgManager(this);
 
         Intent intent1 = getIntent();
-        friendInfo = (FriendInfo) intent1.getSerializableExtra(AppProperties.FRIENDINFO);
+        mFriendInfo = (FriendInfo) intent1.getSerializableExtra(AppProperties.FRIENDINFO);
         if (intent1.hasExtra(AppProperties.SHARE_MESSAGE)) {
-            linkInfo = (MsgInfo) intent1.getSerializableExtra(AppProperties.SHARE_MESSAGE);
-            movieManager = new MovieManager();
+            mLinkInfo = (MsgInfo) intent1.getSerializableExtra(AppProperties.SHARE_MESSAGE);
+            mMovieManager = new MovieManager();
             showShareUI();
         }
 
-        msgManager.getAllMsg(friendInfo.getEmail(), this);
+        mMsgManager.getAllMsg(mFriendInfo.getEmail(), this);
     }
 
     private void showShareUI() {
-        Log.d(TAG, "onShare: ===分享信息" + friendInfo.toString() + "aaa+++" + linkInfo.toString());
+        Log.d(TAG, "onShare: ===分享信息" + mFriendInfo.toString() + "aaa+++" + mLinkInfo.toString());
 
-        ShareConfirmDialog dialog = new ShareConfirmDialog(this, friendInfo, linkInfo, new ShareConfirmDialog.OnShareActionListener() {
+        ShareConfirmDialog dialog = new ShareConfirmDialog(this, mFriendInfo, mLinkInfo, new ShareConfirmDialog.OnShareActionListener() {
             @Override
             public void onShare(MsgInfo shareMsg) {
 
-                movieManager.shareRoom(MsgActivity.this, token, shareMsg, new ResultCallback<Boolean>() {
+                mMovieManager.shareRoom(MsgActivity.this, token, shareMsg, new ResultCallback<Boolean>() {
                     @Override
                     public void onSuccess(Boolean result) {
                         runOnUiThread(() -> {
@@ -135,19 +124,15 @@ public class MsgActivity extends BaseActivity implements View.OnClickListener, W
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setStackFromEnd(true);
-        rv_msg.setLayoutManager(layoutManager);
-        rv_msg.setAdapter(adapter);
-        tv_nickname.setText(friendInfo.getNickname());
+        mBinding.rvMsg.setLayoutManager(layoutManager);
+        mBinding.rvMsg.setAdapter(mAdapter);
+        mBinding.tvNickname.setText(mFriendInfo.getNickname());
     }
 
     private void initView() {
-        et_inputText = (EditText) findViewById(R.id.et_inputText);
-        btn_send = (Button) findViewById(R.id.btn_send);
-        tv_nickname = (TextView) findViewById(R.id.tv_nickname);
-        rv_msg = (RecyclerView) findViewById(R.id.rv_msg);
-
-
-        btn_send.setOnClickListener(this);
+        mBinding.btnSend.setOnClickListener(view -> {
+            sendMsg();
+        });
     }
 
     @Override
@@ -159,16 +144,16 @@ public class MsgActivity extends BaseActivity implements View.OnClickListener, W
     public void onEventMessage(EventType eventType) {
         switch (eventType) {
             case EVENT_TYPE_MSG:
-                msgManager.getAllMsg(friendInfo.getEmail(), new ResultCallback<List<MsgInfo>>() {
+                mMsgManager.getAllMsg(mFriendInfo.getEmail(), new ResultCallback<List<MsgInfo>>() {
                     @Override
                     public void onSuccess(List<MsgInfo> result) {
                         runOnUiThread(() -> {
 
-                            adapter.updateItem(result);
-                            if (msgInfoList.size() > 0) {
-                                Log.d(TAG, "===1正在滚动到最后位置: " + (msgInfoList.size() - 1));
-                                rv_msg.post(() -> {
-                                    rv_msg.smoothScrollToPosition(msgInfoList.size() - 1);
+                            mAdapter.updateItem(result);
+                            if (mMsgInfoList.size() > 0) {
+                                Log.d(TAG, "===1正在滚动到最后位置: " + (mMsgInfoList.size() - 1));
+                                mBinding.rvMsg.post(() -> {
+                                    mBinding.rvMsg.smoothScrollToPosition(mMsgInfoList.size() - 1);
                                 });
                             }
                         });
@@ -191,9 +176,9 @@ public class MsgActivity extends BaseActivity implements View.OnClickListener, W
     @Override
     public void onSuccess(List<MsgInfo> msgInfoList) {
         runOnUiThread(() -> {
-            adapter.updateItem(msgInfoList);
+            mAdapter.updateItem(msgInfoList);
             Log.d(TAG, "onSuccess: ===滚动到最后位置" + (msgInfoList.size() - 1));
-            rv_msg.smoothScrollToPosition(msgInfoList.size() - 1);
+            mBinding.rvMsg.smoothScrollToPosition(msgInfoList.size() - 1);
 
         });
     }
@@ -203,31 +188,18 @@ public class MsgActivity extends BaseActivity implements View.OnClickListener, W
         //获取本地消息记录失败回调
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_send:
-                sendMsg();
-                break;
-            case R.id.tv_cancel:
-                break;
-            case R.id.tv_share:
-                break;
-        }
-    }
-
     private void sendMsg() {
-        String msg = et_inputText.getText().toString().trim();
+        String msg = mBinding.etInputText.getText().toString().trim();
         if (TextUtils.isEmpty(msg))
             return;
 
         String currentEmail = sp.getString("email", "");
 
 
-        msgManager.sendMsg(token, currentEmail, friendInfo.getEmail(), msg, new ResultCallback<Boolean>() {
+        mMsgManager.sendMsg(token, currentEmail, mFriendInfo.getEmail(), msg, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                msgManager.getAllMsg(friendInfo.getEmail(), MsgActivity.this);
+                mMsgManager.getAllMsg(mFriendInfo.getEmail(), MsgActivity.this);
             }
 
             @Override
@@ -235,7 +207,7 @@ public class MsgActivity extends BaseActivity implements View.OnClickListener, W
 
             }
         });
-        et_inputText.setText("");
+        mBinding.etInputText.setText("");
     }
 
     @Override
@@ -251,20 +223,20 @@ public class MsgActivity extends BaseActivity implements View.OnClickListener, W
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            msgService = ((IWebSocketService) service).getService();
-            msgService.registerListener(MsgActivity.this);
+            mMsgService = ((IWebSocketService) service).getService();
+            mMsgService.registerListener(MsgActivity.this);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            msgService.unregisterListener(MsgActivity.this);
+            mMsgService.unregisterListener(MsgActivity.this);
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(msgConn);
-        msgService.unregisterListener(this);
+        unbindService(mMsgConn);
+        mMsgService.unregisterListener(this);
     }
 }

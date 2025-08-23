@@ -3,38 +3,36 @@ package com.memory.wq.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.memory.wq.R;
 import com.memory.wq.beans.UserInfo;
+import com.memory.wq.databinding.LoginMainLayoutBinding;
 import com.memory.wq.managers.AuthManager;
 import com.memory.wq.managers.SPManager;
 import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.MyToast;
 
-public class LaunchActivity extends BaseActivity implements View.OnClickListener {
-
-    private TextView tv_visitor;
-    private Button btn_login_email;
-    private TextView tv_another;
-    private CheckBox cb_protocol;
-    private AuthManager authManager;
+public class LaunchActivity extends BaseActivity<LoginMainLayoutBinding>  {
+    private AuthManager mAuthManager;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //TODO 后台验证登陆
         if (isLogin()) {
             startActivity(new Intent(this, MainActivity.class));
             finish();
             return;
         }
-        setContentView(R.layout.login_main_layout);
         initView();
         initData();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.login_main_layout;
     }
 
     private boolean isLogin() {
@@ -43,7 +41,7 @@ public class LaunchActivity extends BaseActivity implements View.OnClickListener
 
 
     private void initData() {
-        authManager = new AuthManager();
+        mAuthManager = new AuthManager();
         UserInfo userInfo = SPManager.getUserInfo(this);
         boolean isLogin = userInfo.isLogin();
         if (isLogin) {
@@ -54,42 +52,28 @@ public class LaunchActivity extends BaseActivity implements View.OnClickListener
 
 
     private void initView() {
-        tv_visitor = findViewById(R.id.tv_visitor);
-        btn_login_email = findViewById(R.id.btn_login_email);
-        tv_another = findViewById(R.id.tv_another);
-        cb_protocol = findViewById(R.id.cb_protocol);
+        mBinding.tvAnother.setOnClickListener(view -> {
+            initBottomSheetDialog();
+        });
 
+        mBinding.tvVisitor.setOnClickListener(view -> {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        });
 
-        tv_another.setOnClickListener(this);
-        tv_visitor.setOnClickListener(this);
-        btn_login_email.setOnClickListener(this);
-    }
+        mBinding.btnLoginEmail.setOnClickListener(view -> {
+            mAuthManager.checkProtocol(mBinding.cbProtocol.isChecked(), new ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean result) {
+                    startActivity(new Intent(LaunchActivity.this, LoginWithEmailActivity.class));
+                }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_login_email:
-                authManager.checkProtocol(cb_protocol.isChecked(), new ResultCallback<Boolean>() {
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        startActivity(new Intent(LaunchActivity.this, LoginWithEmailActivity.class));
-                    }
-
-                    @Override
-                    public void onError(String err) {
-                        MyToast.showToast(LaunchActivity.this, err);
-                    }
-                });
-                break;
-            case R.id.tv_visitor:
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
-
-                break;
-            case R.id.tv_another:
-                initBottomSheetDialog();
-                break;
-        }
+                @Override
+                public void onError(String err) {
+                    MyToast.showToast(LaunchActivity.this, err);
+                }
+            });
+        });
     }
 
     private void initBottomSheetDialog() {
@@ -97,7 +81,9 @@ public class LaunchActivity extends BaseActivity implements View.OnClickListener
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         bottomSheetDialog.setContentView(anotherMethod);
         bottomSheetDialog.show();
-        anotherMethod.setOnClickListener(this);
+        anotherMethod.setOnClickListener(view -> {
+
+        });
     }
 
 }
