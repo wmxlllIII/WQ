@@ -126,11 +126,9 @@ public class EditPostActivity extends BaseActivity<ActivityEditRecommendBinding>
         mPostManager.publishPost(token, postInfo, postImagesList, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                runOnUiThread(() -> {
                     MyToast.showToast(EditPostActivity.this, "发布成功");
                     finish();
                     mBinding.tvPublish.setEnabled(true);
-                });
             }
 
             @Override

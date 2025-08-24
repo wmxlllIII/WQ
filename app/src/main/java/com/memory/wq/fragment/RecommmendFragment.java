@@ -215,7 +215,6 @@ public class RecommmendFragment extends Fragment {
         postManager.getPosts(token, queryPostInfo, new ResultCallback<PageResult<PostInfo>>() {
             @Override
             public void onSuccess(PageResult<PostInfo> result) {
-                getActivity().runOnUiThread(() -> {
                     int oldSize = mRecommendVM.postInfoList.size();
                     List<PostInfo> newData = result.getResultList();
                     if (newData != null && !newData.isEmpty()) {
@@ -224,9 +223,7 @@ public class RecommmendFragment extends Fragment {
                         mRecommendVM.currentPage++;
                     }
                     mRecommendVM.hasNextPage = result.isHasNext();
-                    mRecommendVM.isLoading = false;
-                });
-
+                    mRecommendVM.isLoading = false;;
 
             }
 

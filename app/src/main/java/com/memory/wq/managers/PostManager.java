@@ -1,5 +1,7 @@
 package com.memory.wq.managers;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -27,7 +29,7 @@ import okhttp3.Response;
 
 public class PostManager {
     public static final String TAG = PostManager.class.getName();
-
+    private final Handler handler=new Handler(Looper.getMainLooper());
 
     public void publishPost(String token, PostInfo postInfo, List<File> imageList, ResultCallback<Boolean> callback) {
         String json = GenerateJson.getPostContentJson(postInfo);
@@ -35,14 +37,18 @@ public class PostManager {
             HttpStreamOP.publishPost(AppProperties.POST_PUBLISH, token, json, imageList, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    callback.onError(e.getMessage());
+                    handler.post(()->{
+                        callback.onError(e.getMessage());
+                    });
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
                         Log.d(TAG, "===[x] publishPost #54");
-                        callback.onError(response.message());
+                        handler.post(()->{
+                            callback.onError(response.message());
+                        });
                         return;
                     }
 
@@ -51,7 +57,9 @@ public class PostManager {
                         int code = json.getInt("code");
                         if (code == 1) {
                             //TODO 成功上传,保存本地
-                            callback.onSuccess(true);
+                            handler.post(()->{
+                                callback.onSuccess(true);
+                            });
                             Log.d(TAG, "onResponse: ===发布成功");
                         }
                     } catch (JSONException e) {
@@ -83,7 +91,9 @@ public class PostManager {
                     try {
                         JSONObject json = new JSONObject(response.body().string());
                         PageResult<PostInfo> postInfoPageResult = JsonParser.postParser(json);
-                        callback.onSuccess(postInfoPageResult);
+                        handler.post(()->{
+                            callback.onSuccess(postInfoPageResult);
+                        });
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

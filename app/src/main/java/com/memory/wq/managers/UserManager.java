@@ -3,7 +3,6 @@ package com.memory.wq.managers;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -19,11 +18,11 @@ import com.memory.wq.enumertions.SelectImageType;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.provider.FileOP;
 import com.memory.wq.provider.HttpStreamOP;
-import com.memory.wq.utils.ResultCallback;
+import com.memory.wq.thread.ThreadPoolManager;
 import com.memory.wq.utils.GenerateJson;
 import com.memory.wq.utils.JsonParser;
 import com.memory.wq.utils.MyToast;
-import com.memory.wq.thread.ThreadPoolManager;
+import com.memory.wq.utils.ResultCallback;
 import com.yalantis.ucrop.UCrop;
 
 import org.json.JSONException;
@@ -45,7 +44,6 @@ public class UserManager {
     public static final int REQUEST_ALBUM_CODE = 20;
     public static final int REQUEST_CROP_CODE = 30;
     private File tempImageFile;
-    private PermissionManager permissionManager;
 
 
     public UserManager(Context context) {
@@ -97,41 +95,15 @@ public class UserManager {
 
 
     public void open(Context context, SelectImageType type) {
-        boolean isPermit;
         switch (type) {
             case IMAGE_FROM_ALBUM:
-                isPermit = isPermitPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
-                if (isPermit) {
-                    openAlbum(context);
-                } else {
-                    requestPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_ALBUM_CODE);
-                }
+                openAlbum(context);
                 break;
             case IMAGE_FROM_CAMERA:
-                isPermit = isPermitPermission(context, Manifest.permission.CAMERA);
-                if (isPermit) {
-                    openCamera(context);
-                } else {
-                    requestPermission(context, Manifest.permission.CAMERA, REQUEST_CAMERA_CODE);
-                }
+                openCamera(context);
                 break;
 
         }
-    }
-
-    private boolean isPermitPermission(Context context, String permission) {
-        PermissionManager permissionManager = new PermissionManager(context);
-
-        boolean isPermit = permissionManager.isPermitPermission(permission);
-        if (isPermit) {
-            return true;
-        }
-        return false;
-    }
-
-    private void requestPermission(Context context, String permission, int requestCode) {
-        permissionManager = new PermissionManager(context);
-        permissionManager.requestPermission(new String[]{permission}, requestCode);
     }
 
     private void openAlbum(Context context) {
@@ -149,14 +121,6 @@ public class UserManager {
         ((Activity) context).startActivityForResult(intent, REQUEST_CAMERA_CODE);
     }
 
-    public boolean handleRequestPermission(Context context, int[] grantResults, SelectImageType type) {
-        boolean isGranted = permissionManager.isPermissionGranted(grantResults);
-        if (isGranted) {
-            open(context, type);
-            return true;
-        }
-        return false;
-    }
 
     public Uri handleAvatarResult(int requestCode, int resultCode, Intent data, Context context) {
         //相机成功拍照后data可能为null根据resultCode判断。

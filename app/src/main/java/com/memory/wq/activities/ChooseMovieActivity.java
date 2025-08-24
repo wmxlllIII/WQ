@@ -3,7 +3,6 @@ package com.memory.wq.activities;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.EditText;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,7 +24,6 @@ public class ChooseMovieActivity extends BaseActivity<ActivityChooseMovieBinding
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initView();
         initData();
     }
 
@@ -35,18 +33,17 @@ public class ChooseMovieActivity extends BaseActivity<ActivityChooseMovieBinding
     }
 
     private void initData() {
-        mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this,RecyclerView.VERTICAL,false));
-
+        mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
 
         MovieManager movieManager = new MovieManager();
         SharedPreferences sp = getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
         String token = sp.getString("token", "");
-        movieManager.getMovies(token,new ResultCallback<List<MovieInfo>>() {
+        movieManager.getMovies(token, new ResultCallback<List<MovieInfo>>() {
             @Override
             public void onSuccess(List<MovieInfo> result) {
 
-                runOnUiThread(()->{
-                    adapter = new MoviesAdapter(ChooseMovieActivity.this,result);
+                runOnUiThread(() -> {
+                    adapter = new MoviesAdapter(ChooseMovieActivity.this, result);
                     mBinding.rvMovies.setAdapter(adapter);
                 });
             }
@@ -59,10 +56,5 @@ public class ChooseMovieActivity extends BaseActivity<ActivityChooseMovieBinding
 
 
     }
-
-    private void initView() {
-    }
-
-
 
 }

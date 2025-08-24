@@ -3,11 +3,13 @@ package com.memory.wq.activities;
 import static com.memory.wq.managers.UserManager.REQUEST_ALBUM_CODE;
 import static com.memory.wq.managers.UserManager.REQUEST_CAMERA_CODE;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -17,6 +19,7 @@ import androidx.annotation.Nullable;
 import com.memory.wq.R;
 import com.memory.wq.databinding.AvatarDetailLayoutBinding;
 import com.memory.wq.enumertions.SelectImageType;
+import com.memory.wq.managers.PermissionManager;
 import com.memory.wq.managers.UserManager;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.provider.FileOP;
@@ -26,8 +29,11 @@ import com.memory.wq.utils.ResultCallback;
 import java.io.File;
 
 public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
+
     private static final String TAG = AvatarActivity.class.getName();
-    private UserManager mUserManager;
+
+    private final UserManager mUserManager = new UserManager(this);
+    private final PermissionManager mPermissionManager = new PermissionManager(this);
     private String token;
     private String email;
     private ActivityResultLauncher<String> register;
@@ -49,7 +55,6 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
     }
 
     private void initData() {
-        mUserManager = new UserManager(this);
         fileOP = new FileOP(this);
 
         sp = getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
@@ -83,12 +88,30 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
         new AlertDialog.Builder(this)
                 .setTitle("选择图片")
                 .setItems(new String[]{"从相册选择", "拍一张"}, (dialog, which) -> {
+                    boolean isPermit;
                     switch (which) {
                         case 0:
-                            mUserManager.open(AvatarActivity.this, SelectImageType.IMAGE_FROM_ALBUM);
+                            String[] albumPermissions;
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                albumPermissions = new String[]{Manifest.permission.READ_MEDIA_IMAGES};
+                            } else {
+                                albumPermissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
+                            }
+
+                            isPermit = mPermissionManager.isPermitPermission(albumPermissions[0]);
+                            if (isPermit) {
+                                mUserManager.open(AvatarActivity.this, SelectImageType.IMAGE_FROM_ALBUM);
+                            } else {
+                                mPermissionManager.requestPermission(albumPermissions, REQUEST_ALBUM_CODE);
+                            }
                             break;
                         case 1:
-                            mUserManager.open(AvatarActivity.this, SelectImageType.IMAGE_FROM_CAMERA);
+                            isPermit = mPermissionManager.isPermitPermission(Manifest.permission.CAMERA);
+                            if (isPermit) {
+                                mUserManager.open(AvatarActivity.this, SelectImageType.IMAGE_FROM_CAMERA);
+                            } else {
+                                mPermissionManager.requestPermission(new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_CODE);
+                            }
                             break;
                     }
                 })
@@ -99,17 +122,25 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        boolean isPermit;
+        boolean isGranted;
         switch (requestCode) {
             case REQUEST_ALBUM_CODE:
-                isPermit = mUserManager.handleRequestPermission(AvatarActivity.this, grantResults, SelectImageType.IMAGE_FROM_ALBUM);
-                if (!isPermit)
-                    MyToast.showToast(this, "noPermit Album");
+                isGranted = mPermissionManager.isPermissionGranted(grantResults);
+                if (isGranted) {
+                    mUserManager.open(AvatarActivity.this, SelectImageType.IMAGE_FROM_ALBUM);
+                } else {
+                    MyToast.showToast(this, "相册权限被拒绝");
+
+                }
                 break;
+
             case REQUEST_CAMERA_CODE:
-                isPermit = mUserManager.handleRequestPermission(AvatarActivity.this, grantResults, SelectImageType.IMAGE_FROM_CAMERA);
-                if (!isPermit)
+                isGranted = mPermissionManager.isPermissionGranted(grantResults);
+                if (isGranted) {
+                    mUserManager.open(AvatarActivity.this, SelectImageType.IMAGE_FROM_CAMERA);
+                } else {
                     MyToast.showToast(this, "noPermit Camera");
+                }
                 break;
         }
 

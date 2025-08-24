@@ -146,6 +146,7 @@ public class AuthManager {
                         callback.onError(response.toString());
                         return;
                     }
+
                     try {
                         JSONObject json = new JSONObject(response.body().string());
                         int code = json.getInt("code");

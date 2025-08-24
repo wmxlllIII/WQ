@@ -100,7 +100,7 @@ public class PostInfoActivity extends BaseActivity<ActivityPostInfoBinding> {
         }
 
         Glide.with(this)
-                .load(mPostInfo.getPoster())
+                .load(AppProperties.HTTP_SERVER_ADDRESS + mPostInfo.getPosterAvatar())
                 .placeholder(R.mipmap.loading_default)
                 .error(R.mipmap.loading_failure)
                 .into(mBinding.ivAvatar);
@@ -114,7 +114,7 @@ public class PostInfoActivity extends BaseActivity<ActivityPostInfoBinding> {
         mBinding.vpPostImages.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
         //喜欢数量
         mBinding.tvLikeCount.setText(String.valueOf(mPostInfo.getLikeCount()));
-
+        mBinding.tvNickname.setText(mPostInfo.getPoster());
 
     }
 
