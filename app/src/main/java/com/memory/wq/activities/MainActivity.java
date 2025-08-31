@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> implements  WebService.WebSocketListener {
+public class MainActivity extends BaseActivity<ActivityMainBinding> implements WebService.WebSocketListener {
 
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private Fragment mCurrentFragment;
@@ -72,8 +72,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements  
         runOnUiThread(() -> {
             switch (eventType) {
                 case EVENT_TYPE_REQUEST_FRIEND:
-                    if (!(mCurrentFragment instanceof MessageFragment))
-                        mBinding.tvMsgnum.setVisibility(View.VISIBLE);
+                    mBinding.tvMsgnum.setVisibility(View.VISIBLE);
                     break;
             }
         });
@@ -99,6 +98,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements  
     }
 
     private void switchFragment(Fragment fragment) {
+        //TODO SHOW/HIDE
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fl_bottom, fragment);
         transaction.commit();

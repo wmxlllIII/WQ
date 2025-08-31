@@ -20,12 +20,6 @@ public class LaunchActivity extends BaseActivity<LoginMainLayoutBinding>  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //TODO 后台验证登陆
-        if (isLogin()) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-            return;
-        }
         initView();
         initData();
     }
@@ -35,19 +29,8 @@ public class LaunchActivity extends BaseActivity<LoginMainLayoutBinding>  {
         return R.layout.login_main_layout;
     }
 
-    private boolean isLogin() {
-        return SPManager.getUserInfo(this).isLogin();
-    }
-
-
     private void initData() {
         mAuthManager = new AuthManager();
-        UserInfo userInfo = SPManager.getUserInfo(this);
-        boolean isLogin = userInfo.isLogin();
-        if (isLogin) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
     }
 
 

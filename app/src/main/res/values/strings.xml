@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">WQ</string>
     <string name="another_login_method">其他登录方式</string>
+    <string name="login_main_layout_login_with_visitor">发现之旅></string>
+    <string name="login_main_layout_login_with_email">邮箱/ID 登录></string>
     <string name="login_method_wx">微信登录</string>
     <string name="login_method_qq">QQ登录</string>
     <string name="loginByPassword">密码登录</string>

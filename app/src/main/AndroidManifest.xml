@@ -92,13 +92,13 @@
             android:name=".activities.AvatarActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.LaunchActivity"
             android:exported="true" />
         <activity
             android:name=".activities.BaseActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.LaunchActivity"
+            android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

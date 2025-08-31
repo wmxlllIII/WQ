@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="10sp"
-    android:paddingVertical="20sp">
+    android:paddingVertical="20sp"
+    android:background="@android:color/transparent">
 
     <RelativeLayout
         android:id="@+id/rl_login_wx"
