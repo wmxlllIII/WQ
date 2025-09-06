@@ -101,8 +101,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
             Glide.with(getContext())
                     .load(AppProperties.HTTP_SERVER_ADDRESS + avatarUrl)
                     .circleCrop()
-                    .placeholder(R.mipmap.loading_default)
-                    .error(R.mipmap.loading_failure)
+                    .error(R.mipmap.icon_default_avatar)
                     .into(iv_open_drawer);
 
         tv_nickname.setText(userName);

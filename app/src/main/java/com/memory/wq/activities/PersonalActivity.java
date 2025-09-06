@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.databinding.ActivityPersonalBinding;
@@ -43,9 +44,13 @@ public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
         mBinding.tvNickname.setText(nickname);
 
         if (TextUtils.isEmpty(avatarUrl)) {
-            mBinding.sivAvatar.setVisibility(View.GONE);
+            mBinding.ivAvatar.setImageResource(R.mipmap.icon_default_avatar);
+            return;
         }
-        mBinding.sivAvatar.setImageUrl(avatarUrl);
+        Glide.with(this)
+                .load(avatarUrl)
+                .error(R.mipmap.icon_default_avatar)
+                .into(mBinding.ivAvatar);
 
     }
 }

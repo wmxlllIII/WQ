@@ -7,6 +7,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
@@ -39,6 +41,7 @@ public class UserManager {
     public static final String TAG = UserManager.class.getName();
     private Context context;
     private FileOP fileOP;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     public static final int REQUEST_CAMERA_CODE = 10;
     public static final int REQUEST_ALBUM_CODE = 20;
@@ -55,17 +58,18 @@ public class UserManager {
 
     public void upLoadAvatar(File file, String url, String token, ResultCallback<String> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
-            try {
-
-                HttpStreamOP.postFile(url, token, file, new Callback() {
-                    @Override
-                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            HttpStreamOP.postFile(url, token, file, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    handler.post(() -> {
                         callback.onError(e.getMessage());
-                        Log.d(TAG, "onFailure: ======错误1");
-                    }
+                    });
+                    Log.d(TAG, "onFailure: ======错误1");
+                }
 
-                    @Override
-                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    handler.post(() -> {
                         if (!response.isSuccessful()) {
                             callback.onError(response.toString());
                             Log.d(TAG, "onResponse: ======错误2");
@@ -81,15 +85,14 @@ public class UserManager {
                                 } else
                                     callback.onError("=====头像地址为空");
                             }
-                        } catch (JSONException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
+
                         callback.onError("我也不知道啥错误");
-                    }
-                });
-            } catch (Exception e) {
-                callback.onError(e.getMessage());
-            }
+                    });
+                }
+            });
         });
     }
 

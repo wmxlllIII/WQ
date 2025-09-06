@@ -16,8 +16,8 @@
             android:paddingTop="15dp"
             android:paddingBottom="24dp">
 
-            <com.memory.wq.caches.SmartImageView
-                android:id="@+id/siv_avatar"
+            <ImageView
+                android:id="@+id/iv_avatar"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_centerHorizontal="true"
@@ -27,7 +27,7 @@
                 android:id="@+id/tv_remarks"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/siv_avatar"
+                android:layout_below="@id/iv_avatar"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="12dp"
                 android:text="备注"
@@ -95,7 +95,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="wq号："
+                    android:text="wqID："
                     android:textColor="#666666"
                     android:textSize="15dp" />
 

@@ -14,8 +14,8 @@
             android:layout_height="20dp"
             android:src="@mipmap/ic_wx" />
 
-        <com.memory.wq.caches.SmartImageView
-            android:id="@+id/siv_avatar_detail"
+        <ImageView
+            android:id="@+id/iv_avatar_detail"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:layout_centerHorizontal="true"
@@ -24,15 +24,12 @@
             android:adjustViewBounds="true"
             android:maxWidth="300dp"
             android:maxHeight="300dp"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/ic_bannertest1"
-            app:onFail="@mipmap/loading_failure"
-            app:onLoading="@mipmap/loading_default" />
+            android:scaleType="centerCrop"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/siv_avatar_detail"
+            android:layout_below="@id/iv_avatar_detail"
             android:layout_marginTop="40dp"
             android:orientation="vertical">
 

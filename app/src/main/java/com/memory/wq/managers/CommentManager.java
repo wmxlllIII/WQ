@@ -32,7 +32,7 @@ public class CommentManager {
     public void getCommentByPostId(String token, int postId, QueryPostInfo queryPostInfo, ResultCallback<List<PostCommentInfo>> callback) {
         String json = GenerateJson.getCommentJson(postId, queryPostInfo);
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.COMMENT_GET, token, json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.COMMENT_GET, "", json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     Log.d(TAG, "[x] getCommentByPostId #30");

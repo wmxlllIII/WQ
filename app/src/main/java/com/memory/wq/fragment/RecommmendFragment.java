@@ -212,7 +212,7 @@ public class RecommmendFragment extends Fragment {
         QueryPostInfo queryPostInfo = new QueryPostInfo();
         queryPostInfo.setPage(mRecommendVM.currentPage);
         queryPostInfo.setSize(pageSize);
-        postManager.getPosts(token, queryPostInfo, new ResultCallback<PageResult<PostInfo>>() {
+        postManager.getPosts("", queryPostInfo, new ResultCallback<PageResult<PostInfo>>() {
             @Override
             public void onSuccess(PageResult<PostInfo> result) {
                     int oldSize = mRecommendVM.postInfoList.size();

@@ -11,11 +11,13 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.databinding.AvatarDetailLayoutBinding;
 import com.memory.wq.enumertions.SelectImageType;
@@ -25,6 +27,7 @@ import com.memory.wq.properties.AppProperties;
 import com.memory.wq.provider.FileOP;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
+import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 
@@ -61,13 +64,21 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
         token = sp.getString("token", "");
         email = sp.getString("email", "");
         avatarUrl = sp.getString("avatarUrl", "");
-        mBinding.sivAvatarDetail.setImageUrl(avatarUrl);
+        if (TextUtils.isEmpty(avatarUrl)){
+            mBinding.ivAvatarDetail.setImageResource(R.mipmap.icon_default_avatar);
+            return;
+        }
+
+        Glide.with(this)
+                .load(avatarUrl)
+                .error(R.mipmap.icon_default_avatar)
+                .into(mBinding.ivAvatarDetail);
     }
 
     private void initView() {
         // new BottomSheetDialog()
 
-        mBinding.sivAvatarDetail.setOnClickListener(view -> {
+        mBinding.ivAvatarDetail.setOnClickListener(view -> {
 
         });
 
@@ -161,10 +172,11 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
             @Override
             public void onSuccess(String path) {
                 System.out.println("=======uploadAvatar==onSuccess(String path)" + path);
-                sp.edit().putString("avatarUrl", path).commit();
-                runOnUiThread(() -> {
-                    mBinding.sivAvatarDetail.setImageUrl(path);
-                });
+                sp.edit().putString("avatarUrl", path).apply();
+                Glide.with(AvatarActivity.this)
+                        .load(path)
+                        .error(R.mipmap.icon_default_avatar)
+                        .into(mBinding.ivAvatarDetail);
 
                 fileOP.deleteTempCameraFile();
             }

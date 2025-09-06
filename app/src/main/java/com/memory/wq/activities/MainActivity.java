@@ -10,6 +10,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 
 import com.memory.wq.R;
@@ -107,22 +108,22 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements W
 
     private void initView() {
         mBinding.llDiscover.setOnClickListener(view -> {
-            switchBar(Page.PAGE_DISCOVER.getValue());
+            updateBottomBar(Page.PAGE_DISCOVER.getValue());
             switchFragment(mFragmentList.get(0));
         });
 
         mBinding.llCoWatch.setOnClickListener(view -> {
-            switchBar(Page.PAGE_COWATCH.getValue());
+            updateBottomBar(Page.PAGE_COWATCH.getValue());
             switchFragment(mFragmentList.get(1));
         });
 
         mBinding.llMsg.setOnClickListener(view -> {
-            switchBar(Page.PAGE_MESSAGE.getValue());
+            updateBottomBar(Page.PAGE_MESSAGE.getValue());
             switchFragment(mFragmentList.get(2));
         });
 
         mBinding.llHistory.setOnClickListener(view -> {
-            switchBar(Page.PAGE_HISTORY.getValue());
+            updateBottomBar(Page.PAGE_HISTORY.getValue());
             switchFragment(mFragmentList.get(3));
         });
     }
@@ -168,10 +169,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements W
         mFragmentList.add(new CowatchFragment());
         mFragmentList.add(new MessageFragment());
         mFragmentList.add(new HistoryFragment());
-    }
-
-    private void switchBar(int position) {
-        updateBottomBar(position);
     }
 
     @Override
