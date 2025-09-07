@@ -6,6 +6,7 @@ import static com.memory.wq.managers.UserManager.REQUEST_CAMERA_CODE;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -21,7 +22,9 @@ import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.databinding.AvatarDetailLayoutBinding;
 import com.memory.wq.enumertions.SelectImageType;
+import com.memory.wq.managers.AuthManager;
 import com.memory.wq.managers.PermissionManager;
+import com.memory.wq.managers.SessionManager;
 import com.memory.wq.managers.UserManager;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.provider.FileOP;
@@ -39,7 +42,6 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
     private final PermissionManager mPermissionManager = new PermissionManager(this);
     private String token;
     private String email;
-    private ActivityResultLauncher<String> register;
     private FileOP fileOP;
     private String avatarUrl;
     private SharedPreferences sp;
@@ -64,7 +66,7 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
         token = sp.getString("token", "");
         email = sp.getString("email", "");
         avatarUrl = sp.getString("avatarUrl", "");
-        if (TextUtils.isEmpty(avatarUrl)){
+        if (TextUtils.isEmpty(avatarUrl)) {
             mBinding.ivAvatarDetail.setImageResource(R.mipmap.icon_default_avatar);
             return;
         }
@@ -87,6 +89,20 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
         });
 
         mBinding.tvAlterAvatar.setOnClickListener(view -> {
+            if (!SessionManager.isLoggedIn(this)) {
+                new AlertDialog.Builder(this)
+                        .setTitle("未登录")
+                        .setMessage("登录后即可体验完整功能哦~")
+                        .setIcon(R.mipmap.ic_bannertest2)
+                        .setNegativeButton("去登录", (dialogInterface, i) -> {
+                            startActivity(new Intent(this, LaunchActivity.class));
+                        })
+                        .setPositiveButton("取消", null)
+                        .setCancelable(false)
+                        .show();
+                return;
+            }
+
             showImageSourceDialog();
         });
 

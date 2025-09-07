@@ -1,6 +1,6 @@
 package com.memory.wq.fragment;
 
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -11,64 +11,92 @@ import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.memory.wq.R;
+import com.memory.wq.activities.FriendRelaActivity;
+import com.memory.wq.activities.LaunchActivity;
+import com.memory.wq.activities.MainActivity;
 import com.memory.wq.activities.MsgActivity;
 import com.memory.wq.activities.SearchFriendActivity;
-import com.memory.wq.activities.FriendRelaActivity;
 import com.memory.wq.adapters.FriendAdapter;
 import com.memory.wq.adapters.MsgsAdapter;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.managers.FriendManager;
+import com.memory.wq.managers.SessionManager;
 import com.memory.wq.properties.AppProperties;
-import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
+import com.memory.wq.utils.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class MessageFragment extends Fragment implements View.OnClickListener , WebService.WebSocketListener, ResultCallback<List<FriendInfo>> {
+public class MessageFragment extends Fragment implements View.OnClickListener, WebService.WebSocketListener, ResultCallback<List<FriendInfo>> {
 
-    private View view;
     private RecyclerView rv_friends;
     private ListView lv_msg;
-    private RelativeLayout iv_add;
-    private RelativeLayout iv_search;
     private FriendAdapter friendAdapter;
     private List<FriendInfo> friendInfoList;
     private SharedPreferences sp;
     private FriendManager friendManager;
 
-    private EnumSet<EventType> eventTypes=EnumSet.of(EventType.EVENT_TYPE_MSG,EventType.EVENT_TYPE_REQUEST_FRIEND);
+    private final EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_MSG, EventType.EVENT_TYPE_REQUEST_FRIEND);
     private WebService msgService;
     private MsgConn msgConn;
     private MsgsAdapter msgsAdapter;
+    private AppCompatActivity mActivity;
+    private View view;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.message_layout, null, false);
+        view = inflater.inflate(R.layout.message_layout, container, false);
         initView(view);
+        if (!SessionManager.isLoggedIn(mActivity)) {
+            new AlertDialog.Builder(mActivity)
+                    .setTitle("未登录")
+                    .setMessage("登录后即可体验完整功能哦~")
+                    .setIcon(R.mipmap.ic_bannertest2)
+                    .setNegativeButton("去登录", (dialogInterface, i) -> {
+                        startActivity(new Intent(mActivity, LaunchActivity.class));
+                        getActivity().finish();
+                    })
+                    .setPositiveButton("取消", (dialogInterface, i) -> {
+                        view.findViewById(R.id.ll_already_login).setVisibility(View.GONE);
+                        view.findViewById(R.id.layout_no_login).setVisibility(View.VISIBLE);
+                    })
+                    .setCancelable(false)
+                    .show();
+            return view;
+        }
+
         initData();
         show();
         return view;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getContext() != null) {
+            mActivity = (MainActivity) getContext();
+        }
+    }
+
     private void show() {
         String token = sp.getString("token", "");
-        friendManager.getAllFriends(getContext(),token,this);
+        friendManager.getAllFriends(mActivity, token, this);
 
     }
 
@@ -83,50 +111,46 @@ public class MessageFragment extends Fragment implements View.OnClickListener , 
 //                return Boolean.compare(o2.isOnline(),o1.isOnline());
 //            }
 //        });
-        sp = getContext().getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
+        sp = mActivity.getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
         friendManager = new FriendManager();
 
-        rv_friends.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
-        friendAdapter = new FriendAdapter(getContext(),friendInfoList);
+        rv_friends.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false));
+        friendAdapter = new FriendAdapter(mActivity, friendInfoList);
         rv_friends.setAdapter(friendAdapter);
 
 
-
-        Intent intent = new Intent(getContext(), WebService.class);
+        Intent intent = new Intent(mActivity, WebService.class);
         msgConn = new MsgConn();
-        getContext().startService(intent);
-        getContext().bindService(intent,msgConn,Context.BIND_AUTO_CREATE);
+        mActivity.startService(intent);
+        mActivity.bindService(intent, msgConn, Context.BIND_AUTO_CREATE);
 
     }
 
     private void initView(View view) {
-        iv_add = (RelativeLayout) view.findViewById(R.id.iv_add);
-        iv_search = (RelativeLayout) view.findViewById(R.id.iv_search);
-        rv_friends = (RecyclerView) view.findViewById(R.id.rv_friends);
-        lv_msg = (ListView) view.findViewById(R.id.lv_msg);
+        RelativeLayout iv_add = view.findViewById(R.id.iv_add);
+        RelativeLayout iv_search = view.findViewById(R.id.iv_search);
+        rv_friends = view.findViewById(R.id.rv_friends);
+        lv_msg = view.findViewById(R.id.lv_msg);
 
         iv_add.setOnClickListener(this);
         iv_search.setOnClickListener(this);
-        lv_msg.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FriendInfo friendInfo = (FriendInfo) parent.getItemAtPosition(position);
-                Intent intent = new Intent(getContext(), MsgActivity.class);
-                intent.putExtra(AppProperties.FRIENDINFO,friendInfo);
-                getContext().startActivity(intent);
-            }
+        lv_msg.setOnItemClickListener((parent, view1, position, id) -> {
+            FriendInfo friendInfo = (FriendInfo) parent.getItemAtPosition(position);
+            Intent intent = new Intent(mActivity, MsgActivity.class);
+            intent.putExtra(AppProperties.FRIENDINFO, friendInfo);
+            mActivity.startActivity(intent);
         });
 
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.iv_add:
-                startActivity(new Intent(getContext(), FriendRelaActivity.class));
+                startActivity(new Intent(mActivity, FriendRelaActivity.class));
                 break;
             case R.id.iv_search:
-                startActivity(new Intent(getContext(), SearchFriendActivity.class));
+                startActivity(new Intent(mActivity, SearchFriendActivity.class));
                 break;
 
         }
@@ -134,11 +158,11 @@ public class MessageFragment extends Fragment implements View.OnClickListener , 
 
     @Override
     public void onSuccess(List<FriendInfo> friendInfoList) {
-        ((Activity)getContext()).runOnUiThread(()->{
-            if (friendAdapter!=null){
+        mActivity.runOnUiThread(() -> {
+            if (friendAdapter != null) {
                 friendAdapter.updateList(friendInfoList);
-                this.friendInfoList=friendInfoList;
-                msgsAdapter = new MsgsAdapter(getContext(), friendInfoList);
+                this.friendInfoList = friendInfoList;
+                msgsAdapter = new MsgsAdapter(mActivity, friendInfoList);
                 lv_msg.setAdapter(msgsAdapter);
             }
 
@@ -157,7 +181,7 @@ public class MessageFragment extends Fragment implements View.OnClickListener , 
 
     @Override
     public void onEventMessage(EventType eventType) {
-        switch (eventType){
+        switch (eventType) {
             case EVENT_TYPE_REQUEST_FRIEND:
 
                 break;
@@ -171,7 +195,8 @@ public class MessageFragment extends Fragment implements View.OnClickListener , 
     public void onConnectionChanged(boolean isConnected) {
 
     }
-    class MsgConn implements ServiceConnection{
+
+    class MsgConn implements ServiceConnection {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {

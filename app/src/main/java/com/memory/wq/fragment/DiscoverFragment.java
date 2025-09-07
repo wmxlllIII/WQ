@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -41,8 +42,9 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
     private Fragment concernFragment;
     private DrawerLayout dl_main;
     private ImageView iv_open_drawer;
-    private SmartImageView siv_avatar;
+    private ImageView iv_avatar;
     private TextView tv_nickname;
+    private TextView tv_nickname_hint;
 
     private NavigationView nv_side;
 
@@ -51,6 +53,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
     private SharedPreferences sp;
     private TextView tv_usernumber;
     private ImageView iv_edit;
+    private LinearLayout ll_userid;
 
     @Nullable
     @Override
@@ -69,24 +72,21 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initDrawer() {
-        nv_side.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.nv_info:
-                        startActivity(new Intent(getContext(), UserInfoActivity.class));
-                        break;
-                    case R.id.nv_logout:
-                        //TODO
-                        sp.edit().clear().commit();
-                        BaseActivity.finishAll();
-                        Intent intent = new Intent(getContext(), LaunchActivity.class);
-                        startActivity(intent);
-                        break;
+        nv_side.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.nv_info:
+                    startActivity(new Intent(getContext(), UserInfoActivity.class));
+                    break;
+                case R.id.nv_logout:
+                    //TODO
+                    sp.edit().clear().commit();
+                    BaseActivity.finishAll();
+                    Intent intent = new Intent(getContext(), LaunchActivity.class);
+                    startActivity(intent);
+                    break;
 
-                }
-                return false;
             }
+            return false;
         });
     }
 
@@ -97,15 +97,25 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
         String userName = sp.getString("userName", "");
         String avatarUrl = sp.getString("avatarUrl", "");
         long uuNumber = sp.getLong("uuNumber", -1L);
-        if (!TextUtils.isEmpty(avatarUrl))
-            Glide.with(getContext())
-                    .load(AppProperties.HTTP_SERVER_ADDRESS + avatarUrl)
-                    .circleCrop()
-                    .error(R.mipmap.icon_default_avatar)
-                    .into(iv_open_drawer);
+
+        Glide.with(getContext())
+                .load(AppProperties.HTTP_SERVER_ADDRESS + avatarUrl)
+                .circleCrop()
+                .error(R.mipmap.icon_default_avatar)
+                .into(iv_open_drawer);
+
+        Glide.with(getContext())
+                .load(AppProperties.HTTP_SERVER_ADDRESS + avatarUrl)
+                .circleCrop()
+                .error(R.mipmap.icon_default_avatar)
+                .into(iv_avatar);
 
         tv_nickname.setText(userName);
-        siv_avatar.setImageUrl(avatarUrl);
+        if (uuNumber==-1){
+            ll_userid.setVisibility(View.GONE);
+            tv_nickname_hint.setText("登录后可体验完整功能哦~");
+        }
+
         tv_usernumber.setText(String.valueOf(uuNumber));
     }
 
@@ -161,9 +171,11 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
 
         nv_side = (NavigationView) getActivity().findViewById(R.id.nv_side);
         View headerView = nv_side.getHeaderView(0);
-        siv_avatar = (SmartImageView) headerView.findViewById(R.id.siv_avatar);
+        iv_avatar = (ImageView) headerView.findViewById(R.id.iv_avatar);
         tv_nickname = (TextView) headerView.findViewById(R.id.tv_nickname);
         tv_usernumber = (TextView) headerView.findViewById(R.id.tv_userid);
+        tv_nickname_hint = (TextView) headerView.findViewById(R.id.tv_nickname_hint);
+        ll_userid = (LinearLayout) headerView.findViewById(R.id.ll_userid);
 
 
         iv_open_drawer.setOnClickListener(this);
@@ -171,7 +183,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
         tv_concern.setOnClickListener(this);
 
         tv_nickname.setOnClickListener(this);
-        siv_avatar.setOnClickListener(this);
+        iv_avatar.setOnClickListener(this);
         iv_edit.setOnClickListener(this);
 
     }
@@ -192,7 +204,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
             case R.id.iv_open_drawer:
                 dl_main.openDrawer(Gravity.LEFT);
                 break;
-            case R.id.siv_avatar:
+            case R.id.iv_avatar:
                 startActivity(new Intent(getContext(), AvatarActivity.class));
                 break;
             case R.id.tv_nickname:
