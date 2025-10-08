@@ -16,9 +16,9 @@ import com.memory.wq.databinding.HistoryLayoutBinding;
 public class HistoryFragment extends Fragment {
     private static final String TAG = "HistoryFragment";
     private HistoryLayoutBinding mBinding;
-    private static final int PAGE_WORK=0;
-    private static final int PAGE_LIKE=1;
-    private static final int PAGE_TRACE=2;
+    private static final int PAGE_WORK = 0;
+    private static final int PAGE_LIKE = 1;
+    private static final int PAGE_TRACE = 2;
 
     @Nullable
     @Override
