@@ -196,4 +196,15 @@ public class GenerateJson {
         }
         return object.toString();
     }
+
+    public static String getMyPostJson(QueryPostInfo queryPostInfo) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("page", queryPostInfo.getPage());
+            object.put("size", queryPostInfo.getSize());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return object.toString();
+    }
 }

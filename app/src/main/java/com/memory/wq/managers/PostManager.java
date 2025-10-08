@@ -29,7 +29,7 @@ import okhttp3.Response;
 
 public class PostManager {
     public static final String TAG = PostManager.class.getName();
-    private final Handler handler=new Handler(Looper.getMainLooper());
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     public void publishPost(String token, PostInfo postInfo, List<File> imageList, ResultCallback<Boolean> callback) {
         String json = GenerateJson.getPostContentJson(postInfo);
@@ -37,7 +37,7 @@ public class PostManager {
             HttpStreamOP.publishPost(AppProperties.POST_PUBLISH, token, json, imageList, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    handler.post(()->{
+                    handler.post(() -> {
                         callback.onError(e.getMessage());
                     });
                 }
@@ -46,7 +46,7 @@ public class PostManager {
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
                         Log.d(TAG, "===[x] publishPost #54");
-                        handler.post(()->{
+                        handler.post(() -> {
                             callback.onError(response.message());
                         });
                         return;
@@ -57,7 +57,7 @@ public class PostManager {
                         int code = json.getInt("code");
                         if (code == 1) {
                             //TODO 成功上传,保存本地
-                            handler.post(()->{
+                            handler.post(() -> {
                                 callback.onSuccess(true);
                             });
                             Log.d(TAG, "onResponse: ===发布成功");
@@ -91,7 +91,39 @@ public class PostManager {
                     try {
                         JSONObject json = new JSONObject(response.body().string());
                         PageResult<PostInfo> postInfoPageResult = JsonParser.postParser(json);
-                        handler.post(()->{
+                        handler.post(() -> {
+                            callback.onSuccess(postInfoPageResult);
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        });
+    }
+
+    public void getMyPost(String token, QueryPostInfo queryPostInfo, ResultCallback<PageResult<PostInfo>> callback) {
+        String json = GenerateJson.getMyPostJson(queryPostInfo);
+        ThreadPoolManager.getInstance().execute(() -> {
+            HttpStreamOP.postJson(AppProperties.POST_MY_GET, token, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    handler.post(() -> {
+
+                    });
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "===[x] getPosts #89");
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        PageResult<PostInfo> postInfoPageResult = JsonParser.postParser(json);
+                        handler.post(() -> {
                             callback.onSuccess(postInfoPageResult);
                         });
                     } catch (JSONException e) {

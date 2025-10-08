@@ -1,12 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <include
-        android:id="@+id/layout_no_login"
-        layout="@layout/layout_no_login"
-        android:visibility="gone" />
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/tv_recent_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="最近观看"
+            android:textSize="18dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/white_80"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_recent_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_recent_view"
+            android:layout_marginTop="5dp"/>
+
+        <LinearLayout
+            android:id="@+id/ll_bars"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rv_recent_view"
+            android:layout_marginHorizontal="10dp"
+            android:gravity="center"
+            android:paddingVertical="5dp"
+            android:layout_marginTop="8dp">
+
+            <RelativeLayout
+                android:id="@+id/rl_page_works"
+                style="@style/history_bar">
+                <TextView
+                    android:id="@+id/tv_bar_A"
+                    style="@style/history_bar_tv"
+                    android:text="作品" />
+
+                <View
+                    android:id="@+id/tv_bar_indi_A"
+                    style="@style/history_bar_indicator"
+                    android:layout_below="@id/tv_bar_A"
+                    android:visibility="visible" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl_page_likes"
+                style="@style/history_bar">
+
+                <TextView
+                    android:id="@+id/tv_bar_B"
+                    style="@style/history_bar_tv"
+                    android:text="喜欢" />
+                <View
+                    android:id="@+id/tv_bar_indi_B"
+                    android:layout_below="@id/tv_bar_B"
+                    style="@style/history_bar_indicator"
+                    android:visibility="gone"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl_page_track"
+                style="@style/history_bar">
+                <TextView
+                    android:id="@+id/tv_bar_C"
+                    style="@style/history_bar_tv"
+                    android:text="足迹" />
+                <View
+                    android:id="@+id/tv_bar_indi_C"
+                    android:layout_below="@id/tv_bar_C"
+                    style="@style/history_bar_indicator"
+                    android:visibility="gone"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                style="@style/history_bar">
+
+                <TextView
+                    android:id="@+id/tv_bar_D"
+                    style="@style/history_bar_tv"
+                    android:text="待定" />
+                <View
+                    android:id="@+id/tv_bar_indi_D"
+                    android:layout_below="@id/tv_bar_D"
+                    style="@style/history_bar_indicator"
+                    android:visibility="gone"/>
+            </RelativeLayout>
+
+
+        </LinearLayout>
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vp_history"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_bars"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

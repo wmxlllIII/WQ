@@ -53,15 +53,15 @@ public class CowatchFragment extends Fragment implements View.OnClickListener {
         token = sp.getString("token", "");
 
         MovieManager movieManager = new MovieManager();
-        movieManager.getRooms(token, new ResultCallback<List<RoomInfo>>() {
+        movieManager.getRooms(new ResultCallback<List<RoomInfo>>() {
             @Override
             public void onSuccess(List<RoomInfo> result) {
-                if (getContext()!=null)
-                ((Activity)getContext()).runOnUiThread(()->{
-                    rv_room.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-                    roomAdapter = new RoomAdapter(getContext(), result);
-                    rv_room.setAdapter(roomAdapter);
-                });
+                if (getContext() != null)
+                    ((Activity) getContext()).runOnUiThread(() -> {
+                        rv_room.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+                        roomAdapter = new RoomAdapter(getContext(), result);
+                        rv_room.setAdapter(roomAdapter);
+                    });
             }
 
             @Override

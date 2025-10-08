@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
-import com.memory.wq.activities.MsgActivity;
+import com.memory.wq.activities.ChatActivity;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.properties.AppProperties;
 
@@ -60,7 +60,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
         holder.iv_friend_avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, MsgActivity.class);
+                Intent intent = new Intent(context, ChatActivity.class);
                 intent.putExtra(AppProperties.FRIENDINFO, friendInfo);
                 context.startActivity(intent);
             }

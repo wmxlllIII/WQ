@@ -25,6 +25,7 @@ import com.memory.wq.adapters.HeaderAdapter;
 import com.memory.wq.adapters.RecommendAdapter;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.QueryPostInfo;
+import com.memory.wq.databinding.RecommendLayoutBinding;
 import com.memory.wq.managers.BannerManager;
 import com.memory.wq.managers.PostManager;
 import com.memory.wq.managers.SPManager;
@@ -41,7 +42,6 @@ public class RecommmendFragment extends Fragment {
     private BannerManager manager;
     private List<Integer> bannerImageList;
     private List<ImageView> indicatorsList = new ArrayList<>();
-    private RecyclerView rv_recomment;
     private List<PostInfo> postInfoList;
     private View bannerHeader;
     private RecommendAdapter recommendAdapter;
@@ -55,6 +55,7 @@ public class RecommmendFragment extends Fragment {
     private boolean hasNextPage = true;
     private boolean isLoading = false; // 是否正在加载数据
     private RecommendViewModel mRecommendVM;
+    private RecommendLayoutBinding mBinding;
 
 
     @Override
@@ -66,15 +67,14 @@ public class RecommmendFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.recommend_layout, null, false);
-        initView(view);
+        mBinding = RecommendLayoutBinding.inflate(inflater, container, false);
         if (mRecommendVM.postInfoList.isEmpty()) {
             initData();
         } else {
             restoreData();
         }
         setRecyclerView();
-        return view;
+        return mBinding.getRoot();
     }
 
     private void restoreData() {
@@ -88,20 +88,17 @@ public class RecommmendFragment extends Fragment {
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         HeaderAdapter headerAdapter = new HeaderAdapter(bannerHeader);
         recommendAdapter = new RecommendAdapter(mRecommendVM.postInfoList);
-        rv_recomment.setLayoutManager(layoutManager);
+        mBinding.rvRecomment.setLayoutManager(layoutManager);
         ConcatAdapter concatAdapter = new ConcatAdapter(headerAdapter, recommendAdapter);
-        rv_recomment.setAdapter(concatAdapter);
+        mBinding.rvRecomment.setAdapter(concatAdapter);
 
-        recommendAdapter.setOnItemClickListener(new RecommendAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position, PostInfo postInfo) {
-                Intent intent = new Intent(getContext(), PostInfoActivity.class);
-                intent.putExtra(AppProperties.POSTINFO, postInfo);
-                startActivity(intent);
-            }
+        recommendAdapter.setOnItemClickListener((position, postInfo) -> {
+            Intent intent = new Intent(getContext(), PostInfoActivity.class);
+            intent.putExtra(AppProperties.POSTINFO, postInfo);
+            startActivity(intent);
         });
 
-        rv_recomment.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        mBinding.rvRecomment.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -235,12 +232,6 @@ public class RecommmendFragment extends Fragment {
 
 
     }
-
-    private void initView(View view) {
-        rv_recomment = (RecyclerView) view.findViewById(R.id.rv_recomment);
-
-    }
-
 
     @Override
     public void onResume() {

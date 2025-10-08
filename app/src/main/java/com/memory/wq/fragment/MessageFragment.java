@@ -25,14 +25,14 @@ import com.memory.wq.R;
 import com.memory.wq.activities.FriendRelaActivity;
 import com.memory.wq.activities.LaunchActivity;
 import com.memory.wq.activities.MainActivity;
-import com.memory.wq.activities.MsgActivity;
+import com.memory.wq.activities.ChatActivity;
 import com.memory.wq.activities.SearchFriendActivity;
 import com.memory.wq.adapters.FriendAdapter;
 import com.memory.wq.adapters.MsgsAdapter;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.managers.FriendManager;
-import com.memory.wq.managers.SessionManager;
+import com.memory.wq.managers.AccountManager;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
@@ -62,8 +62,9 @@ public class MessageFragment extends Fragment implements View.OnClickListener, W
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.message_layout, container, false);
-        initView(view);
-        if (!SessionManager.isLoggedIn(mActivity)) {
+        if (AccountManager.isVisitorUser(mActivity)) {
+            view.findViewById(R.id.ll_already_login).setVisibility(View.GONE);
+            view.findViewById(R.id.layout_no_login).setVisibility(View.VISIBLE);
             new AlertDialog.Builder(mActivity)
                     .setTitle("未登录")
                     .setMessage("登录后即可体验完整功能哦~")
@@ -72,15 +73,12 @@ public class MessageFragment extends Fragment implements View.OnClickListener, W
                         startActivity(new Intent(mActivity, LaunchActivity.class));
                         getActivity().finish();
                     })
-                    .setPositiveButton("取消", (dialogInterface, i) -> {
-                        view.findViewById(R.id.ll_already_login).setVisibility(View.GONE);
-                        view.findViewById(R.id.layout_no_login).setVisibility(View.VISIBLE);
-                    })
+                    .setPositiveButton("取消", null)
                     .setCancelable(false)
                     .show();
             return view;
         }
-
+        initView(view);
         initData();
         show();
         return view;
@@ -136,7 +134,7 @@ public class MessageFragment extends Fragment implements View.OnClickListener, W
         iv_search.setOnClickListener(this);
         lv_msg.setOnItemClickListener((parent, view1, position, id) -> {
             FriendInfo friendInfo = (FriendInfo) parent.getItemAtPosition(position);
-            Intent intent = new Intent(mActivity, MsgActivity.class);
+            Intent intent = new Intent(mActivity, ChatActivity.class);
             intent.putExtra(AppProperties.FRIENDINFO, friendInfo);
             mActivity.startActivity(intent);
         });

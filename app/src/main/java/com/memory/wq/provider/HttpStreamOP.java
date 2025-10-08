@@ -26,7 +26,7 @@ public class HttpStreamOP {
         RequestBody requestBody = RequestBody.create(body, JSON);
         Request request = new Request.Builder()
                 .url(url)
-                .header("token", token)
+                .header("token", token == null ? "" : token)
                 .post(requestBody)
                 .build();
         sendOkhttpRequest(request, callback);
@@ -65,7 +65,7 @@ public class HttpStreamOP {
                 .addFormDataPart("content", json);
 
         for (File image : imagesList) {
-            builder.addFormDataPart("images",image.getName(),RequestBody.create(image,getMediaType(image)));
+            builder.addFormDataPart("images", image.getName(), RequestBody.create(image, getMediaType(image)));
         }
 
 

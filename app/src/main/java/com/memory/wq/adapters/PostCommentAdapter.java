@@ -58,6 +58,9 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
         holder.tv_reply.setOnClickListener(view -> {
             if (listener != null) listener.onReplyToComment(commentInfo);
         });
+        holder.itemView.setOnClickListener(view->{
+            if (listener != null) listener.onReplyToComment(commentInfo);
+        });
 
         if (commentInfo.getChildCommentList() != null && !commentInfo.getChildCommentList().isEmpty()) {
             holder.tv_toggle_replies.setVisibility(View.VISIBLE);

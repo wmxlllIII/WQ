@@ -101,7 +101,7 @@ public class FriendRelaAdapter extends BaseAdapter {
                 viewHolder.tv_friend_state.setVisibility(View.VISIBLE);
                 viewHolder.btn_accept.setVisibility(View.GONE);
                 viewHolder.btn_reject.setVisibility(View.GONE);
-                viewHolder.tv_friend_state.setText("accepted".equals(friendReqInfo.getState()) ? "已添加" : "等待验证");
+                viewHolder.tv_friend_state.setText("accepted".equals(friendReqInfo.getState()) ? "已添加" : "待验证");
             }
         }
 

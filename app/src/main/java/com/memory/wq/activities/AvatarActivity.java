@@ -6,7 +6,6 @@ import static com.memory.wq.managers.UserManager.REQUEST_CAMERA_CODE;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -14,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -22,15 +20,13 @@ import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.databinding.AvatarDetailLayoutBinding;
 import com.memory.wq.enumertions.SelectImageType;
-import com.memory.wq.managers.AuthManager;
 import com.memory.wq.managers.PermissionManager;
-import com.memory.wq.managers.SessionManager;
+import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.UserManager;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.provider.FileOP;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
-import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 
@@ -89,7 +85,7 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
         });
 
         mBinding.tvAlterAvatar.setOnClickListener(view -> {
-            if (!SessionManager.isLoggedIn(this)) {
+            if (AccountManager.isVisitorUser(this)) {
                 new AlertDialog.Builder(this)
                         .setTitle("未登录")
                         .setMessage("登录后即可体验完整功能哦~")

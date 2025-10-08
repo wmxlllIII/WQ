@@ -1,11 +1,9 @@
 package com.memory.wq.activities;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -20,6 +18,7 @@ import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.databinding.ActivityPostInfoBinding;
 import com.memory.wq.managers.CommentManager;
 import com.memory.wq.managers.SPManager;
+import com.memory.wq.managers.AccountManager;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
@@ -87,7 +86,7 @@ public class PostInfoActivity extends BaseActivity<ActivityPostInfoBinding> {
             public void onReplyToComment(PostCommentInfo comment) {
                 PostInfoActivity.this.mComment = comment;
                 showKeyboard(mBinding.etComment);
-                MyToast.showToast(PostInfoActivity.this, "点击了回复" + comment.getReplyToUserName());
+                MyToast.showToast(PostInfoActivity.this, "点击了回复" + comment.getUserName());
             }
         });
     }
@@ -119,6 +118,21 @@ public class PostInfoActivity extends BaseActivity<ActivityPostInfoBinding> {
     }
 
     private void initView() {
+        mBinding.bottomInputBar.setOnClickListener(view -> {
+            if (AccountManager.isVisitorUser(PostInfoActivity.this)) {
+                new AlertDialog.Builder(this)
+                        .setTitle("未登录")
+                        .setMessage("登录后即可体验完整功能哦~")
+                        .setIcon(R.mipmap.ic_bannertest2)
+                        .setNegativeButton("去登录", (dialogInterface, i) -> {
+                            startActivity(new Intent(this, LaunchActivity.class));
+                        })
+                        .setPositiveButton("取消", null)
+                        .setCancelable(false)
+                        .show();
+            }
+        });
+
         mBinding.tvSend.setOnClickListener(view -> {
             String commentContent = mBinding.etComment.getText().toString().trim();
             if (commentContent.isEmpty()) {

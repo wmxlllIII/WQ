@@ -45,7 +45,7 @@ public class UserInfoActivity extends BaseActivity<ActivityInfoBinding> {
     }
 
     private void initView() {
-        mBinding.btnOk.setOnClickListener(view -> {
+    mBinding.btnOk.setOnClickListener(view -> {
             String nickname = mBinding.etNickname.getText().toString().trim();
             if (TextUtils.isEmpty(nickname))
                 return;

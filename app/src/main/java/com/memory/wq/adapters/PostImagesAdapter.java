@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +41,13 @@ public class PostImagesAdapter extends RecyclerView.Adapter<PostImagesAdapter.Im
                 .placeholder(R.mipmap.loading_default)
                 .error(R.mipmap.loading_failure)
                 .into(holder.iv_image);
+        if (imageUrlList == null || imageUrlList.isEmpty()) {
+            holder.ll_photo_indicator.setVisibility(View.GONE);
+            return;
+        }
+
+        holder.tv_photo_posi.setText(String.valueOf(position+1));
+        holder.tv_photo_size.setText(String.valueOf(imageUrlList.size()));
     }
 
     @Override
@@ -48,10 +57,16 @@ public class PostImagesAdapter extends RecyclerView.Adapter<PostImagesAdapter.Im
 
     static class ImageViewHolder extends RecyclerView.ViewHolder {
         ImageView iv_image;
+        TextView tv_photo_posi;
+        TextView tv_photo_size;
+        LinearLayout ll_photo_indicator;
 
         public ImageViewHolder(@NonNull View itemView) {
             super(itemView);
             iv_image = (ImageView) itemView.findViewById(R.id.iv_image);
+            tv_photo_posi = (TextView) itemView.findViewById(R.id.tv_photo_posi);
+            tv_photo_size = (TextView) itemView.findViewById(R.id.tv_photo_size);
+            ll_photo_indicator = (LinearLayout) itemView.findViewById(R.id.ll_photo_indicator);
         }
     }
 }

@@ -18,6 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="还未登录,去登录体验完整功能吧~"
+        android:textColor="@color/white_80"
         app:layout_constraintTop_toBottomOf="@id/iv_not_login"
         android:layout_marginTop="20dp"
         app:layout_constraintLeft_toLeftOf="parent"

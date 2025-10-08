@@ -98,12 +98,22 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements W
         }
     }
 
-    private void switchFragment(Fragment fragment) {
-        //TODO SHOW/HIDE
+    private void switchFragment(Fragment to) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fl_bottom, fragment);
+        if (mCurrentFragment == to) {
+            return;
+        }
+
+        if (mCurrentFragment != null) {
+            transaction.hide(mCurrentFragment);
+        }
+        if (!to.isAdded()) {
+            transaction.add(R.id.fl_bottom, to);
+        } else {
+            transaction.show(to);
+        }
         transaction.commit();
-        mCurrentFragment = fragment;
+        mCurrentFragment = to;
     }
 
     private void initView() {

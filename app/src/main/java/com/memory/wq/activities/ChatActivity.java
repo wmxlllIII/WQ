@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class MsgActivity extends BaseActivity<ActivityMsgBinding> implements WebService.WebSocketListener, ResultCallback<List<MsgInfo>>, MsgAdapter.OnLinkClickListener {
-    public static final String TAG = MsgActivity.class.getName();
+public class ChatActivity extends BaseActivity<ActivityMsgBinding> implements WebService.WebSocketListener, ResultCallback<List<MsgInfo>>, MsgAdapter.OnLinkClickListener {
+    public static final String TAG = ChatActivity.class.getName();
     private final EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_MSG);
     private MsgAdapter mAdapter;
     private final List<MsgInfo> mMsgInfoList = new ArrayList<>();
@@ -91,11 +91,11 @@ public class MsgActivity extends BaseActivity<ActivityMsgBinding> implements Web
             @Override
             public void onShare(MsgInfo shareMsg) {
 
-                mMovieManager.shareRoom(MsgActivity.this, token, shareMsg, new ResultCallback<Boolean>() {
+                mMovieManager.shareRoom(ChatActivity.this, token, shareMsg, new ResultCallback<Boolean>() {
                     @Override
                     public void onSuccess(Boolean result) {
                         runOnUiThread(() -> {
-                            MyToast.showToast(MsgActivity.this, "分享成功");
+                            MyToast.showToast(ChatActivity.this, "分享成功");
                             finish();
                         });
                     }
@@ -103,7 +103,7 @@ public class MsgActivity extends BaseActivity<ActivityMsgBinding> implements Web
                     @Override
                     public void onError(String err) {
                         runOnUiThread(() -> {
-                            MyToast.showToast(MsgActivity.this, "分享失败");
+                            MyToast.showToast(ChatActivity.this, "分享失败");
                             finish();
                         });
                     }
@@ -112,7 +112,7 @@ public class MsgActivity extends BaseActivity<ActivityMsgBinding> implements Web
 
             @Override
             public void onCancel() {
-                MyToast.showToast(MsgActivity.this, "用户取消分享");
+                MyToast.showToast(ChatActivity.this, "用户取消分享");
                 finish();
             }
         });
@@ -199,7 +199,7 @@ public class MsgActivity extends BaseActivity<ActivityMsgBinding> implements Web
         mMsgManager.sendMsg(token, currentEmail, mFriendInfo.getEmail(), msg, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                mMsgManager.getAllMsg(mFriendInfo.getEmail(), MsgActivity.this);
+                mMsgManager.getAllMsg(mFriendInfo.getEmail(), ChatActivity.this);
             }
 
             @Override
@@ -224,12 +224,12 @@ public class MsgActivity extends BaseActivity<ActivityMsgBinding> implements Web
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mMsgService = ((IWebSocketService) service).getService();
-            mMsgService.registerListener(MsgActivity.this);
+            mMsgService.registerListener(ChatActivity.this);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            mMsgService.unregisterListener(MsgActivity.this);
+            mMsgService.unregisterListener(ChatActivity.this);
         }
     }
 

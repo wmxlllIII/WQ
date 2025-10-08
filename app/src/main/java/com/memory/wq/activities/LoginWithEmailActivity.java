@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.memory.wq.R;
 import com.memory.wq.beans.UserInfo;
 import com.memory.wq.databinding.ActivityLoginWithEmailBinding;
+import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.AuthManager;
 import com.memory.wq.managers.SPManager;
 import com.memory.wq.utils.ResultCallback;
@@ -72,6 +73,7 @@ public class LoginWithEmailActivity extends BaseActivity<ActivityLoginWithEmailB
 
                 System.out.println("================回调token: " + userInfo.getToken() + userInfo.getEmail());
                 runOnUiThread(() -> {
+                    AccountManager.saveLoginState(LoginWithEmailActivity.this, AccountManager.UserType.USER_TYPE_USER);
                     MyToast.showToast(LoginWithEmailActivity.this, "登录成功");
                     Intent intent = new Intent(LoginWithEmailActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

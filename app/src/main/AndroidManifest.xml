@@ -52,7 +52,7 @@
             android:exported="true"
             android:screenOrientation="user" />
         <activity
-            android:name=".activities.MsgActivity"
+            android:name=".activities.ChatActivity"
             android:exported="true" />
         <activity
             android:name=".activities.SearchUserActivity"

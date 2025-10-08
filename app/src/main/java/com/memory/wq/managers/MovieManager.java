@@ -34,7 +34,6 @@ public class MovieManager {
 
     public void getMovies(String token, ResultCallback<List<MovieInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
-
             HttpStreamOP.postJson(AppProperties.MOVIES, token, "{}", new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -63,10 +62,10 @@ public class MovieManager {
         });
     }
 
-    public void getRooms(String token, ResultCallback<List<RoomInfo>> callback) {
+    public void getRooms( ResultCallback<List<RoomInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
 
-            HttpStreamOP.postJson(AppProperties.ROOMS, token, "{}", new Callback() {
+            HttpStreamOP.postJson(AppProperties.ROOMS, null,"{}", new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
 
