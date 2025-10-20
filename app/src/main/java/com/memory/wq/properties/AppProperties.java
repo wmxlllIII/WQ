@@ -25,6 +25,7 @@ public class AppProperties {
     public static final String REQUEST_URL = HTTP_SERVER_ADDRESS + "/auth/sendcode";
     public static final String REGISTER_URL = HTTP_SERVER_ADDRESS + "/auth/register";
     public static final String LOGIN_URL = HTTP_SERVER_ADDRESS + "/auth/login";
+    public static final String AUTOLOGIN_URL = HTTP_SERVER_ADDRESS + "/auth/autoLogin";
     public static final String SEND_MSG = HTTP_SERVER_ADDRESS + "/auth/msg/send";
     public static final String UPDATE_USER = HTTP_SERVER_ADDRESS + "/auth/updateuserinfo";
 

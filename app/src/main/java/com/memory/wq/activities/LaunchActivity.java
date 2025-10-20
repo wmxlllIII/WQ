@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.memory.wq.R;
+import com.memory.wq.beans.UserInfo;
 import com.memory.wq.databinding.LoginMainLayoutBinding;
 import com.memory.wq.managers.AuthManager;
 import com.memory.wq.managers.SPManager;
@@ -26,12 +27,22 @@ public class LaunchActivity extends BaseActivity<LoginMainLayoutBinding> {
     }
 
     private void tryAutoLogin() {
-        String token = SPManager.getUserInfo(this).getToken();
-        if (TextUtils.isEmpty(token)) {
+        String oldToken = SPManager.getUserInfo(this).getToken();
+        if (TextUtils.isEmpty(oldToken)) {
             return;
         }
 
-        mAuthManager.tryAutoLogin();
+        mAuthManager.tryAutoLogin(oldToken, new ResultCallback<UserInfo>() {
+            @Override
+            public void onSuccess(UserInfo user) {
+
+            }
+
+            @Override
+            public void onError(String err) {
+
+            }
+        });
         Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
