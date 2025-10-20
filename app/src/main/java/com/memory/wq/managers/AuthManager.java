@@ -1,12 +1,17 @@
 package com.memory.wq.managers;
 
 
+import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 
 import androidx.annotation.NonNull;
 
+import com.memory.wq.activities.LaunchActivity;
+import com.memory.wq.activities.MainActivity;
 import com.memory.wq.beans.UserInfo;
 import com.memory.wq.enumertions.JsonType;
 import com.memory.wq.properties.AppProperties;
@@ -31,6 +36,7 @@ public class AuthManager {
     public static final int EMPTY_PWD = 0;
     public static final int MISMATCH_PWD = 1;
     public static final int OK_PWD = 2;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     public void login(String account, String pwd, ResultCallback<UserInfo> callback) {
         String loginJson = GenerateJson.generateJson(JsonType.JSONTYPE_LOGIN, account, 0, pwd);
@@ -66,6 +72,35 @@ public class AuthManager {
             });
         });
 
+    }
+
+    public void tryAutoLogin(ResultCallback<Boolean> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            HttpStreamOP.postJson(AppProperties.LOGIN_URL, "", new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    mHandler.post(()-> callback.onError("网络连接失败"));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        if (json.getInt("code") == 1) {
+                            mHandler.post(()-> callback.onSuccess(true));
+                        } else {
+                            mHandler.post(()-> callback.onError(response.message()));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        });
     }
 
     public boolean isEmail(String email) {
@@ -117,7 +152,7 @@ public class AuthManager {
                         int code = json.getInt("code");
                         if (code == 1) {
                             UserInfo userInfo = JsonParser.registerParser(json);
-                            Log.d(TAG, "onResponse: ===注册返回数据" + userInfo.toString());
+                            Log.d(TAG, "onResponse: ===注册返回数据" + userInfo);
                             callback.onSuccess(userInfo);
                         }
                     } catch (JSONException e) {

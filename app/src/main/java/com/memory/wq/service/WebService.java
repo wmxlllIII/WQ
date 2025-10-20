@@ -1,6 +1,5 @@
 package com.memory.wq.service;
 
-import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -14,12 +13,11 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.managers.MsgManager;
 import com.memory.wq.properties.AppProperties;
-import com.memory.wq.utils.JsonParser;
 import com.memory.wq.thread.ThreadPoolManager;
+import com.memory.wq.utils.JsonParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,11 +35,12 @@ import okhttp3.WebSocket;
 
 
 public class WebService extends Service {
-    private static final String TAG = WebService.class.getName();
+    private static final String TAG = "WQ_WebService";
 
     private WebSocket webSocket;
     private OkHttpClient client;
     private final List<WebSocketListener> listeners = new CopyOnWriteArrayList<>();
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     public interface WebSocketListener {
         EnumSet<EventType> getEvents();
@@ -83,20 +82,21 @@ public class WebService extends Service {
                 .addHeader("token", token)
                 .build();
         System.out.println("=======token" + token);
-        System.out.println("=======id" + userid);
+        Log.d(TAG, "[✅] connectWebSocket #85"+"token: "+token);
+        Log.d(TAG, "[✅] connectWebSocket #85"+"userid: "+userid);
         webSocket = client.newWebSocket(request, new okhttp3.WebSocketListener() {
             @Override
             public void onClosed(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
                 super.onClosed(webSocket, code, reason);
                 notifyConnectionChanged(false);
-                System.out.println("=======连接关闭");
+                Log.d(TAG, "[✅] onClosed ws连接关闭 #92");
             }
 
             @Override
             public void onFailure(@NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable Response response) {
                 super.onFailure(webSocket, t, response);
                 reconnect();
-                System.out.println("===========连接失败" + t.getMessage());
+                Log.d(TAG, "[x] onFailure ws连接失败 #99:" + t.getMessage());
                 t.printStackTrace();
             }
 
@@ -104,14 +104,14 @@ public class WebService extends Service {
             public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
                 super.onMessage(webSocket, text);
                 notifyMessageReceived(text);
-                System.out.println("========来消息了");
+                Log.d(TAG, "[✅] onMessage ws来消息了 #108");
             }
 
             @Override
             public void onOpen(@NonNull WebSocket webSocket, @NonNull Response response) {
                 super.onOpen(webSocket, response);
                 notifyConnectionChanged(true);
-                System.out.println("======ws====连接成功");
+                Log.d(TAG, "[✅] onOpen ws连接成功 #115");
             }
         });
     }
@@ -151,7 +151,7 @@ public class WebService extends Service {
                     JSONArray msgList = json.getJSONArray("msg_list");
                     System.out.println("==============原始消息列表" + msgList.toString());
 
-                    new Handler(Looper.getMainLooper()).post(() -> {
+                    mHandler.post(() -> {
 
                         try {
 //                            MyToast.showToast(this, "来消息了:" + msgList.get(0));
@@ -188,7 +188,7 @@ public class WebService extends Service {
 
         for (WebSocketListener listener : listeners) {
             if (listener.getEvents().contains(type)) {
-                listener.onEventMessage(type);
+                mHandler.post(() -> listener.onEventMessage(type));
             }
         }
 
@@ -199,7 +199,7 @@ public class WebService extends Service {
     private void notifyConnectionChanged(boolean isConnected) {
         new Handler(Looper.getMainLooper()).post(() -> {
             for (WebSocketListener listener : listeners) {
-                listener.onConnectionChanged(isConnected);
+                mHandler.post(() -> listener.onConnectionChanged(isConnected));
             }
         });
     }

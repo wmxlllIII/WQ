@@ -91,9 +91,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     public void onEventMessage(EventType eventType) {
         switch (eventType) {
             case EVENT_TYPE_REQUEST_FRIEND:
-                runOnUiThread(() -> {
-                    mMsgManager.getAllRelation(this, true, AppProperties.FRIEND_RELATIONSHIP, token, this);
-                });
+                mMsgManager.getAllRelation(this, true, AppProperties.FRIEND_RELATIONSHIP, token, this);
                 break;
         }
 
@@ -102,9 +100,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
 
     @Override
     public void onConnectionChanged(boolean isConnected) {
-        runOnUiThread(() -> {
-            //
-        });
+
     }
 
     @Override
