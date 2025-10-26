@@ -45,14 +45,14 @@ public class UserInfoActivity extends BaseActivity<ActivityInfoBinding> {
     }
 
     private void initView() {
-    mBinding.btnOk.setOnClickListener(view -> {
-            String nickname = mBinding.etNickname.getText().toString().trim();
-            if (TextUtils.isEmpty(nickname))
-                return;
-            UserInfo userInfo = new UserInfo();
-            userInfo.setUserName(nickname);
-            mUserManager.updateUserInfo(token, userInfo);
-        });
+//    mBinding.btnOk.setOnClickListener(view -> {
+//            String nickname = mBinding.etNickname.getText().toString().trim();
+//            if (TextUtils.isEmpty(nickname))
+//                return;
+//            UserInfo userInfo = new UserInfo();
+//            userInfo.setUserName(nickname);
+//            mUserManager.updateUserInfo(token, userInfo);
+//        });
     }
 
 }
