@@ -53,7 +53,6 @@ public class RecommmendFragment extends Fragment {
     private int currentPage = 1;
     private final int pageSize = 10;
     private boolean hasNextPage = true;
-    private boolean isLoading = false; // 是否正在加载数据
     private RecommendViewModel mRecommendVM;
     private RecommendLayoutBinding mBinding;
 

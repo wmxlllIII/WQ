@@ -12,7 +12,7 @@ public class AppProperties {
     public static final String AVATAR_RECEIVER_ACTION = "setCurrentAvatar";
 
 
-    public static final String HTTP_SERVER_ADDRESS = "http://123.56.101.31:8080";
+    public static final String HTTP_SERVER_ADDRESS = "http://81.70.21.235:8080";
     //明文传输xml里也有地址!!!
     public static final String WEB_SOCKET_SERVER_ADDRESS = "ws://123.56.101.31:8080/ws/";
     public static final String FRIEND_RELATIONSHIP = HTTP_SERVER_ADDRESS + "/auth/friend/allrequests";

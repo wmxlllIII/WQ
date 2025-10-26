@@ -39,7 +39,7 @@ public class ChatActivity extends BaseActivity<ActivityMsgBinding> implements We
     private MsgAdapter mAdapter;
     private final List<MsgInfo> mMsgInfoList = new ArrayList<>();
     private WebService mMsgService;
-    private MsgConn mMsgConn;
+    private WebSocketConn mWebSocketConn;
     private MsgManager mMsgManager;
 
     private String token;
@@ -68,9 +68,9 @@ public class ChatActivity extends BaseActivity<ActivityMsgBinding> implements We
         mAdapter = new MsgAdapter(this, mMsgInfoList);
         mAdapter.setOnLinkClickListener(this);
         Intent intent = new Intent(this, WebService.class);
-        if (mMsgConn == null)
-            mMsgConn = new MsgConn();
-        bindService(intent, mMsgConn, BIND_AUTO_CREATE);
+        if (mWebSocketConn == null)
+            mWebSocketConn = new WebSocketConn();
+        bindService(intent, mWebSocketConn, BIND_AUTO_CREATE);
         mMsgManager = new MsgManager(this);
 
         Intent intent1 = getIntent();
@@ -219,7 +219,7 @@ public class ChatActivity extends BaseActivity<ActivityMsgBinding> implements We
         System.out.println("=====加入房间id" + msgInfo.getLinkContent());
     }
 
-    class MsgConn implements ServiceConnection {
+    class WebSocketConn implements ServiceConnection {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -236,7 +236,7 @@ public class ChatActivity extends BaseActivity<ActivityMsgBinding> implements We
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(mMsgConn);
+        unbindService(mWebSocketConn);
         mMsgService.unregisterListener(this);
     }
 }
