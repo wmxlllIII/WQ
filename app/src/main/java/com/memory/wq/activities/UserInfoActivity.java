@@ -34,8 +34,8 @@ public class UserInfoActivity extends BaseActivity<ActivityInfoBinding> {
 
         String userName = sp.getString("userName", "");
         String email = sp.getString("email", "");
-        mBinding.etNickname.setHint(userName);
-        mBinding.etEmail.setHint(email);
+        mBinding.tvNickname.setHint(userName);
+        mBinding.tvEmail.setHint(email);
     }
 
     private void initData() {
