@@ -20,11 +20,13 @@ import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.databinding.ActivityMsgBinding;
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.enumertions.RoleType;
+import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.managers.MovieManager;
 import com.memory.wq.managers.MsgManager;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
+import com.memory.wq.service.WebSocketMessage;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.ShareConfirmDialog;
@@ -33,8 +35,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class ChatActivity extends BaseActivity<ActivityMsgBinding> implements WebService.WebSocketListener, ResultCallback<List<MsgInfo>>, MsgAdapter.OnLinkClickListener {
-    public static final String TAG = ChatActivity.class.getName();
+public class ChatActivity extends BaseActivity<ActivityMsgBinding> implements IWebSocketListener, ResultCallback<List<MsgInfo>>, MsgAdapter.OnLinkClickListener {
+    public static final String TAG = "WQ_ChatActivity";
     private final EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_MSG);
     private MsgAdapter mAdapter;
     private final List<MsgInfo> mMsgInfoList = new ArrayList<>();
@@ -121,7 +123,6 @@ public class ChatActivity extends BaseActivity<ActivityMsgBinding> implements We
     }
 
     private void show() {
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setStackFromEnd(true);
         mBinding.rvMsg.setLayoutManager(layoutManager);
@@ -141,29 +142,17 @@ public class ChatActivity extends BaseActivity<ActivityMsgBinding> implements We
     }
 
     @Override
-    public void onEventMessage(EventType eventType) {
-        switch (eventType) {
+    public <T> void onMessage(WebSocketMessage<T> message) {
+        switch (message.getEventType()) {
             case EVENT_TYPE_MSG:
-                mMsgManager.getAllMsg(mFriendInfo.getEmail(), new ResultCallback<List<MsgInfo>>() {
-                    @Override
-                    public void onSuccess(List<MsgInfo> result) {
-                        runOnUiThread(() -> {
+                List<MsgInfo> newMsgList = (List<MsgInfo>) message.getData();
+                if (newMsgList == null || newMsgList.isEmpty()) {
+                    Log.d(TAG, "[x] onMessage #151");
+                    return;
+                }
 
-                            mAdapter.updateItem(result);
-                            if (mMsgInfoList.size() > 0) {
-                                Log.d(TAG, "===1正在滚动到最后位置: " + (mMsgInfoList.size() - 1));
-                                mBinding.rvMsg.post(() -> {
-                                    mBinding.rvMsg.smoothScrollToPosition(mMsgInfoList.size() - 1);
-                                });
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onError(String err) {
-
-                    }
-                });
+                mMsgInfoList.addAll(newMsgList);
+                mAdapter.notifyDataSetChanged();
                 break;
         }
     }

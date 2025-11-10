@@ -31,18 +31,20 @@ import com.memory.wq.adapters.FriendAdapter;
 import com.memory.wq.adapters.MsgsAdapter;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.enumertions.EventType;
+import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
+import com.memory.wq.service.WebSocketMessage;
 import com.memory.wq.utils.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class MessageFragment extends Fragment implements View.OnClickListener, WebService.WebSocketListener, ResultCallback<List<FriendInfo>> {
+public class MessageFragment extends Fragment implements View.OnClickListener, IWebSocketListener, ResultCallback<List<FriendInfo>> {
 
     private RecyclerView rv_friends;
     private ListView lv_msg;
@@ -178,15 +180,15 @@ public class MessageFragment extends Fragment implements View.OnClickListener, W
     }
 
     @Override
-    public void onEventMessage(EventType eventType) {
-        switch (eventType) {
-            case EVENT_TYPE_REQUEST_FRIEND:
-
-                break;
-            case EVENT_TYPE_MSG:
-
-                break;
-        }
+    public <T> void onMessage(WebSocketMessage<T> message) {
+//        switch (eventType) {
+//            case EVENT_TYPE_REQUEST_FRIEND:
+//
+//                break;
+//            case EVENT_TYPE_MSG:
+//
+//                break;
+//        }
     }
 
     @Override

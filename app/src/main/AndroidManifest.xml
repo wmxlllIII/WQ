@@ -28,7 +28,7 @@
             android:name=".activities.PostInfoActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.EditPostActivity"
+            android:name=".activities.UploadPostActivity"
             android:exported="true" />
         <activity
             android:name=".activities.RegisterActivity"

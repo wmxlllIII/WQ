@@ -13,19 +13,21 @@ import com.memory.wq.adapters.FriendRelaAdapter;
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.databinding.ActivityTestWsactivityBinding;
 import com.memory.wq.enumertions.EventType;
+import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.managers.MsgManager;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
+import com.memory.wq.service.WebSocketMessage;
 import com.memory.wq.utils.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBinding> implements WebService.WebSocketListener, ResultCallback<List<FriendRelaInfo>>, FriendRelaAdapter.UpdateRelaListener {
+public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBinding> implements IWebSocketListener, ResultCallback<List<FriendRelaInfo>>, FriendRelaAdapter.UpdateRelaListener {
 
-    private static final String TAG = FriendRelaActivity.class.getName();
+    private static final String TAG = "WQ_FriendRelaActivity";
     private String token;
 
     private WebService mWebService;
@@ -88,13 +90,12 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     }
 
     @Override
-    public void onEventMessage(EventType eventType) {
-        switch (eventType) {
-            case EVENT_TYPE_REQUEST_FRIEND:
-                mMsgManager.getAllRelation(this, true, AppProperties.FRIEND_RELATIONSHIP, token, this);
-                break;
-        }
-
+    public <T> void onMessage(WebSocketMessage<T> message) {
+//        switch (eventType) {
+//            case EVENT_TYPE_REQUEST_FRIEND:
+//                mMsgManager.getAllRelation(this, true, AppProperties.FRIEND_RELATIONSHIP, token, this);
+//                break;
+//        }
     }
 
 

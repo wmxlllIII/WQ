@@ -64,7 +64,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     .placeholder(R.mipmap.loading_default)
                     .error(R.mipmap.loading_failure)
                     .into(holder.iv_cover);
-            Log.d(TAG, "setItemHolder: ===setItemHolder #70 " + AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl());
+//            Log.d(TAG, "setItemHolder: ===setItemHolder #70 " + AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl());
         }
 
         //TODO 更改成用户头像

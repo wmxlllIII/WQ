@@ -10,7 +10,7 @@
         android:fitsSystemWindows="true"
         android:orientation="vertical"
         android:padding="20dp"
-        tools:context=".activities.EditPostActivity">
+        tools:context=".activities.UploadPostActivity">
 
         <RelativeLayout
             android:layout_width="match_parent"

@@ -28,7 +28,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class PostManager {
-    public static final String TAG = PostManager.class.getName();
+    public static final String TAG = "WQ_PostManager";
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     public void publishPost(String token, PostInfo postInfo, List<File> imageList, ResultCallback<Boolean> callback) {

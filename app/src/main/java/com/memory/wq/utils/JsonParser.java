@@ -11,6 +11,7 @@ import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.RoomInfo;
 import com.memory.wq.beans.RtcInfo;
+import com.memory.wq.beans.StsTokenInfo;
 import com.memory.wq.beans.UserInfo;
 import com.memory.wq.enumertions.EventType;
 
@@ -450,4 +451,21 @@ public class JsonParser {
         return comment;
     }
 
+    public static StsTokenInfo stsTokenParser(JSONObject json) {
+        StsTokenInfo stsTokenInfo = new StsTokenInfo();
+        try {
+            JSONObject dataJson = json.getJSONObject("data");
+
+            stsTokenInfo.setAccessKeyId(dataJson.getString("accessKeyId"));
+            stsTokenInfo.setAccessKeySecret(dataJson.getString("accessKeySecret"));
+            stsTokenInfo.setSecurityToken(dataJson.getString("securityToken"));
+            // stsTokenInfo.setEndPoint(dataJson.getString("endpoint")); // 如果需要
+            stsTokenInfo.setRegion(dataJson.getString("region"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG,"=====解析sts结果： "+stsTokenInfo.toString());
+        return stsTokenInfo;
+    }
 }

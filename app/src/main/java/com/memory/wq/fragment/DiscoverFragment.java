@@ -4,10 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -26,10 +24,9 @@ import com.google.android.material.navigation.NavigationView;
 import com.memory.wq.R;
 import com.memory.wq.activities.AvatarActivity;
 import com.memory.wq.activities.BaseActivity;
-import com.memory.wq.activities.EditPostActivity;
+import com.memory.wq.activities.UploadPostActivity;
 import com.memory.wq.activities.LaunchActivity;
 import com.memory.wq.activities.UserInfoActivity;
-import com.memory.wq.caches.SmartImageView;
 import com.memory.wq.properties.AppProperties;
 
 public class DiscoverFragment extends Fragment implements View.OnClickListener {
@@ -211,7 +208,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
 
                 break;
             case R.id.iv_edit:
-                startActivity(new Intent(getContext(), EditPostActivity.class));
+                startActivity(new Intent(getContext(), UploadPostActivity.class));
                 break;
 
         }

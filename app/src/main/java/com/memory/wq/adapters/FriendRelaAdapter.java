@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.memory.wq.R;
@@ -58,14 +59,14 @@ public class FriendRelaAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
+        FriendRelaViewHolder friendRelaViewHolder;
         if (convertView == null) {
             convertView = View.inflate(context, R.layout.item_friend_request_layout, null);
-            viewHolder = new ViewHolder(convertView);
-            convertView.setTag(viewHolder);
+            friendRelaViewHolder = new FriendRelaViewHolder(convertView);
+            convertView.setTag(friendRelaViewHolder);
 
         } else {
-            viewHolder = (ViewHolder) convertView.getTag();
+            friendRelaViewHolder = (FriendRelaViewHolder) convertView.getTag();
         }
 
         FriendRelaInfo friendReqInfo = reqInfoList.get(position);
@@ -73,39 +74,39 @@ public class FriendRelaAdapter extends BaseAdapter {
         boolean isReceiver = friendReqInfo.getTargetEmail().equals(email);
 
 
-        viewHolder.siv_avatar.setImageUrl(isReceiver ? friendReqInfo.getSourceAvatarUrl() : friendReqInfo.getTargetAvatarUrl());
-        viewHolder.tv_nickname.setText(isReceiver ? friendReqInfo.getSourceNickname() : friendReqInfo.getTargetNickname());
-        viewHolder.tv_verify_message.setText(friendReqInfo.getValidMsg());
+        friendRelaViewHolder.siv_avatar.setImageUrl(isReceiver ? friendReqInfo.getSourceAvatarUrl() : friendReqInfo.getTargetAvatarUrl());
+        friendRelaViewHolder.tv_nickname.setText(isReceiver ? friendReqInfo.getSourceNickname() : friendReqInfo.getTargetNickname());
+        friendRelaViewHolder.tv_verify_message.setText(friendReqInfo.getValidMsg());
 
 
         if (isReceiver) {
             if ("sended".equals(friendReqInfo.getState())) {
-                viewHolder.tv_friend_state.setVisibility(View.GONE);
-                viewHolder.btn_accept.setVisibility(View.VISIBLE);
-                viewHolder.btn_reject.setVisibility(View.VISIBLE);
+                friendRelaViewHolder.tv_friend_state.setVisibility(View.GONE);
+                friendRelaViewHolder.btn_accept.setVisibility(View.VISIBLE);
+                friendRelaViewHolder.btn_reject.setVisibility(View.VISIBLE);
 
             } else {
-                viewHolder.tv_friend_state.setVisibility(View.VISIBLE);
-                viewHolder.btn_accept.setVisibility(View.GONE);
-                viewHolder.btn_reject.setVisibility(View.GONE);
-                viewHolder.tv_friend_state.setText(friendReqInfo.getState().equals("accepted") ? "已添加" : "已拒绝");
+                friendRelaViewHolder.tv_friend_state.setVisibility(View.VISIBLE);
+                friendRelaViewHolder.btn_accept.setVisibility(View.GONE);
+                friendRelaViewHolder.btn_reject.setVisibility(View.GONE);
+                friendRelaViewHolder.tv_friend_state.setText(friendReqInfo.getState().equals("accepted") ? "已添加" : "已拒绝");
             }
         } else {
             if ("sended".equals(friendReqInfo.getState())) {
-                viewHolder.tv_friend_state.setVisibility(View.VISIBLE);
-                viewHolder.btn_accept.setVisibility(View.GONE);
-                viewHolder.btn_reject.setVisibility(View.GONE);
-                viewHolder.tv_friend_state.setText("已申请");
+                friendRelaViewHolder.tv_friend_state.setVisibility(View.VISIBLE);
+                friendRelaViewHolder.btn_accept.setVisibility(View.GONE);
+                friendRelaViewHolder.btn_reject.setVisibility(View.GONE);
+                friendRelaViewHolder.tv_friend_state.setText("已申请");
 
             } else {
-                viewHolder.tv_friend_state.setVisibility(View.VISIBLE);
-                viewHolder.btn_accept.setVisibility(View.GONE);
-                viewHolder.btn_reject.setVisibility(View.GONE);
-                viewHolder.tv_friend_state.setText("accepted".equals(friendReqInfo.getState()) ? "已添加" : "待验证");
+                friendRelaViewHolder.tv_friend_state.setVisibility(View.VISIBLE);
+                friendRelaViewHolder.btn_accept.setVisibility(View.GONE);
+                friendRelaViewHolder.btn_reject.setVisibility(View.GONE);
+                friendRelaViewHolder.tv_friend_state.setText("accepted".equals(friendReqInfo.getState()) ? "已添加" : "待验证");
             }
         }
 
-        viewHolder.btn_accept.setOnClickListener(v -> {
+        friendRelaViewHolder.btn_accept.setOnClickListener(v -> {
             MsgManager.updateRela(context, true, friendReqInfo.getSourceEmail(), new ResultCallback<Boolean>() {
                 @Override
                 public void onSuccess(Boolean result) {
@@ -121,7 +122,7 @@ public class FriendRelaAdapter extends BaseAdapter {
 
         });
 
-        viewHolder.btn_reject.setOnClickListener(v -> {
+        friendRelaViewHolder.btn_reject.setOnClickListener(v -> {
             MsgManager.updateRela(context, false, friendReqInfo.getSourceEmail(), new ResultCallback<Boolean>() {
                 @Override
                 public void onSuccess(Boolean result) {
@@ -141,7 +142,8 @@ public class FriendRelaAdapter extends BaseAdapter {
     }
 
 
-    private static class ViewHolder {
+    private static class FriendRelaViewHolder {
+        //TODO IMAGEVIEW
         SmartImageView siv_avatar;
         TextView tv_nickname;
         TextView tv_verify_message;
@@ -149,7 +151,7 @@ public class FriendRelaAdapter extends BaseAdapter {
         ImageButton btn_reject;
         TextView tv_friend_state;
 
-        private ViewHolder(View convertView) {
+        private FriendRelaViewHolder(View convertView) {
             siv_avatar = (SmartImageView) convertView.findViewById(R.id.siv_avatar);
             tv_nickname = (TextView) convertView.findViewById(R.id.tv_nickname);
             tv_verify_message = (TextView) convertView.findViewById(R.id.tv_verify_message);

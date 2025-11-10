@@ -21,14 +21,16 @@ import com.memory.wq.fragment.CowatchFragment;
 import com.memory.wq.fragment.DiscoverFragment;
 import com.memory.wq.fragment.HistoryFragment;
 import com.memory.wq.fragment.MessageFragment;
+import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
+import com.memory.wq.service.WebSocketMessage;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> implements WebService.WebSocketListener {
+public class MainActivity extends BaseActivity<ActivityMainBinding> implements IWebSocketListener {
 
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private Fragment mCurrentFragment;
@@ -69,14 +71,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements W
     }
 
     @Override
-    public void onEventMessage(EventType eventType) {
-        runOnUiThread(() -> {
-            switch (eventType) {
-                case EVENT_TYPE_REQUEST_FRIEND:
-                    mBinding.tvMsgnum.setVisibility(View.VISIBLE);
-                    break;
-            }
-        });
+    public <T> void onMessage(WebSocketMessage<T> message) {
+        switch (message.getEventType()) {
+            case EVENT_TYPE_REQUEST_FRIEND:
+                mBinding.tvMsgnum.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     @Override
