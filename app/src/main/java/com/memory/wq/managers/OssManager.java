@@ -3,6 +3,7 @@ package com.memory.wq.managers;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.alibaba.sdk.android.oss.ClientConfiguration;
@@ -30,7 +31,6 @@ import java.util.List;
 public class OssManager {
     public static final String TAG = "WQ_OssManager";
     private static OssManager instance;
-    private static final String BUCKET_NAME = AppProperties.OSS_BUCKET_NAME;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
 
@@ -45,23 +45,28 @@ public class OssManager {
         return instance;
     }
 
-    private OSS initOssClient(Context context,StsTokenInfo stsToken) {
-        String endpoint = "https://oss-cn-beijing.aliyuncs.com";
-        String region = "cn-beijing";
-
-
+    private OSS initOssClient(Context context, StsTokenInfo stsToken) {
         ClientConfiguration config = new ClientConfiguration();
+        OSSCredentialProvider credentialProvider = new OSSStsTokenCredentialProvider(
+                stsToken.getAccessKeyId(),
+                stsToken.getAccessKeySecret(),
+                stsToken.getSecurityToken()
+        );
 
-        OSSCredentialProvider credentialProvider = new OSSStsTokenCredentialProvider(stsToken.getAccessKeyId(), stsToken.getAccessKeySecret(), stsToken.getSecurityToken());
         config.setSignVersion(SignVersion.V4);
 
-//        OSSClient oss = new OSSClient(context, stsToken.getEndPoint(), credentialProvider, config);
-        OSSClient oss = new OSSClient(context, endpoint, credentialProvider, config);
-        oss.setRegion(region);
+        OSSClient oss = new OSSClient(
+                context,
+                stsToken.getEndPoint(),
+                credentialProvider,
+                config
+        );
+
+        oss.setRegion(stsToken.getRegion());
         return oss;
     }
 
-    public void uploadFiles(Context context, StsTokenInfo stsToken,List<File> fileList, ResultCallback<List<String>> callback) {
+    public void uploadFiles(Context context, StsTokenInfo stsToken, List<File> fileList, ResultCallback<List<String>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
             List<String> fileUrls = new ArrayList<>();
             OSS ossClient = initOssClient(context, stsToken);
@@ -75,10 +80,9 @@ public class OssManager {
 
 
             for (File file : fileList) {
-                //objectKey 文件名
                 String objectKey = FileUtil.generateUniqueObjectKey(file.getName());
                 try {
-                    PutObjectRequest put = new PutObjectRequest(BUCKET_NAME, objectKey, file.getAbsolutePath());
+                    PutObjectRequest put = new PutObjectRequest(stsToken.getBucketName(), objectKey, file.getAbsolutePath());
 
                     put.setProgressCallback((request, currentSize, totalSize) -> {
                         //TODO
@@ -87,21 +91,29 @@ public class OssManager {
                     ossClient.asyncPutObject(put, new OSSCompletedCallback<PutObjectRequest, PutObjectResult>() {
                         @Override
                         public void onSuccess(PutObjectRequest request, PutObjectResult result) {
-                            Log.d(TAG, "===" + result.toString());
-//                            String ossUrl = result.getServerCallbackReturnBody();
-//                            fileUrls.add(ossUrl);
+                            String url = FileUtil.tagConvertUrl(request.getObjectKey(), request.getBucketName(), stsToken.getEndPoint());
+                            if (TextUtils.isEmpty(url)) {
+                                Log.d(TAG, "[x] uploadFiles onSuccess #101");
+                                return;
+                            }
+
+                            fileUrls.add(url);
+                            if (fileUrls.size() == fileList.size()) {
+                                callback.onSuccess(fileUrls);
+                            }
                         }
 
                         @Override
                         public void onFailure(PutObjectRequest request, ClientException clientException, ServiceException serviceException) {
-                            Log.d(TAG, "===clientException： " + clientException);
-                            Log.d(TAG, "===： " + serviceException);
+                            Log.e(TAG, "[x] uploadFiles onFailure #106" + clientException.getMessage());
+                            Log.e(TAG, "[x] uploadFiles onFailure #107" + serviceException.getMessage());
+                            callback.onError("上传失败");
                         }
                     });
 
 
                 } catch (Exception e) {
-                    Log.d(TAG, "[x] uploadFiles #115 " + e);
+                    Log.e(TAG, "[x] uploadFiles #115 " + e.getMessage());
                 }
             }
         });

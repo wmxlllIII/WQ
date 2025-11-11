@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JsonParser {
-    private final static String TAG = JsonParser.class.getName();
+    private final static String TAG = "WQ_JsonParser";
 
     public static UserInfo registerParser(JSONObject json) {
         UserInfo userInfo = new UserInfo();
@@ -459,13 +459,13 @@ public class JsonParser {
             stsTokenInfo.setAccessKeyId(dataJson.getString("accessKeyId"));
             stsTokenInfo.setAccessKeySecret(dataJson.getString("accessKeySecret"));
             stsTokenInfo.setSecurityToken(dataJson.getString("securityToken"));
-            // stsTokenInfo.setEndPoint(dataJson.getString("endpoint")); // 如果需要
+            stsTokenInfo.setEndPoint(dataJson.getString("endpoint"));
             stsTokenInfo.setRegion(dataJson.getString("region"));
+            stsTokenInfo.setBucketName(dataJson.getString("bucketName"));
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, "[x] stsTokenParser #466 " + e.getMessage());
         }
-        Log.d(TAG,"=====解析sts结果： "+stsTokenInfo.toString());
         return stsTokenInfo;
     }
 }

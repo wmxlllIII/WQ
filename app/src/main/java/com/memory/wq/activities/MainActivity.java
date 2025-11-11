@@ -32,6 +32,7 @@ import java.util.List;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> implements IWebSocketListener {
 
+    private static final String TAG = "WQ_MainActivity";
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private Fragment mCurrentFragment;
 

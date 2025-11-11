@@ -35,17 +35,18 @@ public class LaunchActivity extends BaseActivity<LoginMainLayoutBinding> {
         mAuthManager.tryAutoLogin(oldToken, new ResultCallback<UserInfo>() {
             @Override
             public void onSuccess(UserInfo user) {
-
+                SPManager.saveUserInfo(LaunchActivity.this,user);
+                Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
             }
 
             @Override
             public void onError(String err) {
-
+                MyToast.showToast(LaunchActivity.this,err);
             }
         });
-        Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
+
     }
 
     @Override

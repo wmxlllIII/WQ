@@ -6,6 +6,15 @@ public class StsTokenInfo {
     private String accessKeySecret;
     private String securityToken;
     private String region;
+    private String bucketName;
+
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
 
     public String getEndPoint() {
         return endPoint;

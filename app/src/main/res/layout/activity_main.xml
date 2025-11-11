@@ -94,6 +94,19 @@
                         </RelativeLayout>
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:id="@+id/ll_player"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.5"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:src="@mipmap/icon_player" />
+                    </LinearLayout>
+
 
                     <LinearLayout
                         android:id="@+id/ll_msg"
@@ -156,14 +169,14 @@
                 </LinearLayout>
             </RelativeLayout>
 
-<!--todo drawable 圆角-->
+            <!--todo drawable 圆角-->
             <com.google.android.material.navigation.NavigationView
                 android:id="@+id/nv_side"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="left"
-                app:headerLayout="@layout/sidehead_layout"
                 android:background="#80504F4F"
+                app:headerLayout="@layout/sidehead_layout"
                 app:menu="@menu/side_menu" />
 
         </androidx.drawerlayout.widget.DrawerLayout>

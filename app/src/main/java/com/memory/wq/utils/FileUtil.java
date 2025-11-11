@@ -1,5 +1,6 @@
 package com.memory.wq.utils;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.UUID;
@@ -21,8 +22,16 @@ public class FileUtil {
         }
 
         String uuid = UUID.randomUUID().toString();
-        String name = "WQ_" + uuid + "." + extension;
-        return name;
+        return "WQ_" + uuid + "." + extension;
+    }
+
+    public static String tagConvertUrl(String fileName, String bucketName, String endPoint) {
+        if (TextUtils.isEmpty(fileName)) {
+            Log.d(TAG, "[x] tagConvertUrl #31");
+            return null;
+        }
+
+        return "https://" + bucketName + "." + endPoint + "/" + fileName;
     }
 
 }

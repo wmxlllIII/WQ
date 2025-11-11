@@ -74,17 +74,19 @@ public class AuthManager {
 
     }
 
-    public void tryAutoLogin(String token,ResultCallback<UserInfo> callback) {
+    public void tryAutoLogin(String token, ResultCallback<UserInfo> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.AUTOLOGIN_URL, token, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    mHandler.post(()-> callback.onError("网络连接失败"));
+                    mHandler.post(() -> callback.onError("网络连接失败"));
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] tryAutoLogin #88");
+                        mHandler.post(() -> callback.onError("网络连接失败"));
                         return;
                     }
 
@@ -93,9 +95,9 @@ public class AuthManager {
                         if (json.getInt("code") == 1) {
                             //TODO onSuccess("token")
                             UserInfo userInfo = JsonParser.loginParser(json);
-                            mHandler.post(()-> callback.onSuccess(userInfo));
+                            mHandler.post(() -> callback.onSuccess(userInfo));
                         } else {
-                            mHandler.post(()-> callback.onError(response.message()));
+                            mHandler.post(() -> callback.onError(response.message()));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
