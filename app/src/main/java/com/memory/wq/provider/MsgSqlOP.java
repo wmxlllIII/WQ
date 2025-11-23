@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.db.SqlHelper;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.utils.GenerateJson;
 import com.memory.wq.utils.JsonParser;
 

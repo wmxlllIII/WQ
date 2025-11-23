@@ -1,11 +1,10 @@
 package com.memory.wq.provider;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.memory.wq.beans.UserInfo;
 import com.memory.wq.helper.SpHelper;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 
 public class SPOP {
 

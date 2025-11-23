@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import com.memory.wq.beans.UserInfo;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 
 public class SPManager {
     private static final String KEY_TOKEN = "token";

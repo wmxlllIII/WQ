@@ -8,20 +8,25 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import androidx.lifecycle.Observer;
+import androidx.annotation.Nullable;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.memory.wq.R;
 import com.memory.wq.adapters.FriendRelaAdapter;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.databinding.ActivityTestWsactivityBinding;
 import com.memory.wq.enumertions.EventType;
+import com.memory.wq.enumertions.SearchUserType;
 import com.memory.wq.interfaces.IWebSocketListener;
+import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.MsgManager;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
 import com.memory.wq.service.WebSocketMessage;
+import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
 import java.util.ArrayList;
@@ -41,6 +46,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     private FriendRelaAdapter mAdapter;
     private MsgManager mMsgManager;
     private SharedPreferences sp;
+    private FriendManager mFriendManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +76,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
 
         sp = getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
         token = sp.getString("token", "");
-
+        mFriendManager = new FriendManager();
     }
 
     private void showLV() {
@@ -84,6 +90,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
         mBinding.llSearch.setOnClickListener(view -> {
             startActivity(new Intent(this, SearchUserActivity.class));
         });
+        mBinding.tvScan.setOnClickListener(view -> scanQRCode());
     }
 
     @Override
@@ -93,11 +100,11 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
 
     @Override
     public <T> void onMessage(WebSocketMessage<T> message) {
-//        switch (eventType) {
-//            case EVENT_TYPE_REQUEST_FRIEND:
-//                mMsgManager.getAllRelation(this, true, AppProperties.FRIEND_RELATIONSHIP, token, this);
-//                break;
-//        }
+        switch (message.getEventType()) {
+            case EVENT_TYPE_REQUEST_FRIEND:
+                mMsgManager.getAllRelation(this, true, AppProperties.FRIEND_RELATIONSHIP, token, this);
+                break;
+        }
     }
 
 
@@ -153,5 +160,50 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
             unbindService(mConn);
 
         }
+    }
+
+    private void scanQRCode() {
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+        integrator.setPrompt("扫描用户二维码");
+        integrator.setCameraId(0);
+        integrator.setBeepEnabled(true);
+        integrator.setCaptureActivity(PortraitCaptureActivity.class);
+        integrator.initiateScan();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result == null) {
+            super.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
+        if (result.getContents() == null) {
+            MyToast.showToast(this, "扫描取消");
+        } else {
+            String uuNum = result.getContents();
+            //TODO 进主页
+            enterPersonalHome(SearchUserType.SEARCH_USER_TYPE_UUNUM, uuNum);
+            MyToast.showToast(this, "扫描结果:" + uuNum);
+        }
+
+
+    }
+
+    private void enterPersonalHome(SearchUserType type, String targetAccount) {
+        mFriendManager.searchUser(type, targetAccount, token, new ResultCallback<FriendInfo>() {
+            @Override
+            public void onSuccess(FriendInfo result) {
+                Intent intent = new Intent(FriendRelaActivity.this, PersonalActivity.class);
+                intent.putExtra(AppProperties.FRIENDINFO, result);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onError(String err) {
+
+            }
+        });
     }
 }

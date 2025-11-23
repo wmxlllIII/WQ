@@ -36,9 +36,9 @@ public class AccountManager {
         return UserType.USER_TYPE_VISITOR.getType().equals(sp.getString(KEY_USER_TYPE, UserType.USER_TYPE_VISITOR.getType()));
     }
 
-    public static UserInfo getUserInfo(){
+    public static UserInfo getUserInfo(Context context){
         
-        return null;
+        return SPManager.getUserInfo(context);
     }
 
     public static long getUserId(){

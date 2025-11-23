@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 
 public class SqlHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_USERS = "create table " + AppProperties.USER_TABLE_NAME + " (id integer primary key autoincrement ,uuid varchar(255) not null,email varchar(255) unique,nickname varchar(20),avatarurl varchar(255))";

@@ -9,9 +9,7 @@
         android:id="@+id/iv_friend_avatar"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:src="@mipmap/ic_t2"
-        app:onLoading="@mipmap/loading_default"
-        app:onFail="@mipmap/loading_failure"/>
+        android:src="@mipmap/ic_t2"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_online_state"

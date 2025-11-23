@@ -12,12 +12,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.beans.MsgInfo;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.FriendSqlOP;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.provider.MsgSqlOP;
@@ -45,9 +43,9 @@ import okhttp3.ResponseBody;
 
 public class MsgManager {
 
-    public static final String TAG = MsgManager.class.getName();
+    public static final String TAG = "WQ_MsgManager";
+    private final Handler mHandler=new Handler(Looper.getMainLooper());
     private Context context;
-
     public MsgManager(Context context) {
         this.context = context;
     }
@@ -64,7 +62,7 @@ public class MsgManager {
                 public void onSuccess(List<FriendRelaInfo> allRelationFromServer) {
                     List<FriendRelaInfo> friendRelaList = mergeData(allRelationFromDB, allRelationFromServer);
                     saveFriendRelaToDB(friendRelaList);
-                    new Handler(Looper.getMainLooper()).post(() -> {
+                    mHandler.post(() -> {
                         callback.onSuccess(friendRelaList);
                     });
                 }
@@ -176,7 +174,7 @@ public class MsgManager {
         return System.currentTimeMillis() - lastSyncTime > 5 * 60 * 1000;
     }
 
-    public static void receiveFriendRela(Context context, JSONArray requestList) {
+    public  void receiveFriendRela(Context context, JSONArray requestList) {
         List<FriendRelaInfo> friendRelList = JsonParser.friendRelaParser(requestList);
         ThreadPoolManager.getInstance().execute(() -> {
             FriendSqlOP op = new FriendSqlOP(context);
@@ -184,7 +182,7 @@ public class MsgManager {
         });
     }
 
-    public static void updateRela(Context context, boolean isAgree, String sourceEmail, ResultCallback<Boolean> callback) {
+    public void updateRela(Context context, boolean isAgree, String sourceEmail, ResultCallback<Boolean> callback) {
         String json = GenerateJson.getUpdateRelaJson(sourceEmail, isAgree);
         String token = context.getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE).getString("token", "");
         if (token != null && !TextUtils.isEmpty(token))
@@ -207,12 +205,12 @@ public class MsgManager {
 
                             Log.d(TAG, "onResponse: ======" + code);
                             if (code == 1) {
-                                new Handler(Looper.getMainLooper()).post(() -> {
+                                mHandler.post(() -> {
                                     callback.onSuccess(true);
                                 });
 
                             } else {
-                                new Handler(Looper.getMainLooper()).post(() -> {
+                                mHandler.post(() -> {
                                     String msg = json.optString("msg");
                                     callback.onError("======MsgManager====onRes错误" + msg);
                                 });

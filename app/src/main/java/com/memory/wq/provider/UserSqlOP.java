@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.memory.wq.beans.UserInfo;
 import com.memory.wq.db.SqlHelper;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 
 public class UserSqlOP {
 

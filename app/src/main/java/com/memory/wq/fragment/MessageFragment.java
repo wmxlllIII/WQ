@@ -26,7 +26,7 @@ import com.memory.wq.activities.FriendRelaActivity;
 import com.memory.wq.activities.LaunchActivity;
 import com.memory.wq.activities.MainActivity;
 import com.memory.wq.activities.ChatActivity;
-import com.memory.wq.activities.SearchFriendActivity;
+import com.memory.wq.activities.MyQrCodeActivity;
 import com.memory.wq.adapters.FriendAdapter;
 import com.memory.wq.adapters.MsgsAdapter;
 import com.memory.wq.beans.FriendInfo;
@@ -34,7 +34,7 @@ import com.memory.wq.enumertions.EventType;
 import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.AccountManager;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
 import com.memory.wq.service.WebSocketMessage;
@@ -150,7 +150,7 @@ public class MessageFragment extends Fragment implements View.OnClickListener, I
                 startActivity(new Intent(mActivity, FriendRelaActivity.class));
                 break;
             case R.id.iv_search:
-                startActivity(new Intent(mActivity, SearchFriendActivity.class));
+                startActivity(new Intent(mActivity, MyQrCodeActivity.class));
                 break;
 
         }

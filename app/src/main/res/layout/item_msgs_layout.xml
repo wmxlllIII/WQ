@@ -4,8 +4,8 @@
     android:layout_height="wrap_content"
     android:background="#202020"
     android:padding="7dp">
-    <com.memory.wq.caches.SmartImageView
-        android:id="@+id/siv_avatar"
+    <ImageView
+        android:id="@+id/iv_avatar"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="#000000"/>

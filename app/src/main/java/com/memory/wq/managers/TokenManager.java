@@ -7,7 +7,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.memory.wq.beans.RtcInfo;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.GenerateJson;

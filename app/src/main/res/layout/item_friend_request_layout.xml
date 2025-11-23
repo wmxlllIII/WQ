@@ -11,20 +11,18 @@
         android:layout_height="wrap_content"
         android:layout_weight="1">
 
-        <com.memory.wq.caches.SmartImageView
-            android:id="@+id/siv_avatar"
+        <ImageView
+            android:id="@+id/iv_avatar"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_alignParentLeft="true"
-            app:onLoading="@mipmap/loading_default"
-            app:onFail="@mipmap/loading_failure"/>
+            android:layout_alignParentLeft="true"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="12dp"
-            android:layout_toRightOf="@id/siv_avatar"
+            android:layout_toRightOf="@id/iv_avatar"
             android:orientation="vertical">
 
             <TextView

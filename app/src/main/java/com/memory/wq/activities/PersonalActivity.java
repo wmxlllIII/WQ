@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.databinding.ActivityPersonalBinding;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 
 public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
 

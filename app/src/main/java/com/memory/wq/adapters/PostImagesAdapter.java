@@ -13,10 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
-import com.memory.wq.properties.AppProperties;
 
 import java.util.List;
-import java.util.Optional;
 
 public class PostImagesAdapter extends RecyclerView.Adapter<PostImagesAdapter.ImageViewHolder> {
     private Context context;

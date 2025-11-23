@@ -58,7 +58,7 @@
             android:name=".activities.SearchUserActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.SearchFriendActivity"
+            android:name=".activities.MyQrCodeActivity"
             android:exported="true" />
         <activity
             android:name=".activities.FriendRelaActivity"

@@ -5,7 +5,7 @@ import android.util.Log;
 import android.view.SurfaceView;
 
 import com.memory.wq.beans.RtcInfo;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 
 import org.json.JSONException;
 import org.json.JSONObject;

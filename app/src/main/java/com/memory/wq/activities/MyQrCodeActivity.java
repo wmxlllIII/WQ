@@ -13,16 +13,16 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.memory.wq.R;
 import com.memory.wq.beans.FriendInfo;
-import com.memory.wq.databinding.ActivitySearchFriendBinding;
+import com.memory.wq.constants.AppProperties;
+import com.memory.wq.databinding.ActivityMyQrCodeBinding;
 import com.memory.wq.enumertions.SearchUserType;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.QRCodeManager;
-import com.memory.wq.properties.AppProperties;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
-public class SearchFriendActivity extends BaseActivity<ActivitySearchFriendBinding> {
-    private static final String TAG = SearchFriendActivity.class.getName();
+public class MyQrCodeActivity extends BaseActivity<ActivityMyQrCodeBinding> {
+    private static final String TAG = "WQ_MyQrCodeActivity";
     private SharedPreferences sp;
     private FriendManager mFriendManager;
     private String token;
@@ -36,7 +36,7 @@ public class SearchFriendActivity extends BaseActivity<ActivitySearchFriendBindi
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_search_friend;
+        return R.layout.activity_my_qr_code;
     }
 
     private void initData() {
@@ -55,24 +55,10 @@ public class SearchFriendActivity extends BaseActivity<ActivitySearchFriendBindi
     }
 
     private void initView() {
-        mBinding.llSearch.setOnClickListener(view -> {
-            startActivity(new Intent(this, SearchUserActivity.class));
-        });
 
-        mBinding.tvScan.setOnClickListener(view -> {
-            scanQRCode();
-        });
     }
 
-    private void scanQRCode() {
-        IntentIntegrator integrator = new IntentIntegrator(this);
-        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
-        integrator.setPrompt("扫描用户二维码");
-        integrator.setCameraId(0);
-        integrator.setBeepEnabled(true);
-        integrator.setCaptureActivity(PortraitCaptureActivity.class);
-        integrator.initiateScan();
-    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -98,7 +84,7 @@ public class SearchFriendActivity extends BaseActivity<ActivitySearchFriendBindi
             @Override
             public void onSuccess(FriendInfo result) {
                 runOnUiThread(() -> {
-                    Intent intent = new Intent(SearchFriendActivity.this, PersonalActivity.class);
+                    Intent intent = new Intent(MyQrCodeActivity.this, PersonalActivity.class);
                     intent.putExtra(AppProperties.FRIENDINFO, result);
                     startActivity(intent);
                 });

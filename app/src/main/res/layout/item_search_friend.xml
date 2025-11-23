@@ -5,14 +5,12 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-        <com.memory.wq.caches.SmartImageView
-            android:id="@+id/siv_avatar_aaa"
+        <ImageView
+            android:id="@+id/iv_avatar_aaa"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="#888888"
-            android:layout_margin="10dp"
-            app:onLoading="@mipmap/loading_default"
-            app:onFail="@mipmap/loading_failure"/>
+            android:layout_margin="10dp"/>
         <TextView
             android:id="@+id/tv_nickName"
             android:layout_width="wrap_content"

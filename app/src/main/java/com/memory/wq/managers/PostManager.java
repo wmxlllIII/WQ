@@ -1,17 +1,15 @@
 package com.memory.wq.managers;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.memory.wq.activities.UploadPostActivity;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.beans.StsTokenInfo;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.thread.ThreadPoolManager;
 import com.memory.wq.utils.GenerateJson;
@@ -22,9 +20,7 @@ import com.memory.wq.utils.ResultCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;

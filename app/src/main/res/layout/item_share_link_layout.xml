@@ -13,14 +13,12 @@
         android:layout_marginRight="80dp"
         android:orientation="horizontal">
 
-        <com.memory.wq.caches.SmartImageView
-            android:id="@+id/siv_friend_avatar_link"
+        <ImageView
+            android:id="@+id/iv_friend_avatar_link"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="5dp"
-            android:src="#000000"
-            app:onFail="@mipmap/loading_failure"
-            app:onLoading="@mipmap/loading_default"/>
+            android:src="#000000"/>
 
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
@@ -34,13 +32,11 @@
                 android:background="#FFFFFF"
                 android:orientation="vertical">
 
-                <com.memory.wq.caches.SmartImageView
+                <ImageView
                     android:id="@+id/iv_link_image_left"
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
-                    android:scaleType="centerCrop"
-                    app:onFail="@mipmap/loading_failure"
-                    app:onLoading="@mipmap/loading_default"/>
+                    android:scaleType="centerCrop"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -91,13 +87,11 @@
                 android:background="#FFFFFF"
                 android:orientation="vertical">
 
-                <com.memory.wq.caches.SmartImageView
+                <ImageView
                     android:id="@+id/iv_link_image_right"
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
-                    android:scaleType="centerCrop"
-                    app:onFail="@mipmap/loading_failure"
-                    app:onLoading="@mipmap/loading_default"/>
+                    android:scaleType="centerCrop"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -126,13 +120,11 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <com.memory.wq.caches.SmartImageView
-            android:id="@+id/siv_my_avatar_link"
+        <ImageView
+            android:id="@+id/iv_my_avatar_link"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="5dp"
-            android:src="#000000"
-            app:onFail="@mipmap/loading_failure"
-            app:onLoading="@mipmap/loading_default"/>
+            android:src="#000000"/>
     </LinearLayout>
 </RelativeLayout>

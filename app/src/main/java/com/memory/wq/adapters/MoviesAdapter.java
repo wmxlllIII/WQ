@@ -14,12 +14,10 @@ import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.activities.AudioActivity;
 import com.memory.wq.beans.MovieInfo;
-import com.memory.wq.caches.SmartImageView;
 import com.memory.wq.enumertions.RoleType;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 
 import java.util.List;
-import java.util.UUID;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder>{
     private Context context;

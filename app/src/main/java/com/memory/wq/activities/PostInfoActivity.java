@@ -19,7 +19,7 @@ import com.memory.wq.databinding.ActivityPostInfoBinding;
 import com.memory.wq.managers.CommentManager;
 import com.memory.wq.managers.SPManager;
 import com.memory.wq.managers.AccountManager;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 

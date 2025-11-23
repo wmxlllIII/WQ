@@ -11,8 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.PostInfo;
-import com.memory.wq.databinding.ItemVpWorksLayoutBinding;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.viewholders.WorksVH;
 
 import java.util.ArrayList;

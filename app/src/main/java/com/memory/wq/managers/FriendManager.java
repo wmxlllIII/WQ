@@ -2,12 +2,14 @@ package com.memory.wq.managers;
 
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.enumertions.SearchUserType;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 
 import com.memory.wq.provider.FriendSqlOP;
 import com.memory.wq.provider.HttpStreamOP;
@@ -28,9 +30,11 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class FriendManager {
+    private static final String TAG = "WQ_FriendManager";
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    public void searchUser(SearchUserType type,String account, String token, ResultCallback<FriendInfo> callback) {
-        String json = GenerateJson.getSearchUserJson(type,account);
+    public void searchUser(SearchUserType type, String account, String token, ResultCallback<FriendInfo> callback) {
+        String json = GenerateJson.getSearchUserJson(type, account);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.SEARCH_USER, token, json, new Callback() {
                 @Override
@@ -49,7 +53,7 @@ public class FriendManager {
                         int code = json.getInt("code");
                         if (code == 1) {
                             FriendInfo friendInfo = JsonParser.searchFriendParser(json);
-                            callback.onSuccess(friendInfo);
+                            mHandler.post(()-> callback.onSuccess(friendInfo));
 
                         }
                     } catch (JSONException e) {
@@ -60,7 +64,7 @@ public class FriendManager {
         });
     }
 
-    public void getAllFriendFromServer(Context context, String token,ResultCallback<List<FriendInfo>> callback) {
+    public void getAllFriendFromServer(Context context, String token, ResultCallback<List<FriendInfo>> callback) {
 
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.ALL_FRIENDS, token, "{}", new Callback() {
@@ -99,7 +103,7 @@ public class FriendManager {
         //TODO
         String id = SPManager.getUserInfo(context).getId();
         int count = 0;
-        while (!friendSqlOP.insertFriends(friendInfoList,id)) {
+        while (!friendSqlOP.insertFriends(friendInfoList, id)) {
             if (++count == 3)
                 break;
         }
@@ -107,7 +111,7 @@ public class FriendManager {
 
     }
 
-    public void getAllFriends(Context context,String token,ResultCallback<List<FriendInfo>> callback){
+    public void getAllFriends(Context context, String token, ResultCallback<List<FriendInfo>> callback) {
         List<FriendInfo> friendsFromDB = getFriendFromDB(context);
         callback.onSuccess(friendsFromDB);
         getAllFriendFromServer(context, token, new ResultCallback<List<FriendInfo>>() {
@@ -123,7 +127,7 @@ public class FriendManager {
         });
     }
 
-    private List<FriendInfo> getFriendFromDB(Context context){
+    private List<FriendInfo> getFriendFromDB(Context context) {
         FriendSqlOP op = new FriendSqlOP(context);
         //TODO
         String id = SPManager.getUserInfo(context).getId();

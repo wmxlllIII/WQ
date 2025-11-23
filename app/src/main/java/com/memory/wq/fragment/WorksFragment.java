@@ -19,7 +19,7 @@ import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.databinding.FragmentWorksLayoutBinding;
 import com.memory.wq.managers.PostManager;
 import com.memory.wq.managers.SPManager;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.PageResult;
 import com.memory.wq.utils.ResultCallback;

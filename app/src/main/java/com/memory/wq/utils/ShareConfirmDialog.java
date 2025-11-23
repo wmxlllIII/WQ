@@ -13,7 +13,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.memory.wq.R;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.MsgInfo;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 
 public class ShareConfirmDialog extends BottomSheetDialog {
 

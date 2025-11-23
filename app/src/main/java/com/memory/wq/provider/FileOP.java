@@ -5,23 +5,17 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-
-import okhttp3.MediaType;
 
 public class FileOP {
 

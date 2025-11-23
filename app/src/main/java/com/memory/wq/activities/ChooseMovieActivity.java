@@ -1,7 +1,5 @@
 package com.memory.wq.activities;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,7 +11,6 @@ import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.databinding.ActivityChooseMovieBinding;
 import com.memory.wq.managers.MovieManager;
 import com.memory.wq.managers.SPManager;
-import com.memory.wq.properties.AppProperties;
 import com.memory.wq.utils.ResultCallback;
 
 import java.util.List;

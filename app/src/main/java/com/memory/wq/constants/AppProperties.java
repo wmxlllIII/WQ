@@ -1,4 +1,4 @@
-package com.memory.wq.properties;
+package com.memory.wq.constants;
 
 public class AppProperties {
     public static final String MY_DB_NAME = "Memory.db";
@@ -14,9 +14,9 @@ public class AppProperties {
 
     public static final String OSS_BUCKET_NAME = "wwwmemory";
 
-    public static final String HTTP_SERVER_ADDRESS = "http://81.70.21.235:8080";
+    public static final String HTTP_SERVER_ADDRESS = "http://139.199.70.159:8080";
     //明文传输xml里也有地址!!!
-    public static final String WEB_SOCKET_SERVER_ADDRESS = "ws://123.56.101.31:8080/ws/";
+    public static final String WEB_SOCKET_SERVER_ADDRESS = "ws://139.199.70.159:8080/ws/";
     public static final String FRIEND_RELATIONSHIP = HTTP_SERVER_ADDRESS + "/auth/friend/allrequests";
     public static final String UPLOAD_URL = HTTP_SERVER_ADDRESS + "/auth/avatar";
     public static final String SEARCH_USER = HTTP_SERVER_ADDRESS + "/auth/searchUser";

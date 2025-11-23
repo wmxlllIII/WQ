@@ -2,20 +2,20 @@ package com.memory.wq.adapters;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.FriendInfo;
-import com.memory.wq.caches.SmartImageView;
 
 import java.util.List;
 
 public class SearchFriendAdapter extends BaseAdapter {
-    public static final String TAG=SearchFriendAdapter.class.getName();
+    public static final String TAG = "WQ_SearchFriendAdapter";
 
     private Context context;
     private List<FriendInfo> friendInfoList;
@@ -43,26 +43,29 @@ public class SearchFriendAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
-        if (convertView==null){
-            convertView= View.inflate(context,R.layout.item_search_friend,null);
-            viewHolder=new ViewHolder(convertView);
+        if (convertView == null) {
+            convertView = View.inflate(context, R.layout.item_search_friend, null);
+            viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
-        }else {
-            viewHolder=(ViewHolder)convertView.getTag();
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
         FriendInfo friendInfo = friendInfoList.get(position);
-        viewHolder.siv_avatar.setImageUrl(friendInfo.getAvatarUrl());
-        Log.d(TAG, "=====getView: 昵称"+friendInfo.getNickname()+"====头像"+friendInfo.getAvatarUrl());
+        Glide.with(parent.getContext())
+                .load(friendInfo.getAvatarUrl())
+                .into(viewHolder.iv_avatar);
+
+        Log.d(TAG, "=====getView: 昵称" + friendInfo.getNickname() + "====头像" + friendInfo.getAvatarUrl());
         viewHolder.tv_nickName.setText(friendInfo.getNickname());
         return convertView;
     }
 
     static class ViewHolder {
-        SmartImageView siv_avatar;
+        ImageView iv_avatar;
         TextView tv_nickName;
 
         public ViewHolder(View view) {
-            siv_avatar = (SmartImageView) view.findViewById(R.id.siv_avatar_aaa);
+            iv_avatar = (ImageView) view.findViewById(R.id.iv_avatar_aaa);
             tv_nickName = (TextView) view.findViewById(R.id.tv_nickName);
         }
     }

@@ -2,6 +2,8 @@ package com.memory.wq.managers;
 
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -9,7 +11,7 @@ import androidx.annotation.NonNull;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.RoomInfo;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.provider.MsgSqlOP;
 import com.memory.wq.utils.ResultCallback;
@@ -31,6 +33,7 @@ import okhttp3.Response;
 
 public class MovieManager {
     public static final String TAG = MovieManager.class.getName();
+    private final Handler mhandler = new Handler(Looper.getMainLooper());
 
     public void getMovies(String token, ResultCallback<List<MovieInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
@@ -62,10 +65,10 @@ public class MovieManager {
         });
     }
 
-    public void getRooms( ResultCallback<List<RoomInfo>> callback) {
+    public void getRooms(ResultCallback<List<RoomInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
 
-            HttpStreamOP.postJson(AppProperties.ROOMS, null,"{}", new Callback() {
+            HttpStreamOP.postJson(AppProperties.ROOMS, null, "{}", new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
 
@@ -74,7 +77,7 @@ public class MovieManager {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        callback.onError("getRooms出错了");
+                        mhandler.post(() -> callback.onError("getRooms出错了"));
                     }
                     try {
                         JSONObject json = new JSONObject(response.body().string());
@@ -82,7 +85,8 @@ public class MovieManager {
                         if (code == 1) {
                             JSONArray roomList = json.getJSONArray("data");
                             List<RoomInfo> roomInfoList = JsonParser.roomParer(roomList);
-                            callback.onSuccess(roomInfoList);
+                            mhandler.post(() -> callback.onSuccess(roomInfoList));
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -128,20 +132,19 @@ public class MovieManager {
         });
     }
 
-    public void shareRoom(Context context,String token, MsgInfo shareMsg, ResultCallback<Boolean> callback) {
+    public void shareRoom(Context context, String token, MsgInfo shareMsg, ResultCallback<Boolean> callback) {
         String json = GenerateJson.getShareMsgJson(shareMsg);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.SHARE_ROOM, token, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    callback.onError(null);
+                    mhandler.post(() -> callback.onError(null));
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-
-                        callback.onError(null);
+                        mhandler.post(() -> callback.onError(null));
                         return;
                     }
                     try {
@@ -149,10 +152,10 @@ public class MovieManager {
                         int code = json.getInt("code");
                         Log.d(TAG, "onResponse: ===分享房间返回码" + code);
                         if (code == 1) {
-                            callback.onSuccess(true);
+                            mhandler.post(() -> callback.onSuccess(true));
                             //TODO 保存到数据库
                             MsgSqlOP msgSqlOP = new MsgSqlOP(context);
-                            List<MsgInfo> msgInfoList=new ArrayList<>();
+                            List<MsgInfo> msgInfoList = new ArrayList<>();
                             msgInfoList.add(shareMsg);
                             msgSqlOP.insertMessages(msgInfoList);
                         }

@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -23,7 +22,7 @@ import com.memory.wq.enumertions.SelectImageType;
 import com.memory.wq.managers.PermissionManager;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.UserManager;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.FileOP;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;

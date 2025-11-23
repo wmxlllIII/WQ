@@ -1,7 +1,6 @@
 package com.memory.wq.managers;
 
 
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -10,11 +9,9 @@ import android.util.Patterns;
 
 import androidx.annotation.NonNull;
 
-import com.memory.wq.activities.LaunchActivity;
-import com.memory.wq.activities.MainActivity;
 import com.memory.wq.beans.UserInfo;
 import com.memory.wq.enumertions.JsonType;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.GenerateJson;

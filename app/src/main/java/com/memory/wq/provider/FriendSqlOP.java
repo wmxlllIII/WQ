@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.db.SqlHelper;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 
 import java.util.ArrayList;
 import java.util.List;

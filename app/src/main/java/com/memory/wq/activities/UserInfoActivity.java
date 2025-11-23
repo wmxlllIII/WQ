@@ -3,13 +3,11 @@ package com.memory.wq.activities;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import com.memory.wq.R;
-import com.memory.wq.beans.UserInfo;
 import com.memory.wq.databinding.ActivityInfoBinding;
 import com.memory.wq.managers.UserManager;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 
 public class UserInfoActivity extends BaseActivity<ActivityInfoBinding> {
 

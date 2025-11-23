@@ -1,231 +1,94 @@
 package com.memory.wq.activities;
 
-
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.text.TextUtils;
 import android.util.Log;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import com.memory.wq.fragment.ChatFragment;
 import com.memory.wq.R;
-import com.memory.wq.adapters.MsgAdapter;
-import com.memory.wq.beans.FriendInfo;
-import com.memory.wq.beans.MsgInfo;
-import com.memory.wq.databinding.ActivityMsgBinding;
-import com.memory.wq.enumertions.EventType;
-import com.memory.wq.enumertions.RoleType;
-import com.memory.wq.interfaces.IWebSocketListener;
-import com.memory.wq.managers.MovieManager;
-import com.memory.wq.managers.MsgManager;
-import com.memory.wq.properties.AppProperties;
-import com.memory.wq.service.IWebSocketService;
-import com.memory.wq.service.WebService;
-import com.memory.wq.service.WebSocketMessage;
-import com.memory.wq.utils.MyToast;
-import com.memory.wq.utils.ResultCallback;
-import com.memory.wq.utils.ShareConfirmDialog;
+import com.memory.wq.databinding.ActivityChatBinding;
+import com.memory.wq.enumertions.ChatPage;
+import com.memory.wq.fragment.ChatDetailFragment;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-
-public class ChatActivity extends BaseActivity<ActivityMsgBinding> implements IWebSocketListener, ResultCallback<List<MsgInfo>>, MsgAdapter.OnLinkClickListener {
+public class ChatActivity extends BaseActivity<ActivityChatBinding> {
     public static final String TAG = "WQ_ChatActivity";
-    private final EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_MSG);
-    private MsgAdapter mAdapter;
-    private final List<MsgInfo> mMsgInfoList = new ArrayList<>();
-    private WebService mMsgService;
-    private WebSocketConn mWebSocketConn;
-    private MsgManager mMsgManager;
-
-    private String token;
-    private SharedPreferences sp;
-    private FriendInfo mFriendInfo;
-    private MsgInfo mLinkInfo;
-    private MovieManager mMovieManager;
+    private ChatPage mCurrentPage;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
-        initData();
-        show();
     }
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_msg;
+        return R.layout.activity_chat;
     }
 
-    private void initData() {
-        sp = getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
-        token = sp.getString("token", "");
-        mAdapter = new MsgAdapter(this, mMsgInfoList);
-        mAdapter.setOnLinkClickListener(this);
-        Intent intent = new Intent(this, WebService.class);
-        if (mWebSocketConn == null)
-            mWebSocketConn = new WebSocketConn();
-        bindService(intent, mWebSocketConn, BIND_AUTO_CREATE);
-        mMsgManager = new MsgManager(this);
-
-        Intent intent1 = getIntent();
-        mFriendInfo = (FriendInfo) intent1.getSerializableExtra(AppProperties.FRIENDINFO);
-        if (intent1.hasExtra(AppProperties.SHARE_MESSAGE)) {
-            mLinkInfo = (MsgInfo) intent1.getSerializableExtra(AppProperties.SHARE_MESSAGE);
-            mMovieManager = new MovieManager();
-            showShareUI();
-        }
-
-        mMsgManager.getAllMsg(mFriendInfo.getEmail(), this);
-    }
-
-    private void showShareUI() {
-        Log.d(TAG, "onShare: ===分享信息" + mFriendInfo.toString() + "aaa+++" + mLinkInfo.toString());
-
-        ShareConfirmDialog dialog = new ShareConfirmDialog(this, mFriendInfo, mLinkInfo, new ShareConfirmDialog.OnShareActionListener() {
-            @Override
-            public void onShare(MsgInfo shareMsg) {
-
-                mMovieManager.shareRoom(ChatActivity.this, token, shareMsg, new ResultCallback<Boolean>() {
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        runOnUiThread(() -> {
-                            MyToast.showToast(ChatActivity.this, "分享成功");
-                            finish();
-                        });
-                    }
-
-                    @Override
-                    public void onError(String err) {
-                        runOnUiThread(() -> {
-                            MyToast.showToast(ChatActivity.this, "分享失败");
-                            finish();
-                        });
-                    }
-                });
-            }
-
-            @Override
-            public void onCancel() {
-                MyToast.showToast(ChatActivity.this, "用户取消分享");
-                finish();
-            }
-        });
-        dialog.show();
-
-    }
-
-    private void show() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setStackFromEnd(true);
-        mBinding.rvMsg.setLayoutManager(layoutManager);
-        mBinding.rvMsg.setAdapter(mAdapter);
-        mBinding.tvNickname.setText(mFriendInfo.getNickname());
-    }
 
     private void initView() {
-        mBinding.btnSend.setOnClickListener(view -> {
-            sendMsg();
-        });
+        switchToPage(ChatPage.CHAT);
     }
 
-    @Override
-    public EnumSet<EventType> getEvents() {
-        return eventTypes;
-    }
-
-    @Override
-    public <T> void onMessage(WebSocketMessage<T> message) {
-        switch (message.getEventType()) {
-            case EVENT_TYPE_MSG:
-                List<MsgInfo> newMsgList = (List<MsgInfo>) message.getData();
-                if (newMsgList == null || newMsgList.isEmpty()) {
-                    Log.d(TAG, "[x] onMessage #151");
-                    return;
-                }
-
-                mMsgInfoList.addAll(newMsgList);
-                mAdapter.notifyDataSetChanged();
-                break;
-        }
-    }
-
-    @Override
-    public void onConnectionChanged(boolean isConnected) {
-
-    }
-
-    @Override
-    public void onSuccess(List<MsgInfo> msgInfoList) {
-        runOnUiThread(() -> {
-            mAdapter.updateItem(msgInfoList);
-            Log.d(TAG, "onSuccess: ===滚动到最后位置" + (msgInfoList.size() - 1));
-            mBinding.rvMsg.smoothScrollToPosition(msgInfoList.size() - 1);
-
-        });
-    }
-
-    @Override
-    public void onError(String err) {
-        //获取本地消息记录失败回调
-    }
-
-    private void sendMsg() {
-        String msg = mBinding.etInputText.getText().toString().trim();
-        if (TextUtils.isEmpty(msg))
+    private void switchToPage(ChatPage target) {
+        if (mCurrentPage == target) {
+            Log.d(TAG, "[x] switchToPage #38");
             return;
-
-        String currentEmail = sp.getString("email", "");
-
-
-        mMsgManager.sendMsg(token, currentEmail, mFriendInfo.getEmail(), msg, new ResultCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean result) {
-                mMsgManager.getAllMsg(mFriendInfo.getEmail(), ChatActivity.this);
-            }
-
-            @Override
-            public void onError(String err) {
-
-            }
-        });
-        mBinding.etInputText.setText("");
-    }
-
-    @Override
-    public void onClick(MsgInfo msgInfo) {
-        Intent intent = new Intent(this, AudioActivity.class);
-        intent.putExtra(AppProperties.ROLE_TYPE, RoleType.ROLE_TYPE_AUDIENCE);
-        intent.putExtra(AppProperties.ROOM_ID, msgInfo.getLinkContent());
-        startActivity(intent);
-        System.out.println("=====加入房间id" + msgInfo.getLinkContent());
-    }
-
-    class WebSocketConn implements ServiceConnection {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mMsgService = ((IWebSocketService) service).getService();
-            mMsgService.registerListener(ChatActivity.this);
         }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mMsgService.unregisterListener(ChatActivity.this);
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+
+        hideOrRemoveFragment(ft, mCurrentPage);
+        showOrAddFragment(ft, target);
+
+        ft.commitAllowingStateLoss();
+        mCurrentPage = target;
+    }
+
+    private void hideOrRemoveFragment(FragmentTransaction ft, ChatPage page) {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(page.name());
+        if (fragment == null) {
+            Log.d(TAG, "[x] hideOrRemoveFragment #56");
+            return;
+        }
+
+        if (page.isReusable()) {
+            ft.hide(fragment);
+        } else {
+            ft.remove(fragment);
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unbindService(mWebSocketConn);
-        mMsgService.unregisterListener(this);
+    private void showOrAddFragment(FragmentTransaction ft, ChatPage page) {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(page.name());
+        if (fragment != null) {
+            ft.show(fragment);
+            return;
+        }
+
+        fragment = createFragment(page);
+        if (fragment == null) {
+            Log.d(TAG, "[x] showOrAddFragment #69");
+            return;
+        }
+
+        ft.add(R.id.fragment_container, fragment, page.name());
     }
+
+    private Fragment createFragment(ChatPage page) {
+        switch (page) {
+            case CHAT:
+                return new ChatFragment();
+            case CHAT_DETAIL:
+                return new ChatDetailFragment();
+            default:
+                return null;
+        }
+    }
+
 }

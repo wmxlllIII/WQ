@@ -28,7 +28,7 @@ import com.memory.wq.activities.BaseActivity;
 import com.memory.wq.activities.UploadPostActivity;
 import com.memory.wq.activities.LaunchActivity;
 import com.memory.wq.activities.UserInfoActivity;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 
 public class DiscoverFragment extends Fragment implements View.OnClickListener {
 

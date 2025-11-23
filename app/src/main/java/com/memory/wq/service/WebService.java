@@ -16,13 +16,10 @@ import androidx.annotation.Nullable;
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.interfaces.JsonDataParser;
-import com.memory.wq.managers.MsgManager;
-import com.memory.wq.properties.AppProperties;
-import com.memory.wq.thread.ThreadPoolManager;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.utils.JsonParser;
 import com.memory.wq.utils.ParserFactory;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

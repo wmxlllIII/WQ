@@ -9,18 +9,18 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 
 import com.memory.wq.beans.FriendRelaInfo;
-import com.memory.wq.caches.SmartImageView;
 import com.memory.wq.managers.MsgManager;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.utils.ResultCallback;
 
 import java.util.List;
 
 public class FriendRelaAdapter extends BaseAdapter {
-    public static final String TAG = FriendRelaAdapter.class.getName();
+    public static final String TAG = "WQ_FriendRelaAdapter";
 
     private Context context;
     private List<FriendRelaInfo> reqInfoList;
@@ -70,11 +70,13 @@ public class FriendRelaAdapter extends BaseAdapter {
         }
 
         FriendRelaInfo friendReqInfo = reqInfoList.get(position);
-
+        Log.d(TAG, "=============信息： " + friendReqInfo);
         boolean isReceiver = friendReqInfo.getTargetEmail().equals(email);
 
 
-        friendRelaViewHolder.siv_avatar.setImageUrl(isReceiver ? friendReqInfo.getSourceAvatarUrl() : friendReqInfo.getTargetAvatarUrl());
+        Glide.with(parent.getContext())
+                .load(isReceiver ? friendReqInfo.getSourceAvatarUrl() : friendReqInfo.getTargetAvatarUrl())
+                .into(friendRelaViewHolder.iv_avatar);
         friendRelaViewHolder.tv_nickname.setText(isReceiver ? friendReqInfo.getSourceNickname() : friendReqInfo.getTargetNickname());
         friendRelaViewHolder.tv_verify_message.setText(friendReqInfo.getValidMsg());
 
@@ -106,8 +108,9 @@ public class FriendRelaAdapter extends BaseAdapter {
             }
         }
 
+        MsgManager msgManager = new MsgManager(parent.getContext());
         friendRelaViewHolder.btn_accept.setOnClickListener(v -> {
-            MsgManager.updateRela(context, true, friendReqInfo.getSourceEmail(), new ResultCallback<Boolean>() {
+            msgManager.updateRela(context, true, friendReqInfo.getSourceEmail(), new ResultCallback<Boolean>() {
                 @Override
                 public void onSuccess(Boolean result) {
                     Log.d(TAG, "onSuccess: =======" + result);
@@ -123,7 +126,7 @@ public class FriendRelaAdapter extends BaseAdapter {
         });
 
         friendRelaViewHolder.btn_reject.setOnClickListener(v -> {
-            MsgManager.updateRela(context, false, friendReqInfo.getSourceEmail(), new ResultCallback<Boolean>() {
+            msgManager.updateRela(context, false, friendReqInfo.getSourceEmail(), new ResultCallback<Boolean>() {
                 @Override
                 public void onSuccess(Boolean result) {
                     if (listener != null)
@@ -144,7 +147,7 @@ public class FriendRelaAdapter extends BaseAdapter {
 
     private static class FriendRelaViewHolder {
         //TODO IMAGEVIEW
-        SmartImageView siv_avatar;
+        ImageView iv_avatar;
         TextView tv_nickname;
         TextView tv_verify_message;
         ImageButton btn_accept;
@@ -152,7 +155,7 @@ public class FriendRelaAdapter extends BaseAdapter {
         TextView tv_friend_state;
 
         private FriendRelaViewHolder(View convertView) {
-            siv_avatar = (SmartImageView) convertView.findViewById(R.id.siv_avatar);
+            iv_avatar = (ImageView) convertView.findViewById(R.id.iv_avatar);
             tv_nickname = (TextView) convertView.findViewById(R.id.tv_nickname);
             tv_verify_message = (TextView) convertView.findViewById(R.id.tv_verify_message);
             btn_accept = (ImageButton) convertView.findViewById(R.id.btn_accept);

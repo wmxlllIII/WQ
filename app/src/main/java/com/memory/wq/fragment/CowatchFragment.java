@@ -1,6 +1,5 @@
 package com.memory.wq.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,43 +7,37 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.memory.wq.R;
 import com.memory.wq.activities.AudioActivity;
 import com.memory.wq.activities.ChooseMovieActivity;
 import com.memory.wq.adapters.RoomAdapter;
 import com.memory.wq.beans.RoomInfo;
-import com.memory.wq.enumertions.RoleType;
+import com.memory.wq.databinding.CowatchLayoutBinding;
 import com.memory.wq.managers.MovieManager;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.utils.ResultCallback;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class CowatchFragment extends Fragment implements View.OnClickListener {
+public class CowatchFragment extends Fragment {
 
-    private View view;
-    private RelativeLayout rl_create_room;
-    private RelativeLayout rl_random;
-    private RecyclerView rv_room;
-    private RoomAdapter roomAdapter;
+    private static final String TAG = "WQ_CowatchFragment";
+    private RoomAdapter mRoomAdapter;
     private String token;
+    private CowatchLayoutBinding mBinding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.cowatch_layout, null, false);
-        initView(view);
+        mBinding = CowatchLayoutBinding.inflate(inflater, container, false);
+        initView();
         initData();
-        return view;
+        return mBinding.getRoot();
     }
 
     private void initData() {
@@ -56,12 +49,10 @@ public class CowatchFragment extends Fragment implements View.OnClickListener {
         movieManager.getRooms(new ResultCallback<List<RoomInfo>>() {
             @Override
             public void onSuccess(List<RoomInfo> result) {
-                if (getContext() != null)
-                    ((Activity) getContext()).runOnUiThread(() -> {
-                        rv_room.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-                        roomAdapter = new RoomAdapter(getContext(), result);
-                        rv_room.setAdapter(roomAdapter);
-                    });
+                mRoomAdapter = new RoomAdapter(getContext(), result);
+                mBinding.rvRoom.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+                mBinding.rvRoom.setAdapter(mRoomAdapter);
+
             }
 
             @Override
@@ -72,30 +63,14 @@ public class CowatchFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    private void initView(View view) {
+    private void initView() {
+        mBinding.rlCreateRoom.setOnClickListener(view -> {
+            startActivity(new Intent(getContext(), ChooseMovieActivity.class));
+        });
 
-        rl_create_room = (RelativeLayout) view.findViewById(R.id.rl_create_room);
-        rl_random = (RelativeLayout) view.findViewById(R.id.rl_random);
-        rv_room = (RecyclerView) view.findViewById(R.id.rv_room);
-
-        rl_create_room.setOnClickListener(this);
-
-        rl_random.setOnClickListener(this);
-
+        mBinding.rlRandom.setOnClickListener(view -> {
+            startActivity(new Intent(getContext(), AudioActivity.class));
+        });
     }
 
-    @Override
-    public void onClick(View v) {
-        Intent intent = null;
-        switch (v.getId()) {
-            case R.id.rl_create_room:
-                intent = new Intent(getContext(), ChooseMovieActivity.class);
-                break;
-            case R.id.rl_random:
-                intent = new Intent(getContext(), AudioActivity.class);
-                break;
-        }
-        if (intent != null)
-            startActivity(intent);
-    }
 }

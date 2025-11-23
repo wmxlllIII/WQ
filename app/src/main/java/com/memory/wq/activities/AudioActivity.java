@@ -36,7 +36,7 @@ import com.memory.wq.managers.MovieManager;
 import com.memory.wq.managers.PermissionManager;
 import com.memory.wq.managers.SPManager;
 import com.memory.wq.managers.TokenManager;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.ShareFunctionMenu;

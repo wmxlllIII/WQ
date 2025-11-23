@@ -3,6 +3,8 @@ package com.memory.wq.beans;
 import java.io.Serializable;
 
 public class MsgInfo implements Serializable {
+
+    private long msgId;
     private String content;
 
     private int status;
@@ -116,10 +118,20 @@ public class MsgInfo implements Serializable {
         this.timestamp = timestamp;
     }
 
+    public long getMsgId() {
+
+        return msgId;
+    }
+
+    public void setMsgId(long msgId) {
+        this.msgId = msgId;
+    }
+
     @Override
     public String toString() {
         return "MsgInfo{" +
-                "content='" + content + '\'' +
+                "msgId=" + msgId +
+                ", content='" + content + '\'' +
                 ", status=" + status +
                 ", senderEmail='" + senderEmail + '\'' +
                 ", myAvatarUrl='" + myAvatarUrl + '\'' +

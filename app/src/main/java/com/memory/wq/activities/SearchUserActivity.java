@@ -8,17 +8,21 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.memory.wq.R;
 import com.memory.wq.adapters.SearchFriendAdapter;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.databinding.SearchUserLayoutBinding;
 import com.memory.wq.enumertions.SearchUserType;
 import com.memory.wq.managers.FriendManager;
-import com.memory.wq.properties.AppProperties;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.thread.ThreadPoolManager;
 import com.memory.wq.utils.GenerateJson;
+import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
 import org.json.JSONException;
@@ -99,7 +103,7 @@ public class SearchUserActivity extends BaseActivity<SearchUserLayoutBinding> {
                 Intent intent = new Intent(SearchUserActivity.this, PersonalActivity.class);
                 intent.putExtra(AppProperties.FRIENDINFO, friendInfo);
                 startActivity(intent);
-//                sendReq(friendInfo.getEmail());
+                sendReq(friendInfo.getEmail());
             }
         });
 
