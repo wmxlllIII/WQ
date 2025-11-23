@@ -2,6 +2,7 @@ package com.memory.wq.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,6 +93,7 @@ public class RecommmendFragment extends Fragment {
         mBinding.rvRecomment.setAdapter(concatAdapter);
 
         recommendAdapter.setOnItemClickListener((position, postInfo) -> {
+            Log.d(TAG, "===="+postInfo);
             Intent intent = new Intent(getContext(), PostInfoActivity.class);
             intent.putExtra(AppProperties.POSTINFO, postInfo);
             startActivity(intent);
@@ -201,8 +203,10 @@ public class RecommmendFragment extends Fragment {
     }
 
     private void loadNextPageData() {
-        if (mRecommendVM.isLoading || !mRecommendVM.hasNextPage)
+        if (mRecommendVM.isLoading || !mRecommendVM.hasNextPage){
+
             return;
+        }
 
         mRecommendVM.isLoading = true;
         QueryPostInfo queryPostInfo = new QueryPostInfo();

@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.activities.AudioActivity;
 import com.memory.wq.beans.MovieInfo;
@@ -40,10 +42,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
         MovieInfo movieInfo = movieList.get(position);
 
-        holder.siv_cover.setImageUrl(movieInfo.getCoverUrl());
+        Glide.with(context)
+                .load(movieInfo.getCoverUrl())
+                .error(R.mipmap.loading_failure)
+                .into(holder.iv_cover);
         holder.tv_movie_name.setText(movieInfo.getTitle());
         holder.tv_movie_length.setText(movieInfo.getLength()+"");
-        holder.siv_cover.setOnClickListener(new View.OnClickListener() {
+        holder.iv_cover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TODO
@@ -61,13 +66,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     }
 
      static class ViewHolder extends RecyclerView.ViewHolder {
-        SmartImageView siv_cover;
+        ImageView iv_cover;
         TextView tv_movie_length;
         TextView tv_movie_name;
 
         public ViewHolder(@NonNull View view) {
             super(view);
-            siv_cover = (SmartImageView) view.findViewById(R.id.siv_cover);
+            iv_cover = (ImageView) view.findViewById(R.id.iv_cover);
             tv_movie_length = (TextView) view.findViewById(R.id.tv_movie_length);
             tv_movie_name = (TextView) view.findViewById(R.id.tv_movie_name);
         }

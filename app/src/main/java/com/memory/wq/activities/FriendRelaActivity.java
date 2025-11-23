@@ -8,8 +8,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import androidx.lifecycle.Observer;
+
 import com.memory.wq.R;
 import com.memory.wq.adapters.FriendRelaAdapter;
+import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.databinding.ActivityTestWsactivityBinding;
 import com.memory.wq.enumertions.EventType;
@@ -39,13 +42,11 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     private MsgManager mMsgManager;
     private SharedPreferences sp;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
         initData();
-
         System.out.println("===========TestWSActivity====token" + token);
         showLV();
     }
@@ -76,10 +77,11 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
         mBinding.lvFriendReq.setAdapter(mAdapter);
         mMsgManager.getAllRelation(this, false, AppProperties.FRIEND_RELATIONSHIP, token, this);
         //1从数据库拿-----数据每5分钟轮询get
+
     }
 
     private void initView() {
-        mBinding.lvFriendReq.setOnClickListener(view -> {
+        mBinding.llSearch.setOnClickListener(view -> {
             startActivity(new Intent(this, SearchUserActivity.class));
         });
     }

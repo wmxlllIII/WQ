@@ -1,13 +1,16 @@
 package com.memory.wq.managers;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.memory.wq.activities.UploadPostActivity;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.QueryPostInfo;
+import com.memory.wq.beans.StsTokenInfo;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.thread.ThreadPoolManager;
@@ -29,15 +32,15 @@ import okhttp3.Response;
 
 public class PostManager {
     public static final String TAG = "WQ_PostManager";
-    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    public void publishPost(String token, PostInfo postInfo, List<File> imageList, ResultCallback<Boolean> callback) {
+    public void publishPost(String token, PostInfo postInfo, ResultCallback<Boolean> callback) {
         String json = GenerateJson.getPostContentJson(postInfo);
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.publishPost(AppProperties.POST_PUBLISH, token, json, imageList, new Callback() {
+            HttpStreamOP.postJson(AppProperties.POST_PUBLISH, token, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    handler.post(() -> {
+                    mHandler.post(() -> {
                         callback.onError(e.getMessage());
                     });
                 }
@@ -46,7 +49,7 @@ public class PostManager {
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
                         Log.d(TAG, "===[x] publishPost #54");
-                        handler.post(() -> {
+                        mHandler.post(() -> {
                             callback.onError(response.message());
                         });
                         return;
@@ -57,7 +60,7 @@ public class PostManager {
                         int code = json.getInt("code");
                         if (code == 1) {
                             //TODO 成功上传,保存本地
-                            handler.post(() -> {
+                            mHandler.post(() -> {
                                 callback.onSuccess(true);
                             });
                             Log.d(TAG, "onResponse: ===发布成功");
@@ -91,7 +94,7 @@ public class PostManager {
                     try {
                         JSONObject json = new JSONObject(response.body().string());
                         PageResult<PostInfo> postInfoPageResult = JsonParser.postParser(json);
-                        handler.post(() -> {
+                        mHandler.post(() -> {
                             callback.onSuccess(postInfoPageResult);
                         });
                     } catch (JSONException e) {
@@ -108,7 +111,7 @@ public class PostManager {
             HttpStreamOP.postJson(AppProperties.POST_MY_GET, token, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    handler.post(() -> {
+                    mHandler.post(() -> {
 
                     });
                 }
@@ -123,11 +126,35 @@ public class PostManager {
                     try {
                         JSONObject json = new JSONObject(response.body().string());
                         PageResult<PostInfo> postInfoPageResult = JsonParser.postParser(json);
-                        handler.post(() -> {
+                        mHandler.post(() -> {
                             callback.onSuccess(postInfoPageResult);
                         });
                     } catch (JSONException e) {
                         e.printStackTrace();
+                    }
+                }
+            });
+        });
+    }
+
+    public void getUpLoadPermission(String token, ResultCallback<StsTokenInfo> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            HttpStreamOP.postJson(AppProperties.STS_TOKEN, token, "{}", new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    mHandler.post(() -> callback.onError("获取上传权限失败"));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) {
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            mHandler.post(() -> callback.onSuccess(JsonParser.stsTokenParser(json)));
+                        }
+                    } catch (Exception e) {
+                        Log.d(TAG, "[x] getUpLoadPermission #157" + e.getMessage());
                     }
                 }
             });

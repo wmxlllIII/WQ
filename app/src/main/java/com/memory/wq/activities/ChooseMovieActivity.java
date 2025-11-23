@@ -12,6 +12,7 @@ import com.memory.wq.adapters.MoviesAdapter;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.databinding.ActivityChooseMovieBinding;
 import com.memory.wq.managers.MovieManager;
+import com.memory.wq.managers.SPManager;
 import com.memory.wq.properties.AppProperties;
 import com.memory.wq.utils.ResultCallback;
 
@@ -36,8 +37,7 @@ public class ChooseMovieActivity extends BaseActivity<ActivityChooseMovieBinding
         mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
 
         MovieManager movieManager = new MovieManager();
-        SharedPreferences sp = getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
-        String token = sp.getString("token", "");
+        String token = SPManager.getUserInfo(this).getToken();
         movieManager.getMovies(token, new ResultCallback<List<MovieInfo>>() {
             @Override
             public void onSuccess(List<MovieInfo> result) {

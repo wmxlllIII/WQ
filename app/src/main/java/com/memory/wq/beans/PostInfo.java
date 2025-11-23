@@ -139,5 +139,18 @@ public class PostInfo implements Parcelable {
         dest.writeLong(timestamp);
     }
 
-
+    @Override
+    public String toString() {
+        return "PostInfo{" +
+                "postId=" + postId +
+                ", poster='" + poster + '\'' +
+                ", title='" + title + '\'' +
+                ", commentCoverUrl='" + commentCoverUrl + '\'' +
+                ", posterAvatar='" + posterAvatar + '\'' +
+                ", content='" + content + '\'' +
+                ", contentImagesUrlList=" + contentImagesUrlList +
+                ", likeCount=" + likeCount +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }

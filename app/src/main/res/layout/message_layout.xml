@@ -35,7 +35,7 @@
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_centerInParent="true"
-                    android:src="@mipmap/ic_bannertest1" />
+                    android:src="@mipmap/icon_search" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="10dp"
@@ -58,7 +58,7 @@
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_centerInParent="true"
-                    android:src="@mipmap/ic_bannertest1" />
+                    android:src="@mipmap/icon_add" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="10dp"

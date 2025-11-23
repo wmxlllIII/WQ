@@ -12,6 +12,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.beans.MsgInfo;

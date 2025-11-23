@@ -3,83 +3,57 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:orientation="vertical">
+        android:fitsSystemWindows="true">
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="#000000"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/iv_qrcode"
+            android:layout_marginBottom="20dp"/>
+
+        <ImageView
+            android:id="@+id/iv_qrcode"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="#0ff00f"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
         <LinearLayout
-            android:id="@+id/ll_search"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="#888888" />
-
+            app:layout_constraintStart_toStartOf="@id/iv_qrcode"
+            app:layout_constraintEnd_toEndOf="@id/iv_qrcode"
+            app:layout_constraintTop_toBottomOf="@id/iv_qrcode"
+            android:layout_marginTop="20dp">
             <TextView
+                android:id="@+id/tv_qr_hint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="搜索    账号/E-mail"
-                android:textColor="#888888"
-                android:textSize="18dp" />
+                android:textSize="20dp"
+                android:text="WQID: "/>
+
+            <TextView
+                android:id="@+id/tv_uunum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:text="98461546"
+                android:drawableEnd="@mipmap/icon_edit"
+                android:singleLine="true"
+                android:ellipsize="end"/>
+
         </LinearLayout>
 
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_scan"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="#888888"
-                    android:padding="10dp"
-                    android:text="扫一扫" />
-
-                <ImageView
-                    android:id="@+id/iv_qrcode"
-                    android:layout_width="160dp"
-                    android:layout_height="160dp"
-                    android:src="#0ff00f" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginRight="10dp"
-                        android:layout_weight="1"
-                        android:gravity="right"
-                        android:text="我的账号: " />
-
-                    <TextView
-                        android:id="@+id/tv_uunum"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_weight="1"
-                        android:text="98461546" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </ScrollView>
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

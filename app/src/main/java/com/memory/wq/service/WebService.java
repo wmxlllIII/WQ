@@ -104,9 +104,9 @@ public class WebService extends Service {
             }
 
             @Override
-            public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
-                super.onMessage(webSocket, text);
-                notifyMessageReceived(text);
+            public void onMessage(@NonNull WebSocket webSocket, @NonNull String json) {
+                super.onMessage(webSocket, json);
+                notifyMessageReceived(json);
                 Log.d(TAG, "[✅] onMessage ws来消息了 #108");
             }
 
@@ -140,7 +140,7 @@ public class WebService extends Service {
             // 解析通用消息格式：{ "event_type": "xxx", "data": {} }
             JSONObject rootJson = new JSONObject(message);
             String eventTypeStr = rootJson.getString("event_type");
-            EventType eventType = JsonParser.getJsonType(eventTypeStr); // 需确保JsonParser支持从字符串解析EventType
+            EventType eventType = JsonParser.getJsonType(eventTypeStr);
             JSONObject dataJson = rootJson.getJSONObject("data");
 
             JsonDataParser<?> parser = ParserFactory.getParser(eventType);
@@ -172,27 +172,21 @@ public class WebService extends Service {
             return;
         }
 
-        mHandler.post(() -> {
-            EventType eventType = message.getEventType();
-            for (IWebSocketListener listener : listeners) {
-                // 只通知监听该事件类型的监听器
-                if (listener.getEvents().contains(eventType)) {
+        mHandler.post(() -> listeners.stream()
+                .filter(listener -> listener.getEvents().contains(message.getEventType()))
+                .forEach(listener -> {
                     try {
                         listener.onMessage(message);
-                        Log.d(TAG, "notifyListeners 通知监听器成功: " + listener.getClass().getSimpleName() + " - " + eventType);
+                        Log.d(TAG, "notifyListeners 通知监听器成功: " + listener.getClass().getSimpleName() + " - " + message.getEventType());
                     } catch (Exception e) {
                         Log.e(TAG, "notifyListeners 通知监听器失败", e);
                     }
-                }
-            }
-        });
+                }));
     }
 
     private void notifyConnectionChanged(boolean isConnected) {
-        new Handler(Looper.getMainLooper()).post(() -> {
-            for (IWebSocketListener listener : listeners) {
-                mHandler.post(() -> listener.onConnectionChanged(isConnected));
-            }
+        mHandler.post(() -> {
+            listeners.forEach(listener -> listener.onConnectionChanged(isConnected));
         });
     }
 

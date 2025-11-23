@@ -125,9 +125,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
         tokenManager.getToken(mUserId, token, mRoomId, role, new ResultCallback<RtcInfo>() {
             @Override
             public void onSuccess(RtcInfo result) {
-                runOnUiThread(() -> {
-                    initAgoraManager(result);
-                });
+                initAgoraManager(result);
             }
 
             @Override
@@ -139,6 +137,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
     }
 
     private void initAgoraManager(RtcInfo rtcInfo) {
+        Log.d(TAG, "===initAgoraManager");
         mAgoraManager = new AgoraManager(this, mUserId, mRoomId, rtcInfo);
         mAgoraManager.setEventListener(this);
 
@@ -501,7 +500,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
             controllerParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
             mBinding.rlControllers.setLayoutParams(controllerParams);
 
-            mBinding.ivLandscape.setImageResource(R.mipmap.wyf);
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -523,7 +522,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
             mBinding.remoteVideoViewContainer.setLayoutParams(remote_video_view_containerParams);
             mBinding.rlControllers.setLayoutParams(rl_controllersParams);
 
-            mBinding.ivLandscape.setImageResource(R.mipmap.wyf);
+
 
         } catch (Exception e) {
             e.printStackTrace();

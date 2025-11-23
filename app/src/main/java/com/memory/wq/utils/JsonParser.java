@@ -362,47 +362,34 @@ public class JsonParser {
     }
 
     private static PostInfo postInfoParser(JSONObject item) throws JSONException {
+        Log.d(TAG, "postInfoParser: "+ item.toString());
         PostInfo postInfo = new PostInfo();
         postInfo.setPostId(item.getInt("postId"));
         postInfo.setPoster(item.getString("userId"));
         String coverUrl = item.getString("coverUrl");
-        if ("null".equals(coverUrl))
+        if ("null".equals(coverUrl)){
             coverUrl = null;
+        }
+
         postInfo.setCommentCoverUrl(coverUrl);
         String userAvatarUrl = item.getString("userAvatarUrl");
         postInfo.setPosterAvatar(userAvatarUrl);
         postInfo.setLikeCount(item.getInt("likeCount"));
         postInfo.setTimestamp(item.getLong("createAt"));
+        postInfo.setTitle(item.getString("title"));
 
-        String textContent = item.getString("content");
-        if (TextUtils.isEmpty(textContent)) {
-            Log.e(TAG, "===postInfoParser: content is empty");
-            postInfo.setContent("null了");
+        String content = item.getString("content");
+        if (TextUtils.isEmpty(content)) {
+            Log.e(TAG, "[x] postInfoParser #379");
+            postInfo.setContent("[x] postInfoParser #379 content空了");
             postInfo.setTitle("null了");
             return postInfo;
         }
 
-        JSONObject textContentJson;
-        try {
-            textContentJson = new JSONObject(textContent);
-        } catch (Exception e) {
-            postInfo.setContent("null了");
-            postInfo.setTitle("null了");
-            return postInfo;
-        }
-
-        String content = textContentJson.getString("content");
-        String title = textContentJson.getString("title");
         postInfo.setContent(content);
-        postInfo.setTitle(title);
 
         List<String> imageUrlList = new ArrayList<>();
         JSONArray imageUrlsArray = item.getJSONArray("imageUrls");
-        if (imageUrlsArray == null) {
-            postInfo.setContentImagesUrlList(imageUrlList);
-            Log.d(TAG, "===[x] postInfoParser #396");
-            return postInfo;
-        }
 
         for (int i = 0; i < imageUrlsArray.length(); i++) {
             imageUrlList.add(imageUrlsArray.getString(i));

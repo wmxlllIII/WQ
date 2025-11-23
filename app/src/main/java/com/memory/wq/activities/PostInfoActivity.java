@@ -108,6 +108,7 @@ public class PostInfoActivity extends BaseActivity<ActivityPostInfoBinding> {
         //内容
         mBinding.tvPostContent.setText(mPostInfo.getContent());
         //图片列表
+        Log.d(TAG, "===postInfo" + mPostInfo);
         PostImagesAdapter imagesAdapter = new PostImagesAdapter(this, mPostInfo.getContentImagesUrlList());
         mBinding.vpPostImages.setAdapter(imagesAdapter);
         mBinding.vpPostImages.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);

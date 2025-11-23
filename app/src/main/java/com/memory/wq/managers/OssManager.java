@@ -91,13 +91,7 @@ public class OssManager {
                     ossClient.asyncPutObject(put, new OSSCompletedCallback<PutObjectRequest, PutObjectResult>() {
                         @Override
                         public void onSuccess(PutObjectRequest request, PutObjectResult result) {
-                            String url = FileUtil.tagConvertUrl(request.getObjectKey(), request.getBucketName(), stsToken.getEndPoint());
-                            if (TextUtils.isEmpty(url)) {
-                                Log.d(TAG, "[x] uploadFiles onSuccess #101");
-                                return;
-                            }
-
-                            fileUrls.add(url);
+                            fileUrls.add(request.getObjectKey());
                             if (fileUrls.size() == fileList.size()) {
                                 callback.onSuccess(fileUrls);
                             }
@@ -105,6 +99,12 @@ public class OssManager {
 
                         @Override
                         public void onFailure(PutObjectRequest request, ClientException clientException, ServiceException serviceException) {
+                            /**
+                             * 调用同步接口遇到异常时，将直接抛出ClientException或者ServiceException异常。
+                             * ClientException异常是指本地遇到的异常，如网络异常参数非法等。
+                             * ServiceException异常是指OSS返回的服务异常，如鉴权失败、服务器错误等。
+                             */
+
                             Log.e(TAG, "[x] uploadFiles onFailure #106" + clientException.getMessage());
                             Log.e(TAG, "[x] uploadFiles onFailure #107" + serviceException.getMessage());
                             callback.onError("上传失败");

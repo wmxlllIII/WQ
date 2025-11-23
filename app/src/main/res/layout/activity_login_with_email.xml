@@ -4,6 +4,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@mipmap/ic_bg"
         android:fitsSystemWindows="true"
         android:orientation="vertical"
         android:padding="10sp">
@@ -18,49 +19,43 @@
                 android:layout_width="25dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
-                android:src="@mipmap/back" />
+                android:src="@mipmap/icon_back_light" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:text="@string/loginByPassword"
-                android:textColor="@color/black" />
+                android:textColor="@color/white" />
 
         </RelativeLayout>
 
-        <RelativeLayout
+        <EditText
+            android:id="@+id/et_login_account"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20sp"
+            android:hint="@string/et_login_account"
+            android:textColorHint="@color/white"/>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_login_account"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20sp"
-                android:hint="@string/et_login_account" />
-        </RelativeLayout>
 
-        <RelativeLayout
+        <EditText
+            android:id="@+id/et_login_pwd"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20sp"
+            android:hint="@string/et_login_pwd"
+            android:textColorHint="@color/white"
+            android:inputType="textPassword" />
 
-            <EditText
-                android:id="@+id/et_login_pwd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20sp"
-                android:hint="@string/et_login_pwd" />
-
-            <ImageView
-                android:id="@+id/iv_password_visible"
-                android:layout_width="20sp"
-                android:layout_height="20sp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginHorizontal="25sp"
-                android:src="@drawable/password_visible" />
-        </RelativeLayout>
+        <ImageView
+            android:id="@+id/iv_password_visible"
+            android:layout_width="20sp"
+            android:layout_height="20sp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="25sp"
+            android:src="@drawable/password_visible" />
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -73,7 +68,9 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginHorizontal="20dp"
                 android:paddingVertical="10sp"
-                android:text="@string/tv_forgetpassword" />
+                android:text="@string/tv_forgetpassword"
+                android:textColor="@color/white"
+                />
 
             <TextView
                 android:id="@+id/tv_signin"
@@ -83,7 +80,8 @@
                 android:layout_marginHorizontal="10sp"
                 android:layout_toLeftOf="@id/tv_forgetpassword"
                 android:paddingVertical="5sp"
-                android:text="@string/tv_signin" />
+                android:text="@string/tv_signin"
+                android:textColor="@color/white"/>
 
 
         </RelativeLayout>

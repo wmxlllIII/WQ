@@ -24,7 +24,7 @@
             android:adjustViewBounds="true"
             android:maxWidth="300dp"
             android:maxHeight="300dp"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop" />
 
         <LinearLayout
             android:layout_width="match_parent"

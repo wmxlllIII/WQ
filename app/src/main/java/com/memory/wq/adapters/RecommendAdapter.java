@@ -60,7 +60,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             holder.iv_cover.setVisibility(View.GONE);
         } else {
             Glide.with(holder.iv_cover.getContext())
-                    .load(AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl())
+                    .load(postInfo.getCommentCoverUrl())
                     .placeholder(R.mipmap.loading_default)
                     .error(R.mipmap.loading_failure)
                     .into(holder.iv_cover);

@@ -114,19 +114,20 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
                     boolean isPermit;
                     switch (which) {
                         case 0:
+                            //todo 33sdk
                             String[] albumPermissions;
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                albumPermissions = new String[]{Manifest.permission.READ_MEDIA_IMAGES};
-                            } else {
-                                albumPermissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
-                            }
-
-                            isPermit = mPermissionManager.isPermitPermission(albumPermissions[0]);
-                            if (isPermit) {
-                                mUserManager.open(AvatarActivity.this, SelectImageType.IMAGE_FROM_ALBUM);
-                            } else {
-                                mPermissionManager.requestPermission(albumPermissions, REQUEST_ALBUM_CODE);
-                            }
+//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                                albumPermissions = new String[]{Manifest.permission.READ_MEDIA_IMAGES};
+//                            } else {
+//                                albumPermissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
+//                            }
+//
+//                            isPermit = mPermissionManager.isPermitPermission(albumPermissions[0]);
+//                            if (isPermit) {
+//                                mUserManager.open(AvatarActivity.this, SelectImageType.IMAGE_FROM_ALBUM);
+//                            } else {
+//                                mPermissionManager.requestPermission(albumPermissions, REQUEST_ALBUM_CODE);
+//                            }
                             break;
                         case 1:
                             isPermit = mPermissionManager.isPermitPermission(Manifest.permission.CAMERA);

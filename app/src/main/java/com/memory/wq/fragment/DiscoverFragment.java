@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.material.navigation.NavigationView;
 import com.memory.wq.R;
 import com.memory.wq.activities.AvatarActivity;
@@ -103,7 +104,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
 
         Glide.with(getContext())
                 .load(AppProperties.HTTP_SERVER_ADDRESS + avatarUrl)
-                .circleCrop()
+                .transform(new RoundedCorners(15))
                 .error(R.mipmap.icon_default_avatar)
                 .into(iv_avatar);
 

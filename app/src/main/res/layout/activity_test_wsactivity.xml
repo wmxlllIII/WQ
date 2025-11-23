@@ -8,6 +8,7 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         android:orientation="vertical"
+        android:background="#202840"
         android:padding="5dp">
 
         <RelativeLayout
@@ -17,16 +18,17 @@
             android:padding="5dp">
 
             <ImageView
-                android:layout_width="23dp"
-                android:layout_height="23dp"
+                android:layout_width="19dp"
+                android:layout_height="18dp"
                 android:layout_centerVertical="true"
-                android:src="#888888" />
+                android:src="@mipmap/icon_back_light" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:text="新的朋友"
+                android:textColor="@color/white"
                 android:textSize="23dp" />
 
             <TextView
@@ -34,6 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:text="添加朋友"
+                android:textColor="@color/white"
                 android:textSize="20dp" />
         </RelativeLayout>
 
@@ -46,15 +49,25 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="#888888" />
+                android:src="@mipmap/icon_search" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="搜索    账号/E-mail"
-                android:textColor="#888888"
+                android:text="账号/E-mail"
+                android:textColor="@color/white_80"
                 android:textSize="18dp" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_scan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:text="扫一扫"
+            android:textSize="18dp"
+            android:textColor="@color/white_80"/>
 
         <ListView
             android:id="@+id/lv_friendReq"

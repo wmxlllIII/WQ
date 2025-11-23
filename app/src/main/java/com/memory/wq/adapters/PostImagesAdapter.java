@@ -16,6 +16,7 @@ import com.memory.wq.R;
 import com.memory.wq.properties.AppProperties;
 
 import java.util.List;
+import java.util.Optional;
 
 public class PostImagesAdapter extends RecyclerView.Adapter<PostImagesAdapter.ImageViewHolder> {
     private Context context;
@@ -37,7 +38,7 @@ public class PostImagesAdapter extends RecyclerView.Adapter<PostImagesAdapter.Im
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         String imageUrl = imageUrlList.get(position);
         Glide.with(context)
-                .load(AppProperties.HTTP_SERVER_ADDRESS + imageUrl)
+                .load(imageUrl)
                 .placeholder(R.mipmap.loading_default)
                 .error(R.mipmap.loading_failure)
                 .into(holder.iv_image);
@@ -46,13 +47,13 @@ public class PostImagesAdapter extends RecyclerView.Adapter<PostImagesAdapter.Im
             return;
         }
 
-        holder.tv_photo_posi.setText(String.valueOf(position+1));
+        holder.tv_photo_posi.setText(String.valueOf(position + 1));
         holder.tv_photo_size.setText(String.valueOf(imageUrlList.size()));
     }
 
     @Override
     public int getItemCount() {
-        return imageUrlList.size();
+        return imageUrlList == null ? 0 : imageUrlList.size();
     }
 
     static class ImageViewHolder extends RecyclerView.ViewHolder {

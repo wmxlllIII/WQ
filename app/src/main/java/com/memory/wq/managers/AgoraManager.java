@@ -36,7 +36,7 @@ import io.agora.rtm.RtmEventListener;
 import io.agora.rtm.SubscribeOptions;
 
 public class AgoraManager {
-    public static final String TAG = AgoraManager.class.getName();
+    public static final String TAG = "WQ_AgoraManager";
 
     private String userId;
     private String channelName;
@@ -70,6 +70,7 @@ public class AgoraManager {
 
 
     private void initRtcEngine() {
+        Log.d(TAG, "===initRtcEngine");
         try {
             RtcEngineConfig config = new RtcEngineConfig();
             config.mContext = context;
@@ -96,6 +97,7 @@ public class AgoraManager {
     }
 
     private void initRtmClient() {
+        Log.d(TAG, "===initRtcEngine");
         RtmConfig rtmConfig = new RtmConfig.Builder(appId, userId)
                 .eventListener(rtmEventListener)
                 .build();
@@ -126,7 +128,7 @@ public class AgoraManager {
 
     public void playMedia(String path) {
         if (mediaPlayer != null) {
-            int code = mediaPlayer.open(AppProperties.HTTP_SERVER_ADDRESS + path, 0);
+            int code = mediaPlayer.open(path, 0);
             Log.d(TAG, "playMedia: ===电影地址" + AppProperties.HTTP_SERVER_ADDRESS + path);
             Log.d(TAG, "playMedia: ===播放码" + code);
             Log.d(TAG, "MediaPlayer state after open: " + mediaPlayer.getState());

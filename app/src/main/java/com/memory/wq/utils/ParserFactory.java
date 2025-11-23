@@ -2,6 +2,7 @@ package com.memory.wq.utils;
 
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.interfaces.JsonDataParser;
+import com.memory.wq.utils.parsers.FriendRequestParser;
 import com.memory.wq.utils.parsers.MsgInfoParser;
 
 import org.json.JSONObject;
@@ -15,8 +16,8 @@ public class ParserFactory {
 
     static {
         PARSER_MAP.put(EventType.EVENT_TYPE_MSG, new MsgInfoParser());
+        PARSER_MAP.put(EventType.EVENT_TYPE_REQUEST_FRIEND, new FriendRequestParser());
 //        PARSER_MAP.put(EventType.EVENT_TYPE_SHAREMSG, new ShareMsgParser());
-//        PARSER_MAP.put(EventType.EVENT_TYPE_REQUEST_FRIEND, new FriendRequestParser());
     }
 
     public static <T> JsonDataParser<T> getParser(EventType eventType) {

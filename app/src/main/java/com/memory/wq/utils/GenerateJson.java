@@ -8,6 +8,7 @@ import com.memory.wq.beans.UserInfo;
 import com.memory.wq.enumertions.JsonType;
 import com.memory.wq.enumertions.SearchUserType;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -155,6 +156,17 @@ public class GenerateJson {
         try {
             object.put("title", postInfo.getTitle());
             object.put("content", postInfo.getContent());
+            if (postInfo.getContentImagesUrlList() == null) {
+                object.put("images", new JSONArray());
+                return object.toString();
+            }
+
+            JSONArray imagesArray = new JSONArray();
+            for (String url : postInfo.getContentImagesUrlList()) {
+                imagesArray.put(url);
+            }
+
+            object.put("images", imagesArray);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -184,7 +196,7 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getAddCommentJson(PostCommentInfo postCommentInfo){
+    public static String getAddCommentJson(PostCommentInfo postCommentInfo) {
         JSONObject object = new JSONObject();
         try {
             object.put("content", postCommentInfo.getContent());

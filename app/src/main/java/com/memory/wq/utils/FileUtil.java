@@ -22,16 +22,7 @@ public class FileUtil {
         }
 
         String uuid = UUID.randomUUID().toString();
-        return "WQ_" + uuid + "." + extension;
-    }
-
-    public static String tagConvertUrl(String fileName, String bucketName, String endPoint) {
-        if (TextUtils.isEmpty(fileName)) {
-            Log.d(TAG, "[x] tagConvertUrl #31");
-            return null;
-        }
-
-        return "https://" + bucketName + "." + endPoint + "/" + fileName;
+        return "WQ_" + uuid + extension;
     }
 
 }
