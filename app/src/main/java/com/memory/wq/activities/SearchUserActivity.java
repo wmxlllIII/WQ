@@ -101,7 +101,7 @@ public class SearchUserActivity extends BaseActivity<SearchUserLayoutBinding> {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 FriendInfo friendInfo = (FriendInfo) parent.getItemAtPosition(position);
                 Intent intent = new Intent(SearchUserActivity.this, PersonalActivity.class);
-                intent.putExtra(AppProperties.FRIENDINFO, friendInfo);
+                intent.putExtra("AppProperties.FRIENDINFO", friendInfo);
                 startActivity(intent);
                 sendReq(friendInfo.getEmail());
             }

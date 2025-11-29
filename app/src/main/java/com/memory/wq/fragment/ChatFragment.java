@@ -13,13 +13,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.memory.wq.activities.AudioActivity;
+import com.memory.wq.activities.ChatActivity;
 import com.memory.wq.adapters.MsgAdapter;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.MsgInfo;
+import com.memory.wq.beans.UiChatInfo;
+import com.memory.wq.beans.UiMessageState;
 import com.memory.wq.databinding.FragmentChatBinding;
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.enumertions.RoleType;
@@ -34,20 +42,19 @@ import com.memory.wq.service.WebSocketMessage;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.ShareConfirmDialog;
+import com.memory.wq.vm.ChatViewModel;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class ChatFragment extends Fragment implements IWebSocketListener, ResultCallback<List<MsgInfo>> {
+public class ChatFragment extends Fragment {
     private static final String TAG = "WQ_ChatFragment";
 
     private FragmentChatBinding mBinding;
-    private final EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_MSG);
     private final MsgAdapter mAdapter = new MsgAdapter(new MsgItemCLickListener());
     private final List<MsgInfo> mMsgInfoList = new ArrayList<>();
     private WebService mMsgService;
-    private WebSocketConn mWebSocketConn;
     private MsgManager mMsgManager;
 
     private String token;
@@ -55,15 +62,40 @@ public class ChatFragment extends Fragment implements IWebSocketListener, Result
     private FriendInfo mFriendInfo;
     private MsgInfo mLinkInfo;
     private MovieManager mMovieManager;
+    private ChatViewModel mChatVM;
+
+    private Observer<UiChatInfo> mUiChatInfoObserver = this::_proUiChatInfoUpdate;
+    private Observer<UiMessageState> mUiMessageInfoObserver = this::_proUiMessageInfoUpdate;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = FragmentChatBinding.inflate(inflater, container, false);
-        initView();
+        initView(getViewLifecycleOwner());
+        initRecyclerView();
         initData();
-        show();
         return mBinding.getRoot();
+    }
+
+    private void initRecyclerView() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
+        layoutManager.setStackFromEnd(true);
+        mBinding.rvMsg.setLayoutManager(layoutManager);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (!(context instanceof AppCompatActivity)) {
+            Log.d(TAG, "onAttach #no match");
+            return;
+        }
+
+        createViewModel((AppCompatActivity) context);
+    }
+
+    private void createViewModel(AppCompatActivity activity) {
+        mChatVM = new ViewModelProvider(activity).get(ChatViewModel.class);
     }
 
     private void initData() {
@@ -72,15 +104,6 @@ public class ChatFragment extends Fragment implements IWebSocketListener, Result
 
         mBinding.rvMsg.setAdapter(mAdapter);
 
-        Bundle args = getArguments();
-        if (args != null) {
-            mFriendInfo = (FriendInfo) args.getSerializable(AppProperties.FRIENDINFO);
-            if (args.containsKey(AppProperties.SHARE_MESSAGE)) {
-                mLinkInfo = (MsgInfo) args.getSerializable(AppProperties.SHARE_MESSAGE);
-                mMovieManager = new MovieManager();
-                showShareUI();
-            }
-        }
 
         if (mFriendInfo == null) {
             MyToast.showToast(getContext(), "好友信息缺失");
@@ -88,33 +111,53 @@ public class ChatFragment extends Fragment implements IWebSocketListener, Result
             return;
         }
 
-        if (mWebSocketConn == null) {
-            mWebSocketConn = new WebSocketConn();
-        }
-        Intent intent = new Intent(getContext(), WebService.class);
-        getContext().bindService(intent, mWebSocketConn, Context.BIND_AUTO_CREATE);
-
-        mMsgManager = new MsgManager(getContext());
-        mMsgManager.getAllMsg(mFriendInfo.getEmail(), this);
     }
 
-    private void initView() {
+    private void initView(LifecycleOwner lifecycleOwner) {
+        initObserver(lifecycleOwner);
+
         mBinding.ivBack.setOnClickListener(v -> requireActivity().finish());
-        mBinding.btnSend.setOnClickListener(v -> sendMsg());
+        mBinding.btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMsg();
+            }
+        });
     }
 
-    private void show() {
-        mBinding.tvNickname.setText(mFriendInfo.getNickname());
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
-        layoutManager.setStackFromEnd(true);
-        mBinding.rvMsg.setLayoutManager(layoutManager);
+    private void initObserver(LifecycleOwner lifecycleOwner) {
+        mChatVM.uiChatInfo.observe(lifecycleOwner, mUiChatInfoObserver);
+        mChatVM.uiMessageState.observe(lifecycleOwner, mUiMessageInfoObserver);
     }
+
+    private void _proUiChatInfoUpdate(UiChatInfo uiChatInfo) {
+        if (uiChatInfo == null) {
+            Log.d(TAG, "[x] _proUiChatInfoUpdate #134");
+            return;
+        }
+
+        String diplayTitle = uiChatInfo.getDisplayName() != null ? uiChatInfo.getDisplayName() : uiChatInfo.getNickname();
+        mBinding.tvNickname.setText(diplayTitle);
+    }
+
+    private void _proUiMessageInfoUpdate(UiMessageState state) {
+        if (!(state instanceof UiMessageState.DisPlay)) {
+            Log.d(TAG, "[x] _proUiMessageInfoUpdate #144");
+            return;
+        }
+
+        mAdapter.submitList(((UiMessageState.DisPlay) state).getMsgInfoList(), () -> {
+            mBinding.rvMsg.scrollToPosition(mAdapter.getItemCount() - 1);
+        });
+    }
+
 
     private void sendMsg() {
         String msg = mBinding.etInputText.getText().toString().trim();
-        if (TextUtils.isEmpty(msg))
+        if (TextUtils.isEmpty(msg)){
+            MyToast.showToast(getContext(),"");
             return;
+        }
 
         String currentEmail = sp.getString("email", "");
 
@@ -122,7 +165,7 @@ public class ChatFragment extends Fragment implements IWebSocketListener, Result
         mMsgManager.sendMsg(token, currentEmail, mFriendInfo.getEmail(), msg, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                mMsgManager.getAllMsg(mFriendInfo.getEmail(), ChatFragment.this);
+
             }
 
             @Override
@@ -165,60 +208,6 @@ public class ChatFragment extends Fragment implements IWebSocketListener, Result
 
     }
 
-    @Override
-    public EnumSet<EventType> getEvents() {
-        return eventTypes;
-    }
-
-    @Override
-    public <T> void onMessage(WebSocketMessage<T> message) {
-        switch (message.getEventType()) {
-            case EVENT_TYPE_MSG:
-                List<MsgInfo> newMsgList = (List<MsgInfo>) message.getData();
-                if (newMsgList == null || newMsgList.isEmpty()) {
-                    Log.d(TAG, "[x] onMessage #151");
-                    return;
-                }
-
-                mAdapter.submitList(newMsgList);
-                break;
-        }
-    }
-
-    @Override
-    public void onConnectionChanged(boolean isConnected) {
-
-    }
-
-    @Override
-    public void onSuccess(List<MsgInfo> msgInfoList) {
-        mAdapter.submitList(msgInfoList, () -> {
-            Log.d(TAG, "onSuccess: ===滚动到最后位置" + (msgInfoList.size() - 1));
-            mBinding.rvMsg.smoothScrollToPosition(msgInfoList.size() - 1);
-        });
-
-    }
-
-    @Override
-    public void onError(String err) {
-
-    }
-
-    class WebSocketConn implements ServiceConnection {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mMsgService = ((IWebSocketService) service).getService();
-            mMsgService.registerListener(ChatFragment.this);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mMsgService.unregisterListener(ChatFragment.this);
-        }
-
-    }
-
     private class MsgItemCLickListener implements OnMsgItemClickListener {
         @Override
         public void onLinkClick(MsgInfo msgInfo) {
@@ -238,7 +227,6 @@ public class ChatFragment extends Fragment implements IWebSocketListener, Result
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getContext().unbindService(mWebSocketConn);
-        mMsgService.unregisterListener(this);
     }
+
 }

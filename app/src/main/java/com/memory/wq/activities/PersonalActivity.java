@@ -28,7 +28,7 @@ public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
 
     private void initData() {
         Intent intent = getIntent();
-        FriendInfo friendInfo = (FriendInfo) intent.getSerializableExtra(AppProperties.FRIENDINFO);
+        FriendInfo friendInfo = (FriendInfo) intent.getSerializableExtra("AppProperties.FRIENDINFO");
         String email = friendInfo.getEmail();
         String avatarUrl = friendInfo.getAvatarUrl();
         String nickname = friendInfo.getNickname();

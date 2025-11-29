@@ -50,7 +50,7 @@ public class AppProperties {
     public static final String MOVIE_PATH = "MOVIE_PATH";
     public static final String ROOM_ID = "ROOM_ID";
 
-    public static final String FRIENDINFO = "FRIENDINFO";
+    public static final String CHAT_ID = "ChatId";
     public static final String SHARE_MESSAGE = "SHARE_MESSAGE";
     public static final String POSTINFO = "postInfo";
 

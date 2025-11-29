@@ -12,10 +12,15 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
+import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.beans.MsgInfo;
+import com.memory.wq.beans.UserInfo;
 import com.memory.wq.constants.AppProperties;
+import com.memory.wq.enumertions.ChatType;
 import com.memory.wq.provider.FriendSqlOP;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.provider.MsgSqlOP;
@@ -44,10 +49,13 @@ import okhttp3.ResponseBody;
 public class MsgManager {
 
     public static final String TAG = "WQ_MsgManager";
-    private final Handler mHandler=new Handler(Looper.getMainLooper());
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
     private Context context;
+
     public MsgManager(Context context) {
         this.context = context;
+    }
+    public MsgManager() {
     }
 
     public void getAllRelation(Context context, boolean isForceRefresh, String url, String token, ResultCallback<List<FriendRelaInfo>> callback) {
@@ -174,7 +182,7 @@ public class MsgManager {
         return System.currentTimeMillis() - lastSyncTime > 5 * 60 * 1000;
     }
 
-    public  void receiveFriendRela(Context context, JSONArray requestList) {
+    public void receiveFriendRela(Context context, JSONArray requestList) {
         List<FriendRelaInfo> friendRelList = JsonParser.friendRelaParser(requestList);
         ThreadPoolManager.getInstance().execute(() -> {
             FriendSqlOP op = new FriendSqlOP(context);
@@ -231,6 +239,7 @@ public class MsgManager {
         boolean b = sqlOP.insertMessages(msgInfoList);
 
     }
+
     public static void receiveShareMsg(Context context, JSONArray shareMsgList) {
         List<MsgInfo> msgInfoList = JsonParser.shareMsgParser(shareMsgList);
         MsgSqlOP sqlOP = new MsgSqlOP(context);
@@ -247,7 +256,7 @@ public class MsgManager {
 
     }
 
-    public void sendMsg(String token,String senderEmail, String targetEmail, String content,ResultCallback<Boolean> callback) {
+    public void sendMsg(String token, String senderEmail, String targetEmail, String content, ResultCallback<Boolean> callback) {
         String json = GenerateJson.getMsgJson(targetEmail, content);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.SEND_MSG, token, json, new Callback() {
@@ -281,8 +290,15 @@ public class MsgManager {
         });
     }
 
-    public void saveMsg(){
+    public void saveMsg() {
 
     }
+
+    public void getMsgFromServer(){
+
+    }
+
+
+
 
 }

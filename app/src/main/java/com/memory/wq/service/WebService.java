@@ -17,6 +17,7 @@ import com.memory.wq.enumertions.EventType;
 import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.interfaces.JsonDataParser;
 import com.memory.wq.constants.AppProperties;
+import com.memory.wq.repository.MessageRepository;
 import com.memory.wq.utils.JsonParser;
 import com.memory.wq.utils.ParserFactory;
 
@@ -41,14 +42,6 @@ public class WebService extends Service {
     private OkHttpClient client;
     private final List<IWebSocketListener> listeners = new CopyOnWriteArrayList<>();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
-
-    public interface WebSocketListener {
-        EnumSet<EventType> getEvents();
-
-        void onEventMessage(EventType eventType);
-
-        void onConnectionChanged(boolean isConnected);
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -141,17 +134,14 @@ public class WebService extends Service {
             JSONObject dataJson = rootJson.getJSONObject("data");
 
             JsonDataParser<?> parser = ParserFactory.getParser(eventType);
+
             Object parsedData = parser.parse(dataJson);
 
-//            saveDataToLocal(eventType, parsedData);
-
-            // 🔴 包装为通用消息对象，通知所有监听该事件的监听器
             WebSocketMessage<?> webSocketMsg = new WebSocketMessage<>(eventType, parsedData);
             notifyListeners(webSocketMsg);
 
         } catch (JSONException e) {
             Log.e(TAG, "notifyMessageReceived 消息解析失败", e);
-            // 异常时用默认解析器包装原始消息，避免监听器收不到通知
             WebSocketMessage<JSONObject> errorMsg = null;
             try {
                 errorMsg = new WebSocketMessage<>(EventType.UNKNOWN, new JSONObject(message));
@@ -179,6 +169,7 @@ public class WebService extends Service {
                         Log.e(TAG, "notifyListeners 通知监听器失败", e);
                     }
                 }));
+        MessageRepository.getInstance().postMessage(message);
     }
 
     private void notifyConnectionChanged(boolean isConnected) {

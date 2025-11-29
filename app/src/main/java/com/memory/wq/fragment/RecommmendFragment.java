@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.memory.wq.R;
-import com.memory.wq.RecommendViewModel;
+import com.memory.wq.vm.RecommendViewModel;
 import com.memory.wq.activities.PostInfoActivity;
 import com.memory.wq.adapters.BannerAdapter;
 import com.memory.wq.adapters.HeaderAdapter;

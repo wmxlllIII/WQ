@@ -1,4 +1,4 @@
-package com.memory.wq;
+package com.memory.wq.vm;
 
 import androidx.lifecycle.ViewModel;
 

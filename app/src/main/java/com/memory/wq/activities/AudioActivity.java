@@ -455,7 +455,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
         shareMsg.setReceiverEmail(friendInfo.getEmail());
 
         Intent intent = new Intent(AudioActivity.this, ChatActivity.class);
-        intent.putExtra(AppProperties.FRIENDINFO, friendInfo);
+        intent.putExtra(AppProperties.CHAT_ID, friendInfo.getEmail());
         intent.putExtra(AppProperties.SHARE_MESSAGE, shareMsg);
         startActivity(intent);
     }

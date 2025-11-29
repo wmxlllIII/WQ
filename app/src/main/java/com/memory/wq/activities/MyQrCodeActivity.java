@@ -85,7 +85,7 @@ public class MyQrCodeActivity extends BaseActivity<ActivityMyQrCodeBinding> {
             public void onSuccess(FriendInfo result) {
                 runOnUiThread(() -> {
                     Intent intent = new Intent(MyQrCodeActivity.this, PersonalActivity.class);
-                    intent.putExtra(AppProperties.FRIENDINFO, result);
+                    intent.putExtra("AppProperties.FRIENDINFO", result);
                     startActivity(intent);
                 });
             }

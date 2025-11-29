@@ -137,7 +137,8 @@ public class MessageFragment extends Fragment implements View.OnClickListener, I
         lv_msg.setOnItemClickListener((parent, view1, position, id) -> {
             FriendInfo friendInfo = (FriendInfo) parent.getItemAtPosition(position);
             Intent intent = new Intent(mActivity, ChatActivity.class);
-            intent.putExtra(AppProperties.FRIENDINFO, friendInfo);
+            //TODO 使用哪个chatId
+            intent.putExtra(AppProperties.CHAT_ID, friendInfo.getEmail());
             mActivity.startActivity(intent);
         });
 

@@ -1,26 +1,35 @@
 package com.memory.wq.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.fragment.ChatFragment;
 import com.memory.wq.R;
 import com.memory.wq.databinding.ActivityChatBinding;
 import com.memory.wq.enumertions.ChatPage;
 import com.memory.wq.fragment.ChatDetailFragment;
+import com.memory.wq.vm.ChatViewModel;
 
 public class ChatActivity extends BaseActivity<ActivityChatBinding> {
     public static final String TAG = "WQ_ChatActivity";
     private ChatPage mCurrentPage;
+    private ChatViewModel mChatVM;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        String chatId = (String) intent.getSerializableExtra(AppProperties.CHAT_ID);
+        mChatVM = new ViewModelProvider(this).get(ChatViewModel.class);
+        mChatVM.setChatId(chatId);
         initView();
     }
 
@@ -51,6 +60,10 @@ public class ChatActivity extends BaseActivity<ActivityChatBinding> {
     }
 
     private void hideOrRemoveFragment(FragmentTransaction ft, ChatPage page) {
+        if (page == null) {
+            return;
+        }
+
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(page.name());
         if (fragment == null) {
             Log.d(TAG, "[x] hideOrRemoveFragment #56");
@@ -77,7 +90,7 @@ public class ChatActivity extends BaseActivity<ActivityChatBinding> {
             return;
         }
 
-        ft.add(R.id.fragment_container, fragment, page.name());
+        ft.add(R.id.fl_container, fragment, page.name());
     }
 
     private Fragment createFragment(ChatPage page) {

@@ -196,7 +196,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
             @Override
             public void onSuccess(FriendInfo result) {
                 Intent intent = new Intent(FriendRelaActivity.this, PersonalActivity.class);
-                intent.putExtra(AppProperties.FRIENDINFO, result);
+                intent.putExtra("AppProperties.FRIENDINFO", result);
                 startActivity(intent);
             }
 

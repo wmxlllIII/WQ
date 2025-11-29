@@ -198,4 +198,8 @@ public class UserManager {
         });
     }
 
+    public void getUserInfo(long userId){
+//        HttpStreamOP.postJson();
+    }
+
 }
