@@ -12,7 +12,6 @@ import com.memory.wq.beans.UiMessageState;
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.managers.MsgManager;
 import com.memory.wq.repository.MessageRepository;
-import com.memory.wq.service.WebService;
 import com.memory.wq.service.WebSocketMessage;
 import com.memory.wq.utils.ResultCallback;
 
@@ -70,7 +69,7 @@ public class ChatViewModel extends ViewModel {
         _uiMessageState.setValue(new UiMessageState.Loading());
 
 
-        msgManager.getAllMsg(_chatId.getValue(), new ResultCallback<List<MsgInfo>>() {
+        msgManager.getMsg(,_chatId.getValue(), new ResultCallback<List<MsgInfo>>() {
             @Override
             public void onSuccess(List<MsgInfo> result) {
                 _uiMessageState.postValue(new UiMessageState.DisPlay(result));

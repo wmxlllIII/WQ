@@ -50,11 +50,7 @@ public class MsgManager {
 
     public static final String TAG = "WQ_MsgManager";
     private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private Context context;
 
-    public MsgManager(Context context) {
-        this.context = context;
-    }
     public MsgManager() {
     }
 
@@ -63,7 +59,7 @@ public class MsgManager {
         List<FriendRelaInfo> allRelationFromDB = getAllRelationFromDB(context);
         callback.onSuccess(allRelationFromDB);
 
-        if (shouldFetchFromServer(isForceRefresh)) {
+        if (shouldFetchFromServer(context,isForceRefresh)) {
 
             getAllRelationFromServer(url, token, new ResultCallback<List<FriendRelaInfo>>() {
                 @Override
@@ -134,7 +130,7 @@ public class MsgManager {
         return new FriendSqlOP(context).queryAllRelations();
     }
 
-    private boolean shouldFetchFromServer(boolean forceRefresh) {
+    private boolean shouldFetchFromServer(Context context, boolean forceRefresh) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnected();
@@ -247,13 +243,10 @@ public class MsgManager {
 
     }
 
-    public void getAllMsg(String targetEmail, ResultCallback<List<MsgInfo>> callback) {
-        SharedPreferences sp = context.getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
-        String currentEmail = sp.getString("email", "");
+    public void getMsg(Context context, String targetEmail, String currentEmail, ResultCallback<List<MsgInfo>> callback) {
         MsgSqlOP msgSqlOP = new MsgSqlOP(context);
         List<MsgInfo> messages = msgSqlOP.queryAllMsg(currentEmail, targetEmail);
         callback.onSuccess(messages);
-
     }
 
     public void sendMsg(String token, String senderEmail, String targetEmail, String content, ResultCallback<Boolean> callback) {
@@ -294,11 +287,9 @@ public class MsgManager {
 
     }
 
-    public void getMsgFromServer(){
+    public void getMsgFromServer() {
 
     }
-
-
 
 
 }
