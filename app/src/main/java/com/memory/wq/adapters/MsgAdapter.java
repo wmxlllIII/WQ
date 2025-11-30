@@ -23,7 +23,6 @@ import java.util.List;
 
 
 public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
-    private List<MsgInfo> msgInfoList;
     private OnMsgItemClickListener listener;
 
     private static final int TYPE_TEXT = 0;
@@ -37,7 +36,7 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        return msgInfoList.get(position).getMsgType() == 0 ? TYPE_TEXT : TYPE_LINK;
+        return getCurrentList().get(position).getMsgType() == 0 ? TYPE_TEXT : TYPE_LINK;
     }
 
     @NonNull
@@ -56,7 +55,7 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        MsgInfo msgInfo = msgInfoList.get(position);
+        MsgInfo msgInfo = getCurrentList().get(position);
 
         if (TextUtils.isEmpty(AccountManager.getUserInfo(holder.itemView.getContext()).getEmail()) || msgInfo == null) {
             if (holder instanceof TextViewHolder) {
@@ -150,7 +149,7 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return msgInfoList.size();
+        return getCurrentList().size();
     }
 
 

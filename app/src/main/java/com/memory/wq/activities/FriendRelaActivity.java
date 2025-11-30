@@ -7,8 +7,10 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -20,6 +22,7 @@ import com.memory.wq.databinding.ActivityTestWsactivityBinding;
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.enumertions.SearchUserType;
 import com.memory.wq.interfaces.IWebSocketListener;
+import com.memory.wq.interfaces.OnFriItemClickListener;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.MsgManager;
 import com.memory.wq.constants.AppProperties;
@@ -33,7 +36,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBinding> implements IWebSocketListener, ResultCallback<List<FriendRelaInfo>>, FriendRelaAdapter.UpdateRelaListener {
+public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBinding> implements IWebSocketListener, ResultCallback<List<FriendRelaInfo>> {
 
     private static final String TAG = "WQ_FriendRelaActivity";
     private String token;
@@ -42,8 +45,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     private MyConn mConn;
     private boolean isBind = false;
     private final EnumSet<EventType> EVENT_TYPE_SET = EnumSet.of(EventType.EVENT_TYPE_REQUEST_FRIEND);
-    private final List<FriendRelaInfo> mFriendRelaList = new ArrayList<>();
-    private FriendRelaAdapter mAdapter;
+    private final FriendRelaAdapter mAdapter = new FriendRelaAdapter(new FriItemClickListener());
     private MsgManager mMsgManager;
     private SharedPreferences sp;
     private FriendManager mFriendManager;
@@ -53,7 +55,6 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
         super.onCreate(savedInstanceState);
         initView();
         initData();
-        System.out.println("===========TestWSActivity====token" + token);
         showLV();
     }
 
@@ -66,13 +67,9 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
         Intent intent = new Intent(this, WebService.class);
         startService(intent);
         mConn = new MyConn();
-        mMsgManager = new MsgManager(this);
+        mMsgManager = new MsgManager();
         bindService(intent, mConn, BIND_AUTO_CREATE);
 
-        if (mAdapter == null) {
-            mAdapter = new FriendRelaAdapter(this, mFriendRelaList);
-            mAdapter.setUpdateRelaListener(this);
-        }
 
         sp = getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
         token = sp.getString("token", "");
@@ -80,10 +77,9 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     }
 
     private void showLV() {
-        mBinding.lvFriendReq.setAdapter(mAdapter);
+        mBinding.rvFriendReq.setLayoutManager(new LinearLayoutManager(this));
+        mBinding.rvFriendReq.setAdapter(mAdapter);
         mMsgManager.getAllRelation(this, false, AppProperties.FRIEND_RELATIONSHIP, token, this);
-        //1从数据库拿-----数据每5分钟轮询get
-
     }
 
     private void initView() {
@@ -102,7 +98,13 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     public <T> void onMessage(WebSocketMessage<T> message) {
         switch (message.getEventType()) {
             case EVENT_TYPE_REQUEST_FRIEND:
-                mMsgManager.getAllRelation(this, true, AppProperties.FRIEND_RELATIONSHIP, token, this);
+                List<FriendRelaInfo> friRelaList = (List<FriendRelaInfo>) message.getData();
+                if (friRelaList == null || friRelaList.isEmpty()) {
+                    Log.d(TAG, "[x] onMessage #103");
+                    return;
+                }
+
+                mAdapter.submitList(friRelaList, () -> mBinding.rvFriendReq.scrollToPosition(mAdapter.getItemCount() - 1));
                 break;
         }
     }
@@ -115,12 +117,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
 
     @Override
     public void onSuccess(List<FriendRelaInfo> result) {
-        runOnUiThread(() -> {
-            if (mAdapter != null) {
-                mAdapter.updateAdapterDate(result);
-                mAdapter.notifyDataSetChanged();
-            }
-        });
+        mAdapter.submitList(result);
 
     }
 
@@ -128,13 +125,6 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     public void onError(String err) {
 
     }
-
-
-    @Override
-    public void onUpdateRelaSuccess() {
-        mMsgManager.getAllRelation(this, true, AppProperties.FRIEND_RELATIONSHIP, token, this);
-    }
-
 
     private class MyConn implements ServiceConnection {
 
@@ -205,5 +195,47 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
 
             }
         });
+    }
+
+    private class FriItemClickListener implements OnFriItemClickListener {
+
+        @Override
+        public void onItemClick(String targetId) {
+            // 进主页
+        }
+
+        @Override
+        public void onItemLongClick() {
+
+        }
+
+        @Override
+        public void onAcceptClick(String targetId) {
+            mMsgManager.updateRela(FriendRelaActivity.this, true, targetId, new ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean result) {
+                    MyToast.showToast(FriendRelaActivity.this, result ? "已同意" : "已拒绝");
+                }
+
+                @Override
+                public void onError(String err) {
+
+                }
+            });
+        }
+
+        @Override
+        public void onRejectClick(String targetId) {
+            mMsgManager.updateRela(FriendRelaActivity.this, false, targetId, new ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean result) {
+                }
+
+                @Override
+                public void onError(String err) {
+
+                }
+            });
+        }
     }
 }

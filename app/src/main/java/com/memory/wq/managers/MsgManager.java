@@ -51,39 +51,30 @@ public class MsgManager {
     public static final String TAG = "WQ_MsgManager";
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    public MsgManager() {
-    }
-
     public void getAllRelation(Context context, boolean isForceRefresh, String url, String token, ResultCallback<List<FriendRelaInfo>> callback) {
 
         List<FriendRelaInfo> allRelationFromDB = getAllRelationFromDB(context);
-        callback.onSuccess(allRelationFromDB);
+        mHandler.post(() -> callback.onSuccess(allRelationFromDB));
 
-        if (shouldFetchFromServer(context,isForceRefresh)) {
 
-            getAllRelationFromServer(url, token, new ResultCallback<List<FriendRelaInfo>>() {
-                @Override
-                public void onSuccess(List<FriendRelaInfo> allRelationFromServer) {
-                    List<FriendRelaInfo> friendRelaList = mergeData(allRelationFromDB, allRelationFromServer);
-                    saveFriendRelaToDB(friendRelaList);
-                    mHandler.post(() -> {
-                        callback.onSuccess(friendRelaList);
-                    });
-                }
+        getAllRelationFromServer(url, token, new ResultCallback<List<FriendRelaInfo>>() {
+            @Override
+            public void onSuccess(List<FriendRelaInfo> allRelationFromServer) {
+                List<FriendRelaInfo> friendRelaList = mergeData(allRelationFromDB, allRelationFromServer);
+                saveFriendRelaToDB(context, friendRelaList);
+                mHandler.post(() -> {
+                    callback.onSuccess(friendRelaList);
+                });
+            }
 
-                @Override
-                public void onError(String err) {
+            @Override
+            public void onError(String err) {
 
-                }
-            });
-
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-            sp.edit().putLong("last_sync_time", System.currentTimeMillis()).commit();
-        }
-
+            }
+        });
     }
 
-    private void saveFriendRelaToDB(List<FriendRelaInfo> friendRelaList) {
+    private void saveFriendRelaToDB(Context context, List<FriendRelaInfo> friendRelaList) {
         FriendSqlOP op = new FriendSqlOP(context);
         int count = 0;
         while (!op.insertRelations(friendRelaList)) {
@@ -130,14 +121,6 @@ public class MsgManager {
         return new FriendSqlOP(context).queryAllRelations();
     }
 
-    private boolean shouldFetchFromServer(Context context, boolean forceRefresh) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnected();
-
-        return isConnected && (forceRefresh || isLocalDataExpired());
-    }
-
 
     private static void getAllRelationFromServer(String url, String token, ResultCallback<List<FriendRelaInfo>> callback) {
         HttpStreamOP.postJson(url, token, "{}", new Callback() {
@@ -173,10 +156,6 @@ public class MsgManager {
 
     }
 
-    private boolean isLocalDataExpired() {
-        long lastSyncTime = PreferenceManager.getDefaultSharedPreferences(context).getLong("last_sync_time", 0);
-        return System.currentTimeMillis() - lastSyncTime > 5 * 60 * 1000;
-    }
 
     public void receiveFriendRela(Context context, JSONArray requestList) {
         List<FriendRelaInfo> friendRelList = JsonParser.friendRelaParser(requestList);
@@ -243,10 +222,39 @@ public class MsgManager {
 
     }
 
-    public void getMsg(Context context, String targetEmail, String currentEmail, ResultCallback<List<MsgInfo>> callback) {
-        MsgSqlOP msgSqlOP = new MsgSqlOP(context);
-        List<MsgInfo> messages = msgSqlOP.queryAllMsg(currentEmail, targetEmail);
-        callback.onSuccess(messages);
+    public void getMsg(String chatId, ResultCallback<List<MsgInfo>> callback) {
+        String json = GenerateJson.getLoadMsgJson(chatId);
+        ThreadPoolManager.getInstance().execute(() -> {
+            HttpStreamOP.postJson(AppProperties.GET_MSG, "", json, new Callback() {
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getMsg #254" + response.code());
+                        mHandler.post(() -> callback.onError("网络异常"));
+                        return;
+                    }
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+
+                        if (code == 1) {
+                            List<MsgInfo> msgList = JsonParser.msgParser(json.getJSONArray("data"));
+                            mHandler.post(() -> callback.onSuccess(msgList));
+
+                        } else {
+                            mHandler.post(() -> callback.onError("网络异常，获取数据失败"));
+                        }
+                    } catch (Exception e) {
+                        Log.d(TAG, "[x] getMsg #273" + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                }
+            });
+        });
     }
 
     public void sendMsg(String token, String senderEmail, String targetEmail, String content, ResultCallback<Boolean> callback) {
@@ -255,7 +263,8 @@ public class MsgManager {
             HttpStreamOP.postJson(AppProperties.SEND_MSG, token, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    e.printStackTrace();
+                    Log.d(TAG, "[x] sendMsg #290" + e.getMessage());
+                    mHandler.post(() -> callback.onError("网络异常"));
                 }
 
                 @Override
@@ -265,26 +274,25 @@ public class MsgManager {
                             JSONObject jsonResponse = new JSONObject(response.body().string());
                             if (jsonResponse.getInt("code") == 1) {
                                 // 插入数据库成功后触发回调
-                                new Handler(Looper.getMainLooper()).post(() -> {
-                                    MsgInfo msgInfo = new MsgInfo();
-                                    msgInfo.setSenderEmail(senderEmail);
-                                    msgInfo.setReceiverEmail(targetEmail);
-                                    msgInfo.setContent(content);
-                                    boolean insertSuccess = new MsgSqlOP(context).insertMessages(Collections.singletonList(msgInfo));
-                                    callback.onSuccess(insertSuccess);
-                                });
+                                MsgInfo msgInfo = new MsgInfo();
+                                msgInfo.setSenderEmail(senderEmail);
+                                msgInfo.setReceiverEmail(targetEmail);
+                                msgInfo.setContent(content);
+
+                                mHandler.post(() -> callback.onSuccess(true));
                             }
                         }
                     } catch (Exception e) {
-                        callback.onError(e.getMessage());
+                        Log.d(TAG, "[x] sendMsg #310" + e.getMessage());
+                        callback.onError("发送失败");
                     }
                 }
             });
         });
     }
 
-    public void saveMsg() {
-
+    public void saveMsg(Context context, List<MsgInfo> msgList) {
+        boolean insertSuccess = new MsgSqlOP(context).insertMessages(msgList);
     }
 
     public void getMsgFromServer() {

@@ -1,5 +1,7 @@
 package com.memory.wq.utils;
 
+import android.util.Log;
+
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.QueryPostInfo;
@@ -14,6 +16,7 @@ import org.json.JSONObject;
 
 public class GenerateJson {
 
+    private static final String TAG = "WQ_GenerateJson";
 
     public static String generateJson(JsonType type, String email, int code, String password) {
         String json = "";
@@ -216,6 +219,16 @@ public class GenerateJson {
             object.put("size", queryPostInfo.getSize());
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+        return object.toString();
+    }
+
+    public static String getLoadMsgJson(String targetEmail) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("chatId", targetEmail);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getLoadMsgJson #233"+e.getMessage());
         }
         return object.toString();
     }

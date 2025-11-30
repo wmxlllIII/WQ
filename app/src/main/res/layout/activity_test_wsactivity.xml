@@ -69,8 +69,8 @@
             android:textSize="18dp"
             android:textColor="@color/white_80"/>
 
-        <ListView
-            android:id="@+id/lv_friendReq"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_friendReq"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

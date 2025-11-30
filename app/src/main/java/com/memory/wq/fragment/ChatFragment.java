@@ -1,12 +1,9 @@
 package com.memory.wq.fragment;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,40 +19,28 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.memory.wq.activities.AudioActivity;
-import com.memory.wq.activities.ChatActivity;
 import com.memory.wq.adapters.MsgAdapter;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.UiChatInfo;
 import com.memory.wq.beans.UiMessageState;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.FragmentChatBinding;
-import com.memory.wq.enumertions.EventType;
 import com.memory.wq.enumertions.RoleType;
-import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.interfaces.OnMsgItemClickListener;
 import com.memory.wq.managers.MovieManager;
 import com.memory.wq.managers.MsgManager;
-import com.memory.wq.constants.AppProperties;
-import com.memory.wq.service.IWebSocketService;
-import com.memory.wq.service.WebService;
-import com.memory.wq.service.WebSocketMessage;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.ShareConfirmDialog;
 import com.memory.wq.vm.ChatViewModel;
-
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
 
 public class ChatFragment extends Fragment {
     private static final String TAG = "WQ_ChatFragment";
 
     private FragmentChatBinding mBinding;
     private final MsgAdapter mAdapter = new MsgAdapter(new MsgItemCLickListener());
-    private final List<MsgInfo> mMsgInfoList = new ArrayList<>();
-    private WebService mMsgService;
-    private MsgManager mMsgManager;
+    private MsgManager mMsgManager = new MsgManager();
 
     private String token;
     private SharedPreferences sp;
@@ -107,7 +92,6 @@ public class ChatFragment extends Fragment {
 
         if (mFriendInfo == null) {
             MyToast.showToast(getContext(), "好友信息缺失");
-            requireActivity().finish();
             return;
         }
 
@@ -141,6 +125,7 @@ public class ChatFragment extends Fragment {
     }
 
     private void _proUiMessageInfoUpdate(UiMessageState state) {
+        Log.d(TAG, "_proUiMessageInfoUpdate #144" + state);
         if (!(state instanceof UiMessageState.DisPlay)) {
             Log.d(TAG, "[x] _proUiMessageInfoUpdate #144");
             return;
@@ -154,8 +139,8 @@ public class ChatFragment extends Fragment {
 
     private void sendMsg() {
         String msg = mBinding.etInputText.getText().toString().trim();
-        if (TextUtils.isEmpty(msg)){
-            MyToast.showToast(getContext(),"");
+        if (TextUtils.isEmpty(msg)) {
+            MyToast.showToast(getContext(), "");
             return;
         }
 
@@ -165,7 +150,7 @@ public class ChatFragment extends Fragment {
         mMsgManager.sendMsg(token, currentEmail, mFriendInfo.getEmail(), msg, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-
+                MyToast.showToast(getContext(), result ? "发送成功" : "发送失败");
             }
 
             @Override

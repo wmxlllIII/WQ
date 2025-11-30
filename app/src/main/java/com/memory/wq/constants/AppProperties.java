@@ -41,6 +41,7 @@ public class AppProperties {
     public static final String POST_MY_GET = HTTP_SERVER_ADDRESS + "/auth/getmypost";
     public static final String COMMENT_GET = HTTP_SERVER_ADDRESS + "/auth/getComment";
     public static final String COMMENT_ADD = HTTP_SERVER_ADDRESS + "/auth/addComment";
+    public static final String GET_MSG = HTTP_SERVER_ADDRESS + "/auth/getMsg";
 
     public static final String AGORA_TOKEN = HTTP_SERVER_ADDRESS + "/api/token";
     public static final String STS_TOKEN = HTTP_SERVER_ADDRESS + "/auth/getStsPermission";

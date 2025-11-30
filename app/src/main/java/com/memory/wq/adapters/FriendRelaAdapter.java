@@ -1,151 +1,105 @@
 package com.memory.wq.adapters;
 
-import android.content.Context;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
-
 import com.memory.wq.beans.FriendRelaInfo;
-import com.memory.wq.managers.MsgManager;
-import com.memory.wq.constants.AppProperties;
-import com.memory.wq.utils.ResultCallback;
+import com.memory.wq.interfaces.OnFriItemClickListener;
+import com.memory.wq.managers.AccountManager;
+import com.memory.wq.utils.diffutils.FriRelaDiffCallback;
 
 import java.util.List;
 
-public class FriendRelaAdapter extends BaseAdapter {
+public class FriendRelaAdapter extends ListAdapter<FriendRelaInfo, RecyclerView.ViewHolder> {
     public static final String TAG = "WQ_FriendRelaAdapter";
 
-    private Context context;
-    private List<FriendRelaInfo> reqInfoList;
-    private String email;
-    private UpdateRelaListener listener;
+    private OnFriItemClickListener listener;
 
 
-    public FriendRelaAdapter(Context context, List<FriendRelaInfo> reqInfoList) {
-        this.context = context;
-        this.reqInfoList = reqInfoList;
-        email = context.getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE).getString("email", "");
+    public FriendRelaAdapter(OnFriItemClickListener listener) {
+        super(new FriRelaDiffCallback());
+        this.listener = listener;
     }
 
-    public void updateAdapterDate(List<FriendRelaInfo> friendRelaList) {
-        if (friendRelaList != null && friendRelaList.size() > 0) {
-            this.reqInfoList.clear();
-            this.reqInfoList.addAll(friendRelaList);
-            notifyDataSetChanged();
+    @NonNull
+    @Override
+    public FriendRelaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_friend_request_layout, parent, false);
+        return new FriendRelaViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (!(holder instanceof FriendRelaViewHolder)) {
+            return;
         }
+
+        updateui((FriendRelaViewHolder) holder, position);
     }
 
-    @Override
-    public int getCount() {
-        return reqInfoList.size();
-    }
+    private void updateui(FriendRelaViewHolder holder, int position) {
+        FriendRelaInfo friendRela = getItem(position);
+        Log.d(TAG, "=============信息： " + friendRela);
+        boolean isReceiver = friendRela.getTargetEmail().equals(AccountManager.getUserInfo(holder.itemView.getContext()).getEmail());
 
-    @Override
-    public Object getItem(int position) {
-        return null;
+
+        Glide.with(holder.itemView.getContext())
+                .load(isReceiver ? friendRela.getSourceAvatarUrl() : friendRela.getTargetAvatarUrl())
+                .into(holder.iv_avatar);
+        holder.tv_nickname.setText(isReceiver ? friendRela.getSourceNickname() : friendRela.getTargetNickname());
+        holder.tv_verify_message.setText(friendRela.getValidMsg());
+
+
+        if (isReceiver) {
+            if ("sended".equals(friendRela.getState())) {
+                holder.tv_friend_state.setVisibility(View.GONE);
+                holder.btn_accept.setVisibility(View.VISIBLE);
+                holder.btn_reject.setVisibility(View.VISIBLE);
+
+            } else {
+                holder.tv_friend_state.setVisibility(View.VISIBLE);
+                holder.btn_accept.setVisibility(View.GONE);
+                holder.btn_reject.setVisibility(View.GONE);
+                holder.tv_friend_state.setText(friendRela.getState().equals("accepted") ? "已添加" : "已拒绝");
+            }
+        } else {
+            if ("sended".equals(friendRela.getState())) {
+                holder.tv_friend_state.setVisibility(View.VISIBLE);
+                holder.btn_accept.setVisibility(View.GONE);
+                holder.btn_reject.setVisibility(View.GONE);
+                holder.tv_friend_state.setText("已申请");
+
+            } else {
+                holder.tv_friend_state.setVisibility(View.VISIBLE);
+                holder.btn_accept.setVisibility(View.GONE);
+                holder.btn_reject.setVisibility(View.GONE);
+                holder.tv_friend_state.setText("accepted".equals(friendRela.getState()) ? "已添加" : "待验证");
+            }
+        }
+
+        holder.btn_accept.setOnClickListener(v -> listener.onAcceptClick(friendRela.getSourceEmail()));
+        holder.btn_reject.setOnClickListener(v -> listener.onRejectClick(friendRela.getSourceEmail()));
+
+
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        FriendRelaViewHolder friendRelaViewHolder;
-        if (convertView == null) {
-            convertView = View.inflate(context, R.layout.item_friend_request_layout, null);
-            friendRelaViewHolder = new FriendRelaViewHolder(convertView);
-            convertView.setTag(friendRelaViewHolder);
-
-        } else {
-            friendRelaViewHolder = (FriendRelaViewHolder) convertView.getTag();
-        }
-
-        FriendRelaInfo friendReqInfo = reqInfoList.get(position);
-        Log.d(TAG, "=============信息： " + friendReqInfo);
-        boolean isReceiver = friendReqInfo.getTargetEmail().equals(email);
-
-
-        Glide.with(parent.getContext())
-                .load(isReceiver ? friendReqInfo.getSourceAvatarUrl() : friendReqInfo.getTargetAvatarUrl())
-                .into(friendRelaViewHolder.iv_avatar);
-        friendRelaViewHolder.tv_nickname.setText(isReceiver ? friendReqInfo.getSourceNickname() : friendReqInfo.getTargetNickname());
-        friendRelaViewHolder.tv_verify_message.setText(friendReqInfo.getValidMsg());
-
-
-        if (isReceiver) {
-            if ("sended".equals(friendReqInfo.getState())) {
-                friendRelaViewHolder.tv_friend_state.setVisibility(View.GONE);
-                friendRelaViewHolder.btn_accept.setVisibility(View.VISIBLE);
-                friendRelaViewHolder.btn_reject.setVisibility(View.VISIBLE);
-
-            } else {
-                friendRelaViewHolder.tv_friend_state.setVisibility(View.VISIBLE);
-                friendRelaViewHolder.btn_accept.setVisibility(View.GONE);
-                friendRelaViewHolder.btn_reject.setVisibility(View.GONE);
-                friendRelaViewHolder.tv_friend_state.setText(friendReqInfo.getState().equals("accepted") ? "已添加" : "已拒绝");
-            }
-        } else {
-            if ("sended".equals(friendReqInfo.getState())) {
-                friendRelaViewHolder.tv_friend_state.setVisibility(View.VISIBLE);
-                friendRelaViewHolder.btn_accept.setVisibility(View.GONE);
-                friendRelaViewHolder.btn_reject.setVisibility(View.GONE);
-                friendRelaViewHolder.tv_friend_state.setText("已申请");
-
-            } else {
-                friendRelaViewHolder.tv_friend_state.setVisibility(View.VISIBLE);
-                friendRelaViewHolder.btn_accept.setVisibility(View.GONE);
-                friendRelaViewHolder.btn_reject.setVisibility(View.GONE);
-                friendRelaViewHolder.tv_friend_state.setText("accepted".equals(friendReqInfo.getState()) ? "已添加" : "待验证");
-            }
-        }
-
-        MsgManager msgManager = new MsgManager(parent.getContext());
-        friendRelaViewHolder.btn_accept.setOnClickListener(v -> {
-            msgManager.updateRela(context, true, friendReqInfo.getSourceEmail(), new ResultCallback<Boolean>() {
-                @Override
-                public void onSuccess(Boolean result) {
-                    Log.d(TAG, "onSuccess: =======" + result);
-                    listener.onUpdateRelaSuccess();
-                }
-
-                @Override
-                public void onError(String err) {
-
-                }
-            });
-
-        });
-
-        friendRelaViewHolder.btn_reject.setOnClickListener(v -> {
-            msgManager.updateRela(context, false, friendReqInfo.getSourceEmail(), new ResultCallback<Boolean>() {
-                @Override
-                public void onSuccess(Boolean result) {
-                    if (listener != null)
-                        listener.onUpdateRelaSuccess();
-                }
-
-                @Override
-                public void onError(String err) {
-
-                }
-            });
-        });
-
-
-        return convertView;
-    }
-
-
-    private static class FriendRelaViewHolder {
+    private class FriendRelaViewHolder extends RecyclerView.ViewHolder {
         //TODO IMAGEVIEW
         ImageView iv_avatar;
         TextView tv_nickname;
@@ -155,6 +109,7 @@ public class FriendRelaAdapter extends BaseAdapter {
         TextView tv_friend_state;
 
         private FriendRelaViewHolder(View convertView) {
+            super(convertView);
             iv_avatar = (ImageView) convertView.findViewById(R.id.iv_avatar);
             tv_nickname = (TextView) convertView.findViewById(R.id.tv_nickname);
             tv_verify_message = (TextView) convertView.findViewById(R.id.tv_verify_message);
@@ -162,13 +117,5 @@ public class FriendRelaAdapter extends BaseAdapter {
             btn_reject = (ImageButton) convertView.findViewById(R.id.btn_reject);
             tv_friend_state = (TextView) convertView.findViewById(R.id.tv_friend_state);
         }
-    }
-
-    public interface UpdateRelaListener {
-        void onUpdateRelaSuccess();
-    }
-
-    public void setUpdateRelaListener(UpdateRelaListener listener) {
-        this.listener = listener;
     }
 }

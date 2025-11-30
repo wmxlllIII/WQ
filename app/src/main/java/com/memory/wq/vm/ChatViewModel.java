@@ -69,7 +69,7 @@ public class ChatViewModel extends ViewModel {
         _uiMessageState.setValue(new UiMessageState.Loading());
 
 
-        msgManager.getMsg(,_chatId.getValue(), new ResultCallback<List<MsgInfo>>() {
+        msgManager.getMsg(_chatId.getValue(), new ResultCallback<List<MsgInfo>>() {
             @Override
             public void onSuccess(List<MsgInfo> result) {
                 _uiMessageState.postValue(new UiMessageState.DisPlay(result));
