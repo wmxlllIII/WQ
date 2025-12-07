@@ -29,6 +29,7 @@ import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.RtcInfo;
 import com.memory.wq.databinding.ActivityAudioBinding;
+import com.memory.wq.enumertions.ContentType;
 import com.memory.wq.enumertions.RoleType;
 import com.memory.wq.managers.AgoraManager;
 import com.memory.wq.managers.FriendManager;
@@ -445,7 +446,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
 
     private void shareRoomLinkToFriend(FriendInfo friendInfo) {
         MsgInfo shareMsg = new MsgInfo();
-        shareMsg.setMsgType(1);
+        shareMsg.setMsgType(ContentType.TYPE_LINK);
         shareMsg.setLinkTitle("加入共享房间");
         shareMsg.setContent("点击链接加入观看" + movieInfo.getTitle());
         shareMsg.setLinkContent(mRoomId);

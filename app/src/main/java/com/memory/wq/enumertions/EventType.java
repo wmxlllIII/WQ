@@ -1,5 +1,8 @@
 package com.memory.wq.enumertions;
 
+import android.text.TextUtils;
+import android.util.Log;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +12,7 @@ public enum EventType {
     EVENT_TYPE_SHAREMSG("EVENT_TYPE_SHAREMSG"),
     UNKNOWN("UNKNOWN");
     private String type;
+    private static final String TAG = "WQ_EventType";
     private static final Map<String, EventType> LOOKUP = new HashMap<>();
 
     public String getType() {
@@ -27,8 +31,11 @@ public enum EventType {
 
 
     public static EventType fromString(String text) {
-        if (text == null)
+        if (TextUtils.isEmpty(text)) {
+            Log.d(TAG, "[X] fromString #34");
             return UNKNOWN;
+        }
+
         return LOOKUP.getOrDefault(text.trim().toLowerCase(), UNKNOWN);
     }
 

@@ -13,6 +13,7 @@ import com.memory.wq.beans.RoomInfo;
 import com.memory.wq.beans.RtcInfo;
 import com.memory.wq.beans.StsTokenInfo;
 import com.memory.wq.beans.UserInfo;
+import com.memory.wq.enumertions.ContentType;
 import com.memory.wq.enumertions.EventType;
 
 import org.json.JSONArray;
@@ -130,17 +131,7 @@ public class JsonParser {
     }
 
     public static EventType getJsonType(String message) {
-        EventType type = EventType.UNKNOWN;
-        try {
-            JSONObject json = new JSONObject(message);
-            String eventType = json.getString("event_type");
-            type = EventType.fromString(eventType);
-            Log.d(TAG, "===getJsonType: type" + type);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.d(TAG, "===getJsonType:出异常了 " + e.getMessage());
-        }
-        return type;
+        return EventType.fromString(message);
     }
 
     public static FriendInfo searchFriendParser(JSONObject json) {
@@ -204,15 +195,23 @@ public class JsonParser {
 
     private static MsgInfo parseMsg(JSONObject item) throws JSONException {
         MsgInfo msgInfo = new MsgInfo();
-        String sessionId = item.getString("sessionId");
+        String senderId = item.getString("senderId");
+        String receiverId = item.getString("receiverId");
         String senderEmail = item.getString("senderEmail");
         String receiverEmail = item.getString("receiverEmail");
+//        String senderAvatar = item.getString("senderAvatar");
+//        String receiverAvatar = item.getString("receiverAvatar");
         String content = item.getString("content");
+        int type = item.getInt("type");
+        int msgId = item.getInt("id");
 
         msgInfo.setContent(content);
+        msgInfo.setMsgId(msgId);
+        msgInfo.setMsgType(ContentType.fromInt(type));
         msgInfo.setReceiverEmail(receiverEmail);
         msgInfo.setSenderEmail(senderEmail);
-
+//        msgInfo.setSenderAvatar(senderAvatar);
+//        msgInfo.setReceiverAvatar(receiverAvatar);
 
         return msgInfo;
     }
@@ -239,7 +238,7 @@ public class JsonParser {
         String receiverEmail = item.getString("receiverEmail");
         String linkContent = item.getString("linkContent");
 
-        msgInfo.setMsgType(1);
+        msgInfo.setMsgType(ContentType.TYPE_LINK);
         msgInfo.setLinkTitle(linkTitle);
         msgInfo.setLinkContent(linkContent);
         msgInfo.setLinkImageUrl(linkImageUrl);
@@ -362,12 +361,12 @@ public class JsonParser {
     }
 
     private static PostInfo postInfoParser(JSONObject item) throws JSONException {
-        Log.d(TAG, "postInfoParser: "+ item.toString());
+        Log.d(TAG, "postInfoParser: " + item.toString());
         PostInfo postInfo = new PostInfo();
         postInfo.setPostId(item.getInt("postId"));
         postInfo.setPoster(item.getString("userId"));
         String coverUrl = item.getString("coverUrl");
-        if ("null".equals(coverUrl)){
+        if ("null".equals(coverUrl)) {
             coverUrl = null;
         }
 

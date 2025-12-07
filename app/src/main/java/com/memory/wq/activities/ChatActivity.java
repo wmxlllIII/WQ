@@ -15,6 +15,7 @@ import com.memory.wq.R;
 import com.memory.wq.databinding.ActivityChatBinding;
 import com.memory.wq.enumertions.ChatPage;
 import com.memory.wq.fragment.ChatDetailFragment;
+import com.memory.wq.managers.AccountManager;
 import com.memory.wq.vm.ChatViewModel;
 
 public class ChatActivity extends BaseActivity<ActivityChatBinding> {

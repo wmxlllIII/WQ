@@ -17,14 +17,15 @@ import com.memory.wq.enumertions.EventType;
 import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.interfaces.JsonDataParser;
 import com.memory.wq.constants.AppProperties;
-import com.memory.wq.repository.MessageRepository;
+import com.memory.wq.provider.PersistenceRouter;
+import com.memory.wq.repository.WSRepository;
 import com.memory.wq.utils.JsonParser;
 import com.memory.wq.utils.ParserFactory;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -125,20 +126,21 @@ public class WebService extends Service {
 
 
     private void notifyMessageReceived(String message) {
-        Log.d(TAG, "notifyMessageReceived: =======收到原始消息：" + message);
+        Log.d(TAG, "notifyMessageReceived 收到原始消息：" + message);
         try {
             // 解析通用消息格式：{ "event_type": "xxx", "data": {} }
             JSONObject rootJson = new JSONObject(message);
             String eventTypeStr = rootJson.getString("event_type");
             EventType eventType = JsonParser.getJsonType(eventTypeStr);
-            JSONObject dataJson = rootJson.getJSONObject("data");
+            JSONArray data = rootJson.getJSONArray("data");
 
             JsonDataParser<?> parser = ParserFactory.getParser(eventType);
 
-            Object parsedData = parser.parse(dataJson);
+            Object parsedData = parser.parse(data);
 
             WebSocketMessage<?> webSocketMsg = new WebSocketMessage<>(eventType, parsedData);
             notifyListeners(webSocketMsg);
+            PersistenceRouter.persistIfSupported(eventType, webSocketMsg, this);
 
         } catch (JSONException e) {
             Log.e(TAG, "notifyMessageReceived 消息解析失败", e);
@@ -169,7 +171,7 @@ public class WebService extends Service {
                         Log.e(TAG, "notifyListeners 通知监听器失败", e);
                     }
                 }));
-        MessageRepository.getInstance().postMessage(message);
+        WSRepository.getInstance().postMessage(message);
     }
 
     private void notifyConnectionChanged(boolean isConnected) {
@@ -180,7 +182,7 @@ public class WebService extends Service {
 
 
     private void reconnect() {
-        new Handler(Looper.getMainLooper()).postDelayed(this::connectWebSocket, 5000);
+        mHandler.postDelayed(this::connectWebSocket, 30000);
     }
 
     @Override

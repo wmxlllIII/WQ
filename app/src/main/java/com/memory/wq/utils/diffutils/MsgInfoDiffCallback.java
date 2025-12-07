@@ -15,10 +15,6 @@ public class MsgInfoDiffCallback extends DiffUtil.ItemCallback<MsgInfo> {
 
     @Override
     public boolean areContentsTheSame(@NonNull MsgInfo oldItem, @NonNull MsgInfo newItem) {
-        //哪个字段变化需要更新ui
-        return TextUtils.equals(oldItem.getContent(), newItem.getContent())
-                || TextUtils.equals(oldItem.getLinkTitle(), newItem.getLinkTitle())
-                || TextUtils.equals(oldItem.getLinkImageUrl(), newItem.getLinkImageUrl())
-                || oldItem.getMsgType() == newItem.getMsgType();
+        return oldItem.getMsgId() == newItem.getMsgId();
     }
 }

@@ -5,6 +5,7 @@ import com.memory.wq.interfaces.JsonDataParser;
 import com.memory.wq.utils.parsers.FriendRequestParser;
 import com.memory.wq.utils.parsers.MsgInfoParser;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class ParserFactory {
 
     private static class DefaultParser<T> implements JsonDataParser<T> {
         @Override
-        public T parse(JSONObject dataJson) {
+        public T parse(JSONArray dataJson) {
             return (T) dataJson;
         }
     }

@@ -1,6 +1,7 @@
 package com.memory.wq.adapters;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.MsgInfo;
+import com.memory.wq.enumertions.ContentType;
 import com.memory.wq.interfaces.OnMsgItemClickListener;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.utils.diffutils.MsgInfoDiffCallback;
@@ -23,27 +25,25 @@ import java.util.List;
 
 
 public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
-    private OnMsgItemClickListener listener;
 
-    private static final int TYPE_TEXT = 0;
-    private static final int TYPE_LINK = 1;
+    private static final String TAG = "WQ_MsgAdapter";
+    private final OnMsgItemClickListener listener;
 
     public MsgAdapter(OnMsgItemClickListener listener) {
         super(new MsgInfoDiffCallback());
         this.listener = listener;
     }
 
-
     @Override
     public int getItemViewType(int position) {
-        return getCurrentList().get(position).getMsgType() == 0 ? TYPE_TEXT : TYPE_LINK;
+        return getItem(position).getMsgType().toInt();
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        if (viewType == TYPE_LINK) {
+        if (viewType == ContentType.TYPE_LINK.toInt()) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_share_link_layout, parent, false);
             return new LinkViewHolder(view);
         } else {
@@ -57,7 +57,7 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         MsgInfo msgInfo = getCurrentList().get(position);
 
-        if (TextUtils.isEmpty(AccountManager.getUserInfo(holder.itemView.getContext()).getEmail()) || msgInfo == null) {
+        if (TextUtils.isEmpty(AccountManager.getUserInfo(holder.itemView.getContext()).getEmail())) {
             if (holder instanceof TextViewHolder) {
                 TextViewHolder textHolder = (TextViewHolder) holder;
                 textHolder.ll_left.setVisibility(View.GONE);
@@ -86,10 +86,8 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
         String linkContent = msgInfo.getLinkContent();
         String content = msgInfo.getContent();
 
-        if (msgInfo.getSenderEmail().equals(
-                AccountManager.getUserInfo(holder.itemView.getContext()).getEmail()
-        )
-        ) {
+        if (msgInfo.getSenderEmail().equals(AccountManager.getUserInfo(holder.itemView.getContext()).getEmail())) {
+
             holder.ll_left_link.setVisibility(View.GONE);
             holder.ll_right_link.setVisibility(View.VISIBLE);
 
@@ -101,7 +99,7 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
             holder.tv_link_content_right.setText(content);
 
             Glide.with(holder.itemView.getContext())
-                    .load(msgInfo.getMyAvatarUrl())
+                    .load(msgInfo.getSenderAvatar())
                     .into(holder.iv_my_avatar_link);
         } else {
 
@@ -115,7 +113,7 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
             holder.tv_link_content_left.setText(content);
 
             Glide.with(holder.itemView.getContext())
-                    .load(msgInfo.getFriendAvatarUrl())
+                    .load(msgInfo.getReceiverAvatar())
                     .into(holder.iv_friend_avatar_link);
         }
 
@@ -124,25 +122,26 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
     }
 
     private void handleTextMessage(TextViewHolder holder, MsgInfo msgInfo) {
-        if (msgInfo.getSenderEmail().equals(
-                AccountManager.getUserInfo(holder.itemView.getContext()).getEmail()
-        )
-        ) {
+        Log.d(TAG, "===handleTextMessage=="+AccountManager.getUserInfo(holder.itemView.getContext()).getEmail());
+        Log.d(TAG, "===MsgInfo=="+msgInfo);
+        if (msgInfo.getSenderEmail().equals(AccountManager.getUserInfo(holder.itemView.getContext()).getEmail())) {
+            Log.d(TAG, "===handleTextMessage== 自己的");
             holder.ll_left.setVisibility(View.GONE);
             holder.ll_right.setVisibility(View.VISIBLE);
             holder.tv_rightMsg.setText(msgInfo.getContent());
         } else {
+            Log.d(TAG, "===handleTextMessage== 别人的");
             holder.ll_left.setVisibility(View.VISIBLE);
             holder.ll_right.setVisibility(View.GONE);
             holder.tv_leftMsg.setText(msgInfo.getContent());
         }
 
         Glide.with(holder.iv_friend_avatar.getContext())
-                .load(msgInfo.getFriendAvatarUrl())
+                .load(msgInfo.getReceiverAvatar())
                 .into(holder.iv_friend_avatar);
 
         Glide.with(holder.iv_my_avatar.getContext())
-                .load(msgInfo.getMyAvatarUrl())
+                .load(msgInfo.getSenderAvatar())
                 .into(holder.iv_my_avatar);
     }
 

@@ -7,6 +7,7 @@ import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.interfaces.JsonDataParser;
 import com.memory.wq.utils.JsonParser;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,12 +18,7 @@ public class FriendRequestParser implements JsonDataParser<List<FriendRelaInfo>>
     private static final String TAG = "WQ_FriendRequestParser";
 
     @Override
-    public List<FriendRelaInfo> parse(JSONObject dataJson) {
-        try {
-            return JsonParser.friendRelaParser(dataJson.getJSONArray("data"));
-        } catch (JSONException e) {
-            Log.d(TAG, "[X]  FriendRequestParser e" + e.getMessage());
-            return new ArrayList<>();
-        }
+    public List<FriendRelaInfo> parse(JSONArray dataJson) {
+        return JsonParser.friendRelaParser(dataJson);
     }
 }

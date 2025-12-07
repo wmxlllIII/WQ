@@ -1,5 +1,7 @@
 package com.memory.wq.beans;
 
+import com.memory.wq.enumertions.ContentType;
+
 import java.io.Serializable;
 
 public class MsgInfo implements Serializable {
@@ -9,28 +11,29 @@ public class MsgInfo implements Serializable {
 
     private int status;
     private String senderEmail;
-    private String myAvatarUrl;
-    private String friendAvatarUrl;
+    private String senderAvatar;
+    private String receiverAvatar;
     private String receiverEmail;
     private long timestamp;
 
-    private int msgType; // 0=普通文本 1=分享卡片
+    private ContentType msgType;
     private String linkTitle;
     private String linkTime;
     private String linkContent;
     private String linkImageUrl;
 
-    public int getMsgType() {
+    public ContentType getMsgType() {
         return msgType;
+    }
+
+    public void setMsgType(ContentType msgType) {
+        this.msgType = msgType;
     }
 
     public String getLinkTitle() {
         return linkTitle;
     }
 
-    public void setMsgType(int msgType) {
-        this.msgType = msgType;
-    }
 
     public void setLinkTitle(String linkTitle) {
         this.linkTitle = linkTitle;
@@ -60,20 +63,20 @@ public class MsgInfo implements Serializable {
         this.linkImageUrl = linkImageUrl;
     }
 
-    public String getMyAvatarUrl() {
-        return myAvatarUrl;
+    public String getSenderAvatar() {
+        return senderAvatar;
     }
 
-    public void setMyAvatarUrl(String myAvatarUrl) {
-        this.myAvatarUrl = myAvatarUrl;
+    public void setSenderAvatar(String senderAvatar) {
+        this.senderAvatar = senderAvatar;
     }
 
-    public String getFriendAvatarUrl() {
-        return friendAvatarUrl;
+    public String getReceiverAvatar() {
+        return receiverAvatar;
     }
 
-    public void setFriendAvatarUrl(String friendAvatarUrl) {
-        this.friendAvatarUrl = friendAvatarUrl;
+    public void setReceiverAvatar(String receiverAvatar) {
+        this.receiverAvatar = receiverAvatar;
     }
 
     public String getSenderEmail() {
@@ -134,8 +137,8 @@ public class MsgInfo implements Serializable {
                 ", content='" + content + '\'' +
                 ", status=" + status +
                 ", senderEmail='" + senderEmail + '\'' +
-                ", myAvatarUrl='" + myAvatarUrl + '\'' +
-                ", friendAvatarUrl='" + friendAvatarUrl + '\'' +
+                ", senderAvatar='" + senderAvatar + '\'' +
+                ", receiverAvatar='" + receiverAvatar + '\'' +
                 ", receiverEmail='" + receiverEmail + '\'' +
                 ", timestamp=" + timestamp +
                 ", msgType=" + msgType +

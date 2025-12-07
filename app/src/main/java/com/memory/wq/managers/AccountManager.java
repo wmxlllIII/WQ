@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.memory.wq.beans.UserInfo;
+import com.memory.wq.provider.WqApplication;
 
 import java.io.Serializable;
 
@@ -38,7 +39,7 @@ public class AccountManager {
 
     public static UserInfo getUserInfo(Context context){
         
-        return SPManager.getUserInfo(context);
+        return SPManager.getUserInfo(WqApplication.getInstance());
     }
 
     public static long getUserId(){

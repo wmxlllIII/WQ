@@ -53,7 +53,7 @@ public class FriendManager {
                         int code = json.getInt("code");
                         if (code == 1) {
                             FriendInfo friendInfo = JsonParser.searchFriendParser(json);
-                            mHandler.post(()-> callback.onSuccess(friendInfo));
+                            mHandler.post(() -> callback.onSuccess(friendInfo));
 
                         }
                     } catch (JSONException e) {
@@ -113,11 +113,12 @@ public class FriendManager {
 
     public void getAllFriends(Context context, String token, ResultCallback<List<FriendInfo>> callback) {
         List<FriendInfo> friendsFromDB = getFriendFromDB(context);
-        callback.onSuccess(friendsFromDB);
+        mHandler.post(() -> callback.onSuccess(friendsFromDB));
+
         getAllFriendFromServer(context, token, new ResultCallback<List<FriendInfo>>() {
             @Override
             public void onSuccess(List<FriendInfo> result) {
-                callback.onSuccess(result);
+                mHandler.post(() -> callback.onSuccess(result));
             }
 
             @Override

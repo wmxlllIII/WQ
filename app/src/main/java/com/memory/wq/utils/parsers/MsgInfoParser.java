@@ -16,9 +16,9 @@ public class MsgInfoParser implements JsonDataParser<List<MsgInfo>> {
     private static final String TAG = "WQ_MsgInfoParser";
 
     @Override
-    public List<MsgInfo> parse(JSONObject dataJson) {
+    public List<MsgInfo> parse(JSONArray dataJson) {
         try {
-            return JsonParser.msgParser(dataJson.getJSONArray("msg_list"));
+            return JsonParser.msgParser(dataJson);
         } catch (Exception e) {
             Log.d(TAG, "[X] MsgInfoParser e" + e.getMessage());
             return new ArrayList<>();

@@ -6,7 +6,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
+        android:background="#161528"
         android:fitsSystemWindows="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -55,6 +55,7 @@
             android:id="@+id/rv_msg"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            overScrollMode="never"
             app:layout_constraintBottom_toTopOf="@id/cl_bottom_zone"
             app:layout_constraintTop_toBottomOf="@id/cl_title_zone" />
 
@@ -74,6 +75,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="写下此刻想法吧"
+                android:maxLines="2"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/btn_send"
                 app:layout_constraintStart_toStartOf="parent"

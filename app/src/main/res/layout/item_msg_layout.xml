@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:padding="12dp"
             android:textColor="#000000"
+            android:background="@drawable/bg_item_msg_left"
             android:layout_marginLeft="8dp" />
 
     </LinearLayout>
@@ -47,6 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
             android:padding="12dp"
+            android:background="@drawable/bg_item_msg_left"
             android:textColor="#000000"/>
 
         <ImageView

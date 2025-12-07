@@ -41,9 +41,6 @@ public class UploadPostActivity extends BaseActivity<ActivityEditRecommendBindin
     private PermissionManager permissionManager;
     public static final int PERMISSION_REQUEST_CODE = 0;
 
-    public UploadPostActivity() {
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +87,7 @@ public class UploadPostActivity extends BaseActivity<ActivityEditRecommendBindin
     }
 
     private void initView() {
+        mBinding.ivBack.setOnClickListener(view -> finish());
 
         mBinding.tvPublish.setOnClickListener(v -> {
             mBinding.tvPublish.setEnabled(false);

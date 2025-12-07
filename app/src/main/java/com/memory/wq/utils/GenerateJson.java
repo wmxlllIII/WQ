@@ -223,10 +223,12 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getLoadMsgJson(String targetEmail) {
+    public static String getLoadMsgJson(String targetEmail,int page,int size) {
         JSONObject object = new JSONObject();
         try {
             object.put("chatId", targetEmail);
+            object.put("page", page);
+            object.put("size", size);
         } catch (JSONException e) {
             Log.d(TAG, "[X] getLoadMsgJson #233"+e.getMessage());
         }

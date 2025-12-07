@@ -2,33 +2,24 @@ package com.memory.wq.managers;
 
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.beans.MsgInfo;
-import com.memory.wq.beans.UserInfo;
 import com.memory.wq.constants.AppProperties;
-import com.memory.wq.enumertions.ChatType;
 import com.memory.wq.provider.FriendSqlOP;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.provider.MsgSqlOP;
-import com.memory.wq.utils.ResultCallback;
+import com.memory.wq.provider.WqApplication;
+import com.memory.wq.thread.ThreadPoolManager;
 import com.memory.wq.utils.GenerateJson;
 import com.memory.wq.utils.JsonParser;
-import com.memory.wq.thread.ThreadPoolManager;
-
+import com.memory.wq.utils.ResultCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +27,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +34,6 @@ import java.util.Map;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class MsgManager {
 
@@ -137,17 +126,14 @@ public class MsgManager {
                     return;
                 }
                 try {
-                    //parseJson-->List
-                    ResponseBody body = response.body();
-                    JSONObject json = new JSONObject(body.string());
-                    Log.d(TAG, "onResponse:====code " + json.getInt("code"));
+                    JSONObject json = new JSONObject(response.body().string());
                     if (json.getInt("code") == 1) {
                         JSONArray requestList = json.getJSONArray("data");
                         List<FriendRelaInfo> friendRelaList = JsonParser.friendRelaParser(requestList);
                         callback.onSuccess(friendRelaList);
-                    } else
+                    } else {
                         Log.d(TAG, "onResponse: ====返回码不是1");
-
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -222,10 +208,10 @@ public class MsgManager {
 
     }
 
-    public void getMsg(String chatId, ResultCallback<List<MsgInfo>> callback) {
-        String json = GenerateJson.getLoadMsgJson(chatId);
+    public void getMsg(String chatId, String token, int page, int size, ResultCallback<List<MsgInfo>> callback) {
+        String json = GenerateJson.getLoadMsgJson(chatId, page, size);
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.GET_MSG, "", json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.GET_MSG, token, json, new Callback() {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
@@ -233,17 +219,14 @@ public class MsgManager {
                         mHandler.post(() -> callback.onError("网络异常"));
                         return;
                     }
+
                     try {
                         JSONObject json = new JSONObject(response.body().string());
-                        int code = json.getInt("code");
 
-                        if (code == 1) {
-                            List<MsgInfo> msgList = JsonParser.msgParser(json.getJSONArray("data"));
-                            mHandler.post(() -> callback.onSuccess(msgList));
+                        List<MsgInfo> msgList = JsonParser.msgParser(json.getJSONArray("resultList"));
+                        saveMsg(msgList);
+                        mHandler.post(() -> callback.onSuccess(msgList));
 
-                        } else {
-                            mHandler.post(() -> callback.onError("网络异常，获取数据失败"));
-                        }
                     } catch (Exception e) {
                         Log.d(TAG, "[x] getMsg #273" + e.getMessage());
                     }
@@ -257,7 +240,7 @@ public class MsgManager {
         });
     }
 
-    public void sendMsg(String token, String senderEmail, String targetEmail, String content, ResultCallback<Boolean> callback) {
+    public void sendMsg(String token, String targetEmail, String content, ResultCallback<List<MsgInfo>> callback) {
         String json = GenerateJson.getMsgJson(targetEmail, content);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.SEND_MSG, token, json, new Callback() {
@@ -269,35 +252,39 @@ public class MsgManager {
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    try {
-                        if (response.isSuccessful() && response.body() != null) {
-                            JSONObject jsonResponse = new JSONObject(response.body().string());
-                            if (jsonResponse.getInt("code") == 1) {
-                                // 插入数据库成功后触发回调
-                                MsgInfo msgInfo = new MsgInfo();
-                                msgInfo.setSenderEmail(senderEmail);
-                                msgInfo.setReceiverEmail(targetEmail);
-                                msgInfo.setContent(content);
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] sendMsg #254" + response.code());
+                        mHandler.post(() -> callback.onError("网络异常"));
+                        return;
+                    }
 
-                                mHandler.post(() -> callback.onSuccess(true));
-                            }
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        if (json.getInt("code") == 1) {
+                            List<MsgInfo> msgList = JsonParser.msgParser(json.getJSONArray("data"));
+                            saveMsg(msgList);
+                            mHandler.post(() -> callback.onSuccess(msgList));
                         }
                     } catch (Exception e) {
                         Log.d(TAG, "[x] sendMsg #310" + e.getMessage());
-                        callback.onError("发送失败");
+                        mHandler.post(() -> callback.onError("网络异常"));
                     }
                 }
             });
         });
     }
 
-    public void saveMsg(Context context, List<MsgInfo> msgList) {
-        boolean insertSuccess = new MsgSqlOP(context).insertMessages(msgList);
+
+    private void saveMsg(List<MsgInfo> msgList) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            boolean insertSuccess = new MsgSqlOP(WqApplication.getInstance()).insertMessages(msgList);
+        });
     }
 
-    public void getMsgFromServer() {
 
+    public void deleteMsg(int msgId, ResultCallback<Boolean> booleanResultCallback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+
+        });
     }
-
-
 }

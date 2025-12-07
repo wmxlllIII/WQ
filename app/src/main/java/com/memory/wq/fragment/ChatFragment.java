@@ -35,6 +35,8 @@ import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.ShareConfirmDialog;
 import com.memory.wq.vm.ChatViewModel;
 
+import java.util.List;
+
 public class ChatFragment extends Fragment {
     private static final String TAG = "WQ_ChatFragment";
 
@@ -44,7 +46,6 @@ public class ChatFragment extends Fragment {
 
     private String token;
     private SharedPreferences sp;
-    private FriendInfo mFriendInfo;
     private MsgInfo mLinkInfo;
     private MovieManager mMovieManager;
     private ChatViewModel mChatVM;
@@ -88,13 +89,6 @@ public class ChatFragment extends Fragment {
         token = sp.getString("token", "");
 
         mBinding.rvMsg.setAdapter(mAdapter);
-
-
-        if (mFriendInfo == null) {
-            MyToast.showToast(getContext(), "好友信息缺失");
-            return;
-        }
-
     }
 
     private void initView(LifecycleOwner lifecycleOwner) {
@@ -120,8 +114,8 @@ public class ChatFragment extends Fragment {
             return;
         }
 
-        String diplayTitle = uiChatInfo.getDisplayName() != null ? uiChatInfo.getDisplayName() : uiChatInfo.getNickname();
-        mBinding.tvNickname.setText(diplayTitle);
+        String displayTitle = uiChatInfo.getDisplayName() != null ? uiChatInfo.getDisplayName() : uiChatInfo.getNickname();
+        mBinding.tvNickname.setText(displayTitle);
     }
 
     private void _proUiMessageInfoUpdate(UiMessageState state) {
@@ -144,54 +138,43 @@ public class ChatFragment extends Fragment {
             return;
         }
 
-        String currentEmail = sp.getString("email", "");
-
-
-        mMsgManager.sendMsg(token, currentEmail, mFriendInfo.getEmail(), msg, new ResultCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean result) {
-                MyToast.showToast(getContext(), result ? "发送成功" : "发送失败");
+        mChatVM.sendMsg(token, msg, success -> {
+            if (success) {
+                mBinding.etInputText.setText("");
             }
-
-            @Override
-            public void onError(String err) {
-
-            }
+            MyToast.showToast(getContext(), success ? "发送成功" : "发送失败");
         });
-        mBinding.etInputText.setText("");
     }
 
-    private void showShareUI() {
-        Log.d(TAG, "onShare: ===分享信息" + mFriendInfo.toString() + "aaa+++" + mLinkInfo.toString());
-
-        ShareConfirmDialog dialog = new ShareConfirmDialog(getContext(), mFriendInfo, mLinkInfo, new ShareConfirmDialog.OnShareActionListener() {
-            @Override
-            public void onShare(MsgInfo shareMsg) {
-
-                mMovieManager.shareRoom(getContext(), token, shareMsg, new ResultCallback<Boolean>() {
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        MyToast.showToast(getContext(), "分享成功");
-                        getActivity().finish();
-                    }
-
-                    @Override
-                    public void onError(String err) {
-                        MyToast.showToast(getContext(), "分享失败");
-                        getActivity().finish();
-                    }
-                });
-            }
-
-            @Override
-            public void onCancel() {
-                MyToast.showToast(getContext(), "用户取消分享");
-                getActivity().finish();
-            }
-        });
-        dialog.show();
-
-    }
+//    private void showShareUI() {
+//        ShareConfirmDialog dialog = new ShareConfirmDialog(getContext(), mFriendInfo, mLinkInfo, new ShareConfirmDialog.OnShareActionListener() {
+//            @Override
+//            public void onShare(MsgInfo shareMsg) {
+//
+//                mMovieManager.shareRoom(getContext(), token, shareMsg, new ResultCallback<Boolean>() {
+//                    @Override
+//                    public void onSuccess(Boolean result) {
+//                        MyToast.showToast(getContext(), "分享成功");
+//                        getActivity().finish();
+//                    }
+//
+//                    @Override
+//                    public void onError(String err) {
+//                        MyToast.showToast(getContext(), "分享失败");
+//                        getActivity().finish();
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//                MyToast.showToast(getContext(), "用户取消分享");
+//                getActivity().finish();
+//            }
+//        });
+//        dialog.show();
+//
+//    }
 
     private class MsgItemCLickListener implements OnMsgItemClickListener {
         @Override

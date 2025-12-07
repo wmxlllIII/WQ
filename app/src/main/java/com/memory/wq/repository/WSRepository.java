@@ -3,23 +3,18 @@ package com.memory.wq.repository;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.memory.wq.enumertions.EventType;
-import com.memory.wq.interfaces.IWebSocketListener;
-import com.memory.wq.service.WebService;
 import com.memory.wq.service.WebSocketMessage;
 
-import java.util.EnumSet;
-
-public class MessageRepository {
-    private static MessageRepository instance;
+public class WSRepository {
+    private static WSRepository instance;
     private MutableLiveData<WebSocketMessage<?>> messageLiveData = new MutableLiveData<>();
 
-    public MessageRepository() {
+    public WSRepository() {
     }
 
-    public static MessageRepository getInstance() {
+    public static WSRepository getInstance() {
         if (instance == null) {
-            instance = new MessageRepository();
+            instance = new WSRepository();
         }
         return instance;
     }
