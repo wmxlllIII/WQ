@@ -1,10 +1,8 @@
 package com.memory.wq.activities;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -18,6 +16,7 @@ import com.memory.wq.R;
 import com.memory.wq.adapters.FriendRelaAdapter;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.FriendRelaInfo;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.ActivityTestWsactivityBinding;
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.enumertions.SearchUserType;
@@ -25,21 +24,18 @@ import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.interfaces.OnFriItemClickListener;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.MsgManager;
-import com.memory.wq.constants.AppProperties;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
 import com.memory.wq.service.WebSocketMessage;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBinding> implements IWebSocketListener, ResultCallback<List<FriendRelaInfo>> {
 
     private static final String TAG = "WQ_FriendRelaActivity";
-    private String token;
 
     private WebService mWebService;
     private MyConn mConn;
@@ -47,7 +43,6 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     private final EnumSet<EventType> EVENT_TYPE_SET = EnumSet.of(EventType.EVENT_TYPE_REQUEST_FRIEND);
     private final FriendRelaAdapter mAdapter = new FriendRelaAdapter(new FriItemClickListener());
     private MsgManager mMsgManager;
-    private SharedPreferences sp;
     private FriendManager mFriendManager;
 
     @Override
@@ -69,24 +64,23 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
         mConn = new MyConn();
         mMsgManager = new MsgManager();
         bindService(intent, mConn, BIND_AUTO_CREATE);
-
-
-        sp = getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
-        token = sp.getString("token", "");
         mFriendManager = new FriendManager();
     }
 
     private void showLV() {
         mBinding.rvFriendReq.setLayoutManager(new LinearLayoutManager(this));
         mBinding.rvFriendReq.setAdapter(mAdapter);
-        mMsgManager.getAllRelation(this, false, AppProperties.FRIEND_RELATIONSHIP, token, this);
+        mMsgManager.getRelation(this);
     }
 
     private void initView() {
         mBinding.llSearch.setOnClickListener(view -> {
             startActivity(new Intent(this, SearchUserActivity.class));
         });
+
         mBinding.tvScan.setOnClickListener(view -> scanQRCode());
+
+        mBinding.ivBack.setOnClickListener(view -> finish());
     }
 
     @Override
@@ -182,11 +176,11 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     }
 
     private void enterPersonalHome(SearchUserType type, String targetAccount) {
-        mFriendManager.searchUser(type, targetAccount, token, new ResultCallback<FriendInfo>() {
+        mFriendManager.searchUser(type, targetAccount, new ResultCallback<FriendInfo>() {
             @Override
             public void onSuccess(FriendInfo result) {
                 Intent intent = new Intent(FriendRelaActivity.this, PersonalActivity.class);
-                intent.putExtra("AppProperties.FRIENDINFO", result);
+                intent.putExtra(AppProperties.PERSON_ID, result.getUuNumber());
                 startActivity(intent);
             }
 
@@ -200,7 +194,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     private class FriItemClickListener implements OnFriItemClickListener {
 
         @Override
-        public void onItemClick(String targetId) {
+        public void onItemClick(long targetId) {
             // 进主页
         }
 
@@ -210,10 +204,11 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
         }
 
         @Override
-        public void onAcceptClick(String targetId) {
-            mMsgManager.updateRela(FriendRelaActivity.this, true, targetId, new ResultCallback<Boolean>() {
+        public void onAcceptClick(long targetId) {
+            mMsgManager.updateRela(targetId, true, new ResultCallback<Boolean>() {
                 @Override
                 public void onSuccess(Boolean result) {
+                    //todo 为什么没更新ui
                     MyToast.showToast(FriendRelaActivity.this, result ? "已同意" : "已拒绝");
                 }
 
@@ -225,10 +220,11 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
         }
 
         @Override
-        public void onRejectClick(String targetId) {
-            mMsgManager.updateRela(FriendRelaActivity.this, false, targetId, new ResultCallback<Boolean>() {
+        public void onRejectClick(long targetId) {
+            mMsgManager.updateRela(targetId, false, new ResultCallback<Boolean>() {
                 @Override
                 public void onSuccess(Boolean result) {
+
                 }
 
                 @Override

@@ -6,8 +6,6 @@ import android.content.SharedPreferences;
 import com.memory.wq.beans.UserInfo;
 import com.memory.wq.provider.WqApplication;
 
-import java.io.Serializable;
-
 public class AccountManager {
     private static final String PREF_NAME = "UserSession";
     private static final String KEY_USER_TYPE = "userType";
@@ -32,17 +30,17 @@ public class AccountManager {
     }
 
 
-    public static boolean isVisitorUser(Context context) {
-        SharedPreferences sp = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    public static boolean isVisitorUser() {
+        SharedPreferences sp = WqApplication.getInstance().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         return UserType.USER_TYPE_VISITOR.getType().equals(sp.getString(KEY_USER_TYPE, UserType.USER_TYPE_VISITOR.getType()));
     }
 
-    public static UserInfo getUserInfo(Context context){
+    public static UserInfo getUserInfo(){
         
-        return SPManager.getUserInfo(WqApplication.getInstance());
+        return SPManager.getUserInfo();
     }
 
     public static long getUserId(){
-        return -1L;
+        return getUserInfo().getUuNumber();
     }
 }

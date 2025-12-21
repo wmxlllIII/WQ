@@ -1,4 +1,4 @@
-package com.memory.wq.helper;
+package com.memory.wq.sp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,6 +8,14 @@ public class SpHelper {
 
     public SpHelper(Context context, String name) {
         sharedPreferences = context.getSharedPreferences(name, Context.MODE_PRIVATE);
+    }
+
+    public void saveLong(String key, Long value) {
+        sharedPreferences.edit().putLong(key, value).apply();
+    }
+
+    public Long getLong(String key, Long defaultValue) {
+        return sharedPreferences.getLong(key, defaultValue);
     }
 
     public void saveString(String key, String value) {

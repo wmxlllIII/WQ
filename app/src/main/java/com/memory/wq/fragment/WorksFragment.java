@@ -57,7 +57,7 @@ public class WorksFragment extends Fragment {
 
     private void initData() {
         mPostManager = new PostManager();
-        token = SPManager.getUserInfo(getContext()).getToken();
+        token = SPManager.getUserInfo().getToken();
         loadNextPage();
     }
 

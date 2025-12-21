@@ -8,13 +8,10 @@ public class MsgInfo implements Serializable {
 
     private long msgId;
     private String content;
-
-    private int status;
-    private String senderEmail;
-    private String senderAvatar;
-    private String receiverAvatar;
-    private String receiverEmail;
-    private long timestamp;
+    private long senderId;
+    private long receiverId;
+    private long createAt;
+    private long updateAt;
 
     private ContentType msgType;
     private String linkTitle;
@@ -63,29 +60,6 @@ public class MsgInfo implements Serializable {
         this.linkImageUrl = linkImageUrl;
     }
 
-    public String getSenderAvatar() {
-        return senderAvatar;
-    }
-
-    public void setSenderAvatar(String senderAvatar) {
-        this.senderAvatar = senderAvatar;
-    }
-
-    public String getReceiverAvatar() {
-        return receiverAvatar;
-    }
-
-    public void setReceiverAvatar(String receiverAvatar) {
-        this.receiverAvatar = receiverAvatar;
-    }
-
-    public String getSenderEmail() {
-        return senderEmail;
-    }
-
-    public void setSenderEmail(String senderEmail) {
-        this.senderEmail = senderEmail;
-    }
 
     public String getContent() {
         return content;
@@ -94,31 +68,6 @@ public class MsgInfo implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public String getReceiverEmail() {
-        return receiverEmail;
-    }
-
-    public void setReceiverEmail(String receiverEmail) {
-        this.receiverEmail = receiverEmail;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
     }
 
     public long getMsgId() {
@@ -130,22 +79,35 @@ public class MsgInfo implements Serializable {
         this.msgId = msgId;
     }
 
-    @Override
-    public String toString() {
-        return "MsgInfo{" +
-                "msgId=" + msgId +
-                ", content='" + content + '\'' +
-                ", status=" + status +
-                ", senderEmail='" + senderEmail + '\'' +
-                ", senderAvatar='" + senderAvatar + '\'' +
-                ", receiverAvatar='" + receiverAvatar + '\'' +
-                ", receiverEmail='" + receiverEmail + '\'' +
-                ", timestamp=" + timestamp +
-                ", msgType=" + msgType +
-                ", linkTitle='" + linkTitle + '\'' +
-                ", linkTime='" + linkTime + '\'' +
-                ", linkContent='" + linkContent + '\'' +
-                ", linkImageUrl='" + linkImageUrl + '\'' +
-                '}';
+    public long getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(long createAt) {
+        this.createAt = createAt;
+    }
+
+    public long getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(long updateAt) {
+        this.updateAt = updateAt;
+    }
+
+    public long getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(long senderId) {
+        this.senderId = senderId;
+    }
+
+    public long getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(long receiverId) {
+        this.receiverId = receiverId;
     }
 }

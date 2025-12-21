@@ -9,5 +9,9 @@
         <attr name="onFail" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="SettingsItemView">
+        <attr name="text" format="string" />
+        <attr name="enableSwitch" format="boolean" />
+    </declare-styleable>
 
 </resources>

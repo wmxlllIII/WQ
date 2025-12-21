@@ -28,7 +28,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class AuthManager {
-    public static final String TAG = AuthManager.class.getName();
+    public static final String TAG = "WQ_AuthManager";
 
     public static final int EMPTY_PWD = 0;
     public static final int MISMATCH_PWD = 1;
@@ -39,13 +39,14 @@ public class AuthManager {
         String loginJson = GenerateJson.generateJson(JsonType.JSONTYPE_LOGIN, account, 0, pwd);
         System.out.println("===login===AuthOP" + loginJson);
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.LOGIN_URL, "", loginJson, new Callback() {
+            HttpStreamOP.postJson(AppProperties.LOGIN_URL, loginJson, new Callback() {
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
 
                     if (!response.isSuccessful()) {
-                        callback.onError(response.toString());
+                        Log.d(TAG, "[x] login #48");
+                        mHandler.post(()-> callback.onError("登录失败，请稍后再试"));
                         return;
                     }
                     try {
@@ -54,8 +55,7 @@ public class AuthManager {
                         if (code == 1) {
                             UserInfo userInfo = JsonParser.loginParser(json);
                             System.out.println("=======login==成功了" + userInfo);
-                            userInfo.setLogin(true);
-                            callback.onSuccess(userInfo);
+                            mHandler.post(() -> callback.onSuccess(userInfo));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -72,10 +72,12 @@ public class AuthManager {
     }
 
     public void tryAutoLogin(String token, ResultCallback<UserInfo> callback) {
+        Log.d(TAG, "tryAutoLogin");
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.AUTOLOGIN_URL, token, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] tryAutoLogin #79");
                     mHandler.post(() -> callback.onError("网络连接失败"));
                 }
 
@@ -88,6 +90,8 @@ public class AuthManager {
                     }
 
                     try {
+                        String responseBody = response.body().string();
+                        Log.d(TAG, "=====================tryAutoLogin response: " + responseBody);
                         JSONObject json = new JSONObject(response.body().string());
                         if (json.getInt("code") == 1) {
                             //TODO onSuccess("token")
@@ -97,6 +101,7 @@ public class AuthManager {
                             mHandler.post(() -> callback.onError(response.message()));
                         }
                     } catch (JSONException e) {
+                        Log.d(TAG, "[x] tryAutoLogin #103");
                         e.printStackTrace();
                     }
                 }
@@ -136,7 +141,7 @@ public class AuthManager {
         String json = GenerateJson.generateJson(JsonType.JSONTYPE_REGISTER, email, code, password);
         System.out.println("===register===AuthOP" + json);
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.REGISTER_URL, "", json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.REGISTER_URL, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     callback.onError(e.getMessage());
@@ -170,7 +175,7 @@ public class AuthManager {
     public void getCode(String email, ResultCallback<Boolean> callback) {
         String getCodeJson = GenerateJson.generateJson(JsonType.JSONTYPE_REQUEST, email, 0, "");
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.REQUEST_URL, "", getCodeJson, new Callback() {
+            HttpStreamOP.postJson(AppProperties.REQUEST_URL, getCodeJson, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     callback.onError(e.getMessage());

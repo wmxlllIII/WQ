@@ -35,21 +35,22 @@ public class GenerateJson {
         return json;
     }
 
-    public static String getApplyFriendJson(String targetEmail) {
+    public static String getApplyFriendJson(long targetId,String validMsg) {
         JSONObject object = new JSONObject();
         try {
-            object.put("targetEmail", targetEmail);
+            object.put("targetId", targetId);
+            object.put("validMsg", validMsg);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return object.toString();
     }
 
-    public static String getUpdateRelaJson(String sourceEmail, boolean isAgree) {
+    public static String getUpdateRelaJson(long sourceUuNumber, boolean isAgree) {
         JSONObject object = new JSONObject();
         try {
-            object.put("agree", isAgree);
-            object.put("requestEmail", sourceEmail);
+            object.put("isAgree", isAgree);
+            object.put("sourceUuNumber", sourceUuNumber);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -81,13 +82,14 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getMsgJson(String targetEmail, String content) {
+    public static String getSendMsgJson(long targetUuNumber, String content,int msgType) {
         JSONObject object = new JSONObject();
         try {
             object.put("msg", content);
-            object.put("targetEmail", targetEmail);
+            object.put("msgType", msgType);
+            object.put("targetUuNumber", targetUuNumber);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.d(TAG, "[x] getMsgJson #90");
         }
         return object.toString();
     }
@@ -143,7 +145,7 @@ public class GenerateJson {
     public static String getShareMsgJson(MsgInfo shareMsg) {
         JSONObject object = new JSONObject();
         try {
-            object.put("targetEmail", shareMsg.getReceiverEmail());
+            object.put("targetId", shareMsg.getReceiverId());
             object.put("linkTitle", shareMsg.getLinkTitle());
             object.put("linkContent", shareMsg.getLinkContent());
             object.put("linkImageUrl", shareMsg.getLinkImageUrl());
@@ -223,14 +225,14 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getLoadMsgJson(String targetEmail,int page,int size) {
+    public static String getLoadMsgJson(String targetEmail, int page, int size) {
         JSONObject object = new JSONObject();
         try {
             object.put("chatId", targetEmail);
             object.put("page", page);
             object.put("size", size);
         } catch (JSONException e) {
-            Log.d(TAG, "[X] getLoadMsgJson #233"+e.getMessage());
+            Log.d(TAG, "[X] getLoadMsgJson #233" + e.getMessage());
         }
         return object.toString();
     }

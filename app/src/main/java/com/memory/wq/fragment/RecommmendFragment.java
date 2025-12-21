@@ -50,7 +50,6 @@ public class RecommmendFragment extends Fragment {
     private ViewPager2 vp_banner;
     private LinearLayout ll_indicator;
     private PostManager postManager;
-    private String token;
     private int currentPage = 1;
     private final int pageSize = 10;
     private boolean hasNextPage = true;
@@ -198,7 +197,6 @@ public class RecommmendFragment extends Fragment {
         bannerImageList = mRecommendVM.bannerImageList;
 
         postManager = new PostManager();
-        token = SPManager.getUserInfo(getContext()).getToken();
         loadNextPageData();
     }
 

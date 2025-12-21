@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:padding="10dp">
@@ -58,7 +58,6 @@
                     android:textColor="#1E1E1E" />
             </LinearLayout>
 
-
         </LinearLayout>
     </RelativeLayout>
 
@@ -71,19 +70,19 @@
         android:paddingLeft="8dp">
 
 
-        <ImageButton
-            android:id="@+id/btn_accept"
+        <ImageView
+            android:id="@+id/iv_accept"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:padding="12dp"
             android:src="@mipmap/icon_agree" />
 
 
-        <ImageButton
-            android:id="@+id/btn_reject"
+        <ImageView
+            android:id="@+id/iv_reject"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:padding="12dp"
             android:src="@mipmap/icon_reject" />
         <TextView

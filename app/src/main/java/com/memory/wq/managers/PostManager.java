@@ -33,7 +33,7 @@ public class PostManager {
     public void publishPost(String token, PostInfo postInfo, ResultCallback<Boolean> callback) {
         String json = GenerateJson.getPostContentJson(postInfo);
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.POST_PUBLISH, token, json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.POST_PUBLISH, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     mHandler.post(() -> {
@@ -73,7 +73,7 @@ public class PostManager {
     public void getPosts(String token, QueryPostInfo queryPostInfo, ResultCallback<PageResult<PostInfo>> callback) {
         String json = GenerateJson.getQueryPostJson(queryPostInfo);
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.POST_GET, token, json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.POST_GET, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
 
@@ -104,7 +104,7 @@ public class PostManager {
     public void getMyPost(String token, QueryPostInfo queryPostInfo, ResultCallback<PageResult<PostInfo>> callback) {
         String json = GenerateJson.getMyPostJson(queryPostInfo);
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.POST_MY_GET, token, json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.POST_MY_GET, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     mHandler.post(() -> {
@@ -135,7 +135,7 @@ public class PostManager {
 
     public void getUpLoadPermission(String token, ResultCallback<StsTokenInfo> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.STS_TOKEN, token, "{}", new Callback() {
+            HttpStreamOP.postJson(AppProperties.STS_TOKEN, "{}", new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     mHandler.post(() -> callback.onError("获取上传权限失败"));

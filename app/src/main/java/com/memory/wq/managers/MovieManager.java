@@ -13,7 +13,7 @@ import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.RoomInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.HttpStreamOP;
-import com.memory.wq.provider.MsgSqlOP;
+import com.memory.wq.db.op.MsgSqlOP;
 import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.GenerateJson;
 import com.memory.wq.utils.JsonParser;
@@ -37,7 +37,7 @@ public class MovieManager {
 
     public void getMovies(String token, ResultCallback<List<MovieInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.MOVIES, token, "{}", new Callback() {
+            HttpStreamOP.postJson(AppProperties.MOVIES, "{}", new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
 
@@ -68,7 +68,7 @@ public class MovieManager {
     public void getRooms(ResultCallback<List<RoomInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
 
-            HttpStreamOP.postJson(AppProperties.ROOMS, null, "{}", new Callback() {
+            HttpStreamOP.postJson(AppProperties.ROOMS, "{}", new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
 
@@ -100,7 +100,7 @@ public class MovieManager {
         String json = GenerateJson.getSaveRoomJson(roomId, movieId);
 
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.SAVE_ROOM, token, json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.SAVE_ROOM, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
 
@@ -118,7 +118,7 @@ public class MovieManager {
     public void releaseRoom(String token, String roomId) {
         String json = GenerateJson.getReleaseRoomJson(roomId);
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.REMOVE_ROOM, token, json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.REMOVE_ROOM, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
 
@@ -135,7 +135,7 @@ public class MovieManager {
     public void shareRoom(Context context, String token, MsgInfo shareMsg, ResultCallback<Boolean> callback) {
         String json = GenerateJson.getShareMsgJson(shareMsg);
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.SHARE_ROOM, token, json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.SHARE_ROOM, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     mhandler.post(() -> callback.onError(null));
@@ -154,7 +154,7 @@ public class MovieManager {
                         if (code == 1) {
                             mhandler.post(() -> callback.onSuccess(true));
                             //TODO 保存到数据库
-                            MsgSqlOP msgSqlOP = new MsgSqlOP(context);
+                            MsgSqlOP msgSqlOP = new MsgSqlOP();
                             List<MsgInfo> msgInfoList = new ArrayList<>();
                             msgInfoList.add(shareMsg);
                             msgSqlOP.insertMessages(msgInfoList);

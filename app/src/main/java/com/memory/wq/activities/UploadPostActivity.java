@@ -56,7 +56,7 @@ public class UploadPostActivity extends BaseActivity<ActivityEditRecommendBindin
     private void initData() {
         permissionManager = new PermissionManager(this);
         mPostManager = new PostManager();
-        token = SPManager.getUserInfo(this).getToken();
+        token = SPManager.getUserInfo().getToken();
         mAdapter = new SelectImageAdapter(postImagesList);
         mAdapter.setOnAddClickListener(new SelectImageAdapter.OnAddOrRemoveClickListener() {
             @Override

@@ -1,6 +1,10 @@
 package com.memory.wq.provider;
 
 
+import android.util.Log;
+
+import com.memory.wq.managers.AccountManager;
+
 import java.io.File;
 import java.util.List;
 
@@ -13,6 +17,7 @@ import okhttp3.RequestBody;
 
 public class HttpStreamOP {
 
+    private static final String TAG = "WQ_HttpStreamOP";
 
     private static final OkHttpClient client = new OkHttpClient();
 
@@ -21,7 +26,8 @@ public class HttpStreamOP {
         client.newCall(request).enqueue(okhttpCallback);
     }
 
-    public static void postJson(String url, String token, String body, Callback callback) {
+    public static void postJson(String url, String body, Callback callback) {
+        String token = AccountManager.getUserInfo().getToken();
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(body, JSON);
         Request request = new Request.Builder()
@@ -29,10 +35,12 @@ public class HttpStreamOP {
                 .header("token", token == null ? "" : token)
                 .post(requestBody)
                 .build();
+        Log.d(TAG, "[TOKEN] postJson: " + token);
         sendOkhttpRequest(request, callback);
     }
 
-    public static void postJson(String url, String token, Callback callback) {
+    public static void postJson(String url, Callback callback) {
+        String token = AccountManager.getUserInfo().getToken();
         Request request = new Request.Builder()
                 .url(url)
                 .header("token", token)

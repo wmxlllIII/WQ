@@ -99,13 +99,11 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
         Glide.with(getContext())
                 .load(AppProperties.HTTP_SERVER_ADDRESS + avatarUrl)
                 .circleCrop()
-                .error(R.mipmap.icon_default_avatar)
                 .into(iv_open_drawer);
 
         Glide.with(getContext())
                 .load(AppProperties.HTTP_SERVER_ADDRESS + avatarUrl)
                 .transform(new RoundedCorners(15))
-                .error(R.mipmap.icon_default_avatar)
                 .into(iv_avatar);
 
         tv_nickname.setText(userName);

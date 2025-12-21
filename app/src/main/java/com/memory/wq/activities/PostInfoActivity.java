@@ -48,7 +48,7 @@ public class PostInfoActivity extends BaseActivity<ActivityPostInfoBinding> {
     }
 
     private void initData() {
-        token = SPManager.getUserInfo(this).getToken();
+        token = SPManager.getUserInfo().getToken();
         Intent intent = getIntent();
         mPostInfo = (PostInfo) intent.getParcelableExtra(AppProperties.POSTINFO);
         setData();
@@ -120,7 +120,7 @@ public class PostInfoActivity extends BaseActivity<ActivityPostInfoBinding> {
 
     private void initView() {
         mBinding.bottomInputBar.setOnClickListener(view -> {
-            if (AccountManager.isVisitorUser(PostInfoActivity.this)) {
+            if (AccountManager.isVisitorUser()) {
                 new AlertDialog.Builder(this)
                         .setTitle("未登录")
                         .setMessage("登录后即可体验完整功能哦~")

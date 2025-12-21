@@ -1,11 +1,11 @@
 package com.memory.wq.interfaces;
 
 public interface OnFriItemClickListener {
-    void onItemClick(String targetId);
+    void onItemClick(long targetId);
 
     void onItemLongClick();
 
-    void onAcceptClick(String targetId);
+    void onAcceptClick(long targetId);
 
-    void onRejectClick(String targetId);
+    void onRejectClick(long targetId);
 }

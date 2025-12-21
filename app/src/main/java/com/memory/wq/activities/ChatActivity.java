@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.memory.wq.constants.AppProperties;
@@ -16,22 +17,28 @@ import com.memory.wq.databinding.ActivityChatBinding;
 import com.memory.wq.enumertions.ChatPage;
 import com.memory.wq.fragment.ChatDetailFragment;
 import com.memory.wq.managers.AccountManager;
+import com.memory.wq.utils.MyToast;
 import com.memory.wq.vm.ChatViewModel;
 
 public class ChatActivity extends BaseActivity<ActivityChatBinding> {
     public static final String TAG = "WQ_ChatActivity";
     private ChatPage mCurrentPage;
     private ChatViewModel mChatVM;
-
+    private final Observer<ChatPage> mChatPageObserver = this::switchToPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        String chatId = (String) intent.getSerializableExtra(AppProperties.CHAT_ID);
+        long chatId = (Long) intent.getSerializableExtra(AppProperties.CHAT_ID);
+        if (chatId<=0){
+            MyToast.showToast(this, "聊天对象不存在");
+            return;
+        }
+
         mChatVM = new ViewModelProvider(this).get(ChatViewModel.class);
         mChatVM.setChatId(chatId);
-        initView();
+        initObserver();
     }
 
     @Override
@@ -40,8 +47,8 @@ public class ChatActivity extends BaseActivity<ActivityChatBinding> {
     }
 
 
-    private void initView() {
-        switchToPage(ChatPage.CHAT);
+    private void initObserver() {
+        mChatVM.chatPage.observe(this, mChatPageObserver);
     }
 
     private void switchToPage(ChatPage target) {
@@ -104,5 +111,6 @@ public class ChatActivity extends BaseActivity<ActivityChatBinding> {
                 return null;
         }
     }
+
 
 }

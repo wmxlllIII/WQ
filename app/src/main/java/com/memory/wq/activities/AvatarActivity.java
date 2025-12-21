@@ -68,7 +68,6 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
 
         Glide.with(this)
                 .load(avatarUrl)
-                .error(R.mipmap.icon_default_avatar)
                 .into(mBinding.ivAvatarDetail);
     }
 
@@ -84,7 +83,7 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
         });
 
         mBinding.tvAlterAvatar.setOnClickListener(view -> {
-            if (AccountManager.isVisitorUser(this)) {
+            if (AccountManager.isVisitorUser()) {
                 new AlertDialog.Builder(this)
                         .setTitle("未登录")
                         .setMessage("登录后即可体验完整功能哦~")
@@ -187,7 +186,6 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
                 sp.edit().putString("avatarUrl", path).apply();
                 Glide.with(AvatarActivity.this)
                         .load(path)
-                        .error(R.mipmap.icon_default_avatar)
                         .into(mBinding.ivAvatarDetail);
 
                 fileOP.deleteTempCameraFile();

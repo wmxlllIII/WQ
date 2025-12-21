@@ -49,7 +49,6 @@ public class WorksAdapter extends RecyclerView.Adapter<WorksVH> {
         PostInfo post = workList.get(position);
         Glide.with(holder.itemView.getContext())
                 .load(AppProperties.HTTP_SERVER_ADDRESS + post.getCommentCoverUrl())
-                .error(R.mipmap.icon_default_avatar)
                 .into(holder.cover);
         holder.itemView.setOnClickListener(v -> {
             if (listener == null) {

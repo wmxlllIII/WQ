@@ -1,16 +1,14 @@
-package com.memory.wq.provider;
+package com.memory.wq.db.op;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import com.memory.wq.beans.MsgInfo;
-import com.memory.wq.db.SqlHelper;
-import com.memory.wq.constants.AppProperties;
 import com.memory.wq.enumertions.ContentType;
+import com.memory.wq.provider.MsgProvider;
+import com.memory.wq.provider.WqApplication;
 import com.memory.wq.utils.GenerateJson;
 import com.memory.wq.utils.JsonParser;
 
@@ -19,50 +17,40 @@ import java.util.List;
 
 public class MsgSqlOP {
 
-    private final SqlHelper mHelper;
-    private final ContentResolver mResolver;
+    private final static String TAG = "WQ_MsgSqlOP";
+    private final ContentResolver mResolver = WqApplication.getInstance().getContentResolver();
 
-    public MsgSqlOP(Context context) {
-        mHelper = new SqlHelper(WqApplication.getInstance());
-        mResolver = WqApplication.getInstance().getContentResolver();
-    }
-
-    public List<MsgInfo> queryAllMsg(String currentEmail, String targetEmail) {
+    public List<MsgInfo> queryAllMsg(long currentUuNumber, long targetUuNumber) {
         List<MsgInfo> list = new ArrayList<>();
 
-        Cursor cursor = mResolver.query(MsgProvider.CONTENT_URI, null, "(sender_email = ? AND receiver_email = ?) OR (sender_email = ? AND receiver_email = ?)", new String[]{currentEmail, targetEmail, targetEmail, currentEmail}, null);
+        Cursor cursor = mResolver.query(MsgProvider.CONTENT_URI,
+                null,
+                "(sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)",
+                new String[]{
+                        String.valueOf(currentUuNumber),
+                        String.valueOf(targetUuNumber),
+                        String.valueOf(targetUuNumber),
+                        String.valueOf(currentUuNumber)
+                },
+                "create_at ASC");
         if (cursor == null || cursor.getCount() <= 0) {
             return new ArrayList<>();
         }
 
-        SQLiteDatabase db = mHelper.getReadableDatabase();
         while (cursor.moveToNext()) {
-            String senderEmail = cursor.getString(cursor.getColumnIndex("sender_email"));
-            String receiverEmail = cursor.getString(cursor.getColumnIndex("receiver_email"));
+            long senderId = cursor.getLong(cursor.getColumnIndex("sender_id"));
+            long receiverId = cursor.getLong(cursor.getColumnIndex("receiver_id"));
             String content = cursor.getString(cursor.getColumnIndex("content"));
             int contentType = cursor.getInt(cursor.getColumnIndex("content_type"));
-
-
-            Cursor userCursor = db.query(AppProperties.USER_TABLE_NAME, new String[]{"avatarurl"}, "email=?", new String[]{currentEmail}, null, null, null);
-            String myAvatarUrl = "";
-            if (userCursor != null && userCursor.getCount() > 0) {
-                userCursor.moveToFirst();
-                myAvatarUrl = userCursor.getString(0);
-            }
-
-            Cursor friendCursor = db.query(AppProperties.FRIEND_TABLE_NAME, new String[]{"avatar_url"}, "email=?", new String[]{targetEmail}, null, null, null);
-            String friendAvatarUrl = "";
-            if (friendCursor != null && friendCursor.getCount() > 0) {
-                friendCursor.moveToFirst();
-                friendAvatarUrl = friendCursor.getString(0);
-            }
+            int createAt = cursor.getInt(cursor.getColumnIndex("create_at"));
+            int msgId = cursor.getInt(cursor.getColumnIndex("msg_id"));
 
             MsgInfo msg = new MsgInfo();
-            msg.setSenderEmail(senderEmail);
-            msg.setReceiverEmail(receiverEmail);
+            msg.setSenderId(senderId);
+            msg.setReceiverId(receiverId);
             msg.setMsgType(ContentType.fromInt(contentType));
-            msg.setSenderAvatar(myAvatarUrl);
-            msg.setReceiverAvatar(friendAvatarUrl);
+            msg.setCreateAt(createAt);
+            msg.setMsgId(msgId);
             if (contentType == 0) {
                 msg.setContent(content);
             } else if (contentType == 1) {
@@ -72,11 +60,9 @@ public class MsgSqlOP {
                 msg.setLinkContent(shareMsg.getLinkContent());
             }
 
-
             list.add(msg);
         }
         cursor.close();
-        db.close();
         return list;
     }
 
@@ -91,12 +77,14 @@ public class MsgSqlOP {
             int msgType = msg.getMsgType().toInt();
 
             String content = msg.getContent();
-            String receiverEmail = msg.getReceiverEmail();
-            String senderEmail = msg.getSenderEmail();
+            long senderId = msg.getSenderId();
+            long receiverId = msg.getReceiverId();
 
-            values.put("sender_email", senderEmail);
+            values.put("sender_id", senderId);
+            values.put("receiver_id", receiverId);
             values.put("content_type", msgType);
-            values.put("receiver_email", receiverEmail);
+            values.put("create_at", msg.getCreateAt());
+            values.put("msg_id", msg.getMsgId());
 
             if (msgType == ContentType.TYPE_TEXT.toInt()) {
                 values.put("content", content);
@@ -104,7 +92,6 @@ public class MsgSqlOP {
                 String shareMsgJson = GenerateJson.getShareMsgJson(msg);
                 values.put("content", shareMsgJson);
             }
-
 
             Uri uri = mResolver.insert(MsgProvider.CONTENT_URI, values);
             if (uri == null) {

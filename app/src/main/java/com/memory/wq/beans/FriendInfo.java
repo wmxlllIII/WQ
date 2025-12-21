@@ -4,69 +4,80 @@ package com.memory.wq.beans;
 import java.io.Serializable;
 
 public class FriendInfo implements Serializable {
-  private String nickname;
-  private String avatarUrl;
-  private String verifyMsg;
-  private long updateAt;
-  private boolean isOnline;
-  private String email;
+    private long uuNumber;
+    private String nickname;
+    private String avatarUrl;
+    private String verifyMsg;
+    private boolean isOnline;
+    private String email;
+    private long updateAt;
 
-  public long getUpdateAt() {
-    return updateAt;
-  }
+    public long getUuNumber() {
+        return uuNumber;
+    }
 
-  public void setUpdateAt(long updateAt) {
-    this.updateAt = updateAt;
-  }
+    public void setUuNumber(long uuNumber) {
+        this.uuNumber = uuNumber;
+    }
 
-  public String getNickname() {
-    return nickname;
-  }
+    public long getUpdateAt() {
+        return updateAt;
+    }
 
-  public void setNickname(String nickname) {
-    this.nickname = nickname;
-  }
+    public void setUpdateAt(long updateAt) {
+        this.updateAt = updateAt;
+    }
 
-  public String getAvatarUrl() {
-    return avatarUrl;
-  }
+    public String getNickname() {
+        return nickname;
+    }
 
-  public void setAvatarUrl(String avatarUrl) {
-    this.avatarUrl = avatarUrl;
-  }
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
-  public String getVerifyMsg() {
-    return verifyMsg;
-  }
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
 
-  public void setVerifyMsg(String verifyMsg) {
-    this.verifyMsg = verifyMsg;
-  }
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
 
-  public boolean isOnline() {
-    return isOnline;
-  }
+    public String getVerifyMsg() {
+        return verifyMsg;
+    }
 
-  public void setOnline(boolean online) {
-    isOnline = online;
-  }
+    public void setVerifyMsg(String verifyMsg) {
+        this.verifyMsg = verifyMsg;
+    }
 
-  public String getEmail() {
-    return email;
-  }
+    public boolean isOnline() {
+        return isOnline;
+    }
 
-  public void setEmail(String email) {
-    this.email = email;
-  }
+    public void setOnline(boolean online) {
+        isOnline = online;
+    }
 
-  @Override
-  public String toString() {
-    return "FriendInfo{" +
-            "nickname='" + nickname + '\'' +
-            ", avatarUrl='" + avatarUrl + '\'' +
-            ", verifyMsg='" + verifyMsg + '\'' +
-            ", isOnline=" + isOnline +
-            ", email='" + email + '\'' +
-            '}';
-  }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "FriendInfo{" +
+                "uuNumber=" + uuNumber +
+                ", nickname='" + nickname + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
+                ", verifyMsg='" + verifyMsg + '\'' +
+                ", isOnline=" + isOnline +
+                ", email='" + email + '\'' +
+                ", updateAt=" + updateAt +
+                '}';
+    }
 }

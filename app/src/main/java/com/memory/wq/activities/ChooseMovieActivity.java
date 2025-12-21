@@ -34,7 +34,7 @@ public class ChooseMovieActivity extends BaseActivity<ActivityChooseMovieBinding
         mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
 
         MovieManager movieManager = new MovieManager();
-        String token = SPManager.getUserInfo(this).getToken();
+        String token = SPManager.getUserInfo().getToken();
         movieManager.getMovies(token, new ResultCallback<List<MovieInfo>>() {
             @Override
             public void onSuccess(List<MovieInfo> result) {

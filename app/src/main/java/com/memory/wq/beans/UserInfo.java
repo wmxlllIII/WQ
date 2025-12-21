@@ -3,11 +3,9 @@ package com.memory.wq.beans;
 public class UserInfo {
     private String email;
     private String token;
-    private String id;
     private String userName;
-    private String avatarPath;
+    private String avatarUrl;
     private long uuNumber;
-    private boolean isLogin;
 
     public long getUuNumber() {
         return uuNumber;
@@ -15,14 +13,6 @@ public class UserInfo {
 
     public void setUuNumber(long uuNumber) {
         this.uuNumber = uuNumber;
-    }
-
-    public boolean isLogin() {
-        return isLogin;
-    }
-
-    public void setLogin(boolean login) {
-        isLogin = login;
     }
 
     public String getUserName() {
@@ -33,14 +23,6 @@ public class UserInfo {
         this.userName = userName;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getToken() {
         return token;
     }
@@ -49,12 +31,12 @@ public class UserInfo {
         this.token = token;
     }
 
-    public String getAvatarPath() {
-        return avatarPath;
+    public String getAvatarUrl() {
+        return avatarUrl;
     }
 
-    public void setAvatarPath(String avatarPath) {
-        this.avatarPath = avatarPath;
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public String getEmail() {
@@ -70,12 +52,9 @@ public class UserInfo {
         return "UserInfo{" +
                 "email='" + email + '\'' +
                 ", token='" + token + '\'' +
-                ", id='" + id + '\'' +
                 ", userName='" + userName + '\'' +
-                ", avatarPath='" + avatarPath + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
                 ", uuNumber=" + uuNumber +
-                ", isLogin=" + isLogin +
                 '}';
     }
-
 }

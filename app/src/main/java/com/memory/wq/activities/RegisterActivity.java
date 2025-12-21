@@ -108,7 +108,6 @@ public class RegisterActivity extends BaseActivity<RegisterAccountLayoutBinding>
         mAuthManager.register(email, Integer.parseInt(code), pwd1, new ResultCallback<UserInfo>() {
             @Override
             public void onSuccess(UserInfo userInfo) {
-                userInfo.setLogin(true);
                 SPManager.saveUserInfo(RegisterActivity.this, userInfo);
 
                 runOnUiThread(() -> {

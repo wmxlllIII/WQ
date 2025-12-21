@@ -55,7 +55,6 @@ public class SearchFriendAdapter extends BaseAdapter {
                 .load(friendInfo.getAvatarUrl())
                 .into(viewHolder.iv_avatar);
 
-        Log.d(TAG, "=====getView: 昵称" + friendInfo.getNickname() + "====头像" + friendInfo.getAvatarUrl());
         viewHolder.tv_nickName.setText(friendInfo.getNickname());
         return convertView;
     }

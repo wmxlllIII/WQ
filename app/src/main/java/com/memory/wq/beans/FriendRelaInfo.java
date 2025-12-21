@@ -1,72 +1,36 @@
 package com.memory.wq.beans;
 
 public class FriendRelaInfo {
-    private int id;
-    private String sourceEmail;
-    private String targetEmail;
-    private String sourceAvatarUrl;
-    private String targetAvatarUrl;
-    private String sourceNickname;//user
-    private String targetNickname;//user
+    private int relaId;
+    private long sourceId;
+    private long targetId;
     private String state;
     private String validMsg;
-    private long timeStamp;
+    private long createAt;
     private long updateAt;
 
-    public int getId() {
-        return id;
+    public int getRelaId() {
+        return relaId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setRelaId(int relaId) {
+        this.relaId = relaId;
     }
 
-    public String getSourceEmail() {
-        return sourceEmail;
+    public long getSourceId() {
+        return sourceId;
     }
 
-    public void setSourceEmail(String sourceEmail) {
-        this.sourceEmail = sourceEmail;
+    public void setSourceId(long sourceId) {
+        this.sourceId = sourceId;
     }
 
-    public String getTargetEmail() {
-        return targetEmail;
+    public long getTargetId() {
+        return targetId;
     }
 
-    public void setTargetEmail(String targetEmail) {
-        this.targetEmail = targetEmail;
-    }
-
-    public String getSourceAvatarUrl() {
-        return sourceAvatarUrl;
-    }
-
-    public void setSourceAvatarUrl(String sourceAvatarUrl) {
-        this.sourceAvatarUrl = sourceAvatarUrl;
-    }
-
-    public String getTargetAvatarUrl() {
-        return targetAvatarUrl;
-    }
-
-    public void setTargetAvatarUrl(String targetAvatarUrl) {
-        this.targetAvatarUrl = targetAvatarUrl;
-    }
-
-    public String getSourceNickname() {
-        return sourceNickname;
-    }
-
-    public void setSourceNickname(String sourceNickname) {
-        this.sourceNickname = sourceNickname;
-    }
-
-    public String getTargetNickname() {
-        return targetNickname;
-    }
-
-    public void setTargetNickname(String targetNickname) {
-        this.targetNickname = targetNickname;
+    public void setTargetId(long targetId) {
+        this.targetId = targetId;
     }
 
     public String getState() {
@@ -85,13 +49,6 @@ public class FriendRelaInfo {
         this.validMsg = validMsg;
     }
 
-    public long getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
-    }
 
     public long getUpdateAt() {
         return updateAt;
@@ -101,19 +58,23 @@ public class FriendRelaInfo {
         this.updateAt = updateAt;
     }
 
+    public long getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(long createAt) {
+        this.createAt = createAt;
+    }
+
     @Override
     public String toString() {
         return "FriendRelaInfo{" +
-                "id=" + id +
-                ", sourceEmail='" + sourceEmail + '\'' +
-                ", targetEmail='" + targetEmail + '\'' +
-                ", sourceAvatarUrl='" + sourceAvatarUrl + '\'' +
-                ", targetAvatarUrl='" + targetAvatarUrl + '\'' +
-                ", sourceNickname='" + sourceNickname + '\'' +
-                ", targetNickname='" + targetNickname + '\'' +
+                "relaId=" + relaId +
+                ", sourceId=" + sourceId +
+                ", targetId=" + targetId +
                 ", state='" + state + '\'' +
                 ", validMsg='" + validMsg + '\'' +
-                ", timeStamp=" + timeStamp +
+                ", createAt=" + createAt +
                 ", updateAt=" + updateAt +
                 '}';
     }

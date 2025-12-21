@@ -17,6 +17,8 @@ import com.memory.wq.enumertions.EventType;
 import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.interfaces.JsonDataParser;
 import com.memory.wq.constants.AppProperties;
+import com.memory.wq.managers.AccountManager;
+import com.memory.wq.managers.SPManager;
 import com.memory.wq.provider.PersistenceRouter;
 import com.memory.wq.repository.WSRepository;
 import com.memory.wq.utils.JsonParser;
@@ -68,22 +70,27 @@ public class WebService extends Service {
     }
 
     private void connectWebSocket() {
-        SharedPreferences sp = getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
-        String token = sp.getString("token", "");
-        String userid = sp.getString("userId", "");
+        String token = AccountManager.getUserInfo().getToken();
+        long uuNumber =  AccountManager.getUserInfo().getUuNumber();
+        if (AccountManager.isVisitorUser()) {
+            //todo 登录后没立即连接
+            Log.d(TAG, "[x] connectWebSocket #76 NoNeedConnectWS");
+            return;
+        }
+
         Request request = new Request.Builder()
-                .url(AppProperties.WEB_SOCKET_SERVER_ADDRESS + userid)
+                .url(AppProperties.WEB_SOCKET_SERVER_ADDRESS + uuNumber)
                 .addHeader("token", token)
                 .build();
 //        System.out.println("=======token" + token);
-//        Log.d(TAG, "[✅] connectWebSocket #85" + "token: " + token);
-//        Log.d(TAG, "[✅] connectWebSocket #85" + "userid: " + userid);
+//        Log.d(TAG, "[✓] connectWebSocket #85" + "token: " + token);
+//        Log.d(TAG, "[✓] connectWebSocket #85" + "userid: " + userid);
         webSocket = client.newWebSocket(request, new okhttp3.WebSocketListener() {
             @Override
             public void onClosed(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
                 super.onClosed(webSocket, code, reason);
                 notifyConnectionChanged(false);
-                Log.d(TAG, "[✅] onClosed ws连接关闭 #92");
+                Log.d(TAG, "[✓] onClosed ws连接关闭 #92");
             }
 
             @Override
@@ -98,14 +105,14 @@ public class WebService extends Service {
             public void onMessage(@NonNull WebSocket webSocket, @NonNull String json) {
                 super.onMessage(webSocket, json);
                 notifyMessageReceived(json);
-                Log.d(TAG, "[✅] onMessage ws来消息了 #108");
+                Log.d(TAG, "[✓] onMessage ws来消息了 #108");
             }
 
             @Override
             public void onOpen(@NonNull WebSocket webSocket, @NonNull Response response) {
                 super.onOpen(webSocket, response);
                 notifyConnectionChanged(true);
-//                Log.d(TAG, "[✅] onOpen ws连接成功 #115");
+//                Log.d(TAG, "[✓] onOpen ws连接成功 #115");
             }
         });
     }

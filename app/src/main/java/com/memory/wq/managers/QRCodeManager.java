@@ -2,13 +2,16 @@ package com.memory.wq.managers;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-
+import android.util.Log;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
 public class QRCodeManager {
+
+    private static final String TAG = "WQ_QRCodeManager";
+
     public Bitmap getUserQRCode(Context context, String uuNum, int width, int height) {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         try {
@@ -21,7 +24,7 @@ public class QRCodeManager {
             }
             return bitmap;
         } catch (WriterException e) {
-            e.printStackTrace();
+            Log.d(TAG, "[x] getUserQRCode #26" + e.getMessage());
         }
         return null;
     }

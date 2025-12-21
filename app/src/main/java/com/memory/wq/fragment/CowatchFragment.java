@@ -64,11 +64,11 @@ public class CowatchFragment extends Fragment {
     }
 
     private void initView() {
-        mBinding.rlCreateRoom.setOnClickListener(view -> {
+        mBinding.tvCreateRoom.setOnClickListener(view -> {
             startActivity(new Intent(getContext(), ChooseMovieActivity.class));
         });
 
-        mBinding.rlRandom.setOnClickListener(view -> {
+        mBinding.tvJoinRandom.setOnClickListener(view -> {
             startActivity(new Intent(getContext(), AudioActivity.class));
         });
     }

@@ -21,9 +21,6 @@ import com.memory.wq.interfaces.OnMsgItemClickListener;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.utils.diffutils.MsgInfoDiffCallback;
 
-import java.util.List;
-
-
 public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
 
     private static final String TAG = "WQ_MsgAdapter";
@@ -57,7 +54,7 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         MsgInfo msgInfo = getCurrentList().get(position);
 
-        if (TextUtils.isEmpty(AccountManager.getUserInfo(holder.itemView.getContext()).getEmail())) {
+        if (TextUtils.isEmpty(AccountManager.getUserInfo().getEmail())) {
             if (holder instanceof TextViewHolder) {
                 TextViewHolder textHolder = (TextViewHolder) holder;
                 textHolder.ll_left.setVisibility(View.GONE);
@@ -86,7 +83,7 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
         String linkContent = msgInfo.getLinkContent();
         String content = msgInfo.getContent();
 
-        if (msgInfo.getSenderEmail().equals(AccountManager.getUserInfo(holder.itemView.getContext()).getEmail())) {
+        if (msgInfo.getSenderId() == AccountManager.getUserInfo().getUuNumber()) {
 
             holder.ll_left_link.setVisibility(View.GONE);
             holder.ll_right_link.setVisibility(View.VISIBLE);
@@ -98,9 +95,9 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
             holder.tv_link_title_right.setText(linkTitle);
             holder.tv_link_content_right.setText(content);
 
-            Glide.with(holder.itemView.getContext())
-                    .load(msgInfo.getSenderAvatar())
-                    .into(holder.iv_my_avatar_link);
+//            Glide.with(holder.itemView.getContext())
+//                    .load(msgInfo.getSenderAvatar())
+//                    .into(holder.iv_my_avatar_link);
         } else {
 
             holder.ll_left_link.setVisibility(View.VISIBLE);
@@ -112,9 +109,9 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
             holder.tv_link_title_left.setText(linkTitle);
             holder.tv_link_content_left.setText(content);
 
-            Glide.with(holder.itemView.getContext())
-                    .load(msgInfo.getReceiverAvatar())
-                    .into(holder.iv_friend_avatar_link);
+//            Glide.with(holder.itemView.getContext())
+//                    .load(msgInfo.getReceiverAvatar())
+//                    .into(holder.iv_friend_avatar_link);
         }
 
         holder.ll_left_link.setOnClickListener(v -> listener.onLinkClick(msgInfo));
@@ -122,9 +119,8 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
     }
 
     private void handleTextMessage(TextViewHolder holder, MsgInfo msgInfo) {
-        Log.d(TAG, "===handleTextMessage=="+AccountManager.getUserInfo(holder.itemView.getContext()).getEmail());
-        Log.d(TAG, "===MsgInfo=="+msgInfo);
-        if (msgInfo.getSenderEmail().equals(AccountManager.getUserInfo(holder.itemView.getContext()).getEmail())) {
+        Log.d(TAG, "===MsgInfo==" + msgInfo);
+        if (msgInfo.getSenderId() == AccountManager.getUserInfo().getUuNumber()) {
             Log.d(TAG, "===handleTextMessage== 自己的");
             holder.ll_left.setVisibility(View.GONE);
             holder.ll_right.setVisibility(View.VISIBLE);
@@ -136,13 +132,13 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
             holder.tv_leftMsg.setText(msgInfo.getContent());
         }
 
-        Glide.with(holder.iv_friend_avatar.getContext())
-                .load(msgInfo.getReceiverAvatar())
-                .into(holder.iv_friend_avatar);
-
-        Glide.with(holder.iv_my_avatar.getContext())
-                .load(msgInfo.getSenderAvatar())
-                .into(holder.iv_my_avatar);
+//        Glide.with(holder.iv_friend_avatar.getContext())
+//                .load(msgInfo.getReceiverAvatar())
+//                .into(holder.iv_friend_avatar);
+//
+//        Glide.with(holder.iv_my_avatar.getContext())
+//                .load(msgInfo.getSenderAvatar())
+//                .into(holder.iv_my_avatar);
     }
 
 

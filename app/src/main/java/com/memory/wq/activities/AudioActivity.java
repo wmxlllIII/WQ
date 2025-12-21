@@ -410,7 +410,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
 
 
     private void showOptions() {
-        new FriendManager().getAllFriends(this, token, new ResultCallback<List<FriendInfo>>() {
+        new FriendManager().getAllFriends( new ResultCallback<List<FriendInfo>>() {
             @Override
             public void onSuccess(List<FriendInfo> result) {
                 friendList.clear();
@@ -452,11 +452,11 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
         shareMsg.setLinkContent(mRoomId);
 
         shareMsg.setLinkImageUrl(movieInfo.getCoverUrl());
-        shareMsg.setSenderEmail(SPManager.getUserInfo(this).getEmail());
-        shareMsg.setReceiverEmail(friendInfo.getEmail());
+        shareMsg.setSenderId(SPManager.getUserInfo().getUuNumber());
+        shareMsg.setReceiverId(friendInfo.getUuNumber());
 
         Intent intent = new Intent(AudioActivity.this, ChatActivity.class);
-        intent.putExtra(AppProperties.CHAT_ID, friendInfo.getEmail());
+        intent.putExtra(AppProperties.CHAT_ID, friendInfo.getUuNumber());
         intent.putExtra(AppProperties.SHARE_MESSAGE, shareMsg);
         startActivity(intent);
     }

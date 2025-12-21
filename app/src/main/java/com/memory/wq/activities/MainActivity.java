@@ -48,7 +48,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements I
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
-        initFragment();
+
         mBinding.llDiscover.performClick();
         startMyService();
     }
@@ -137,6 +137,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements I
             updateBottomBar(Page.PAGE_HISTORY.getValue());
             switchFragment(mFragmentList.get(3));
         });
+
+        initFragment();
     }
 
     private void updateBottomBar(int position) {

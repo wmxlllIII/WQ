@@ -17,7 +17,7 @@ public class MsgProvider extends ContentProvider {
 
     private static final String TAG = "WQ_MsgProvider";
     private static final String AUTHORITY = "com.memory.wq.provider.MsgProvider";
-    public static final String TABLE_NAME = AppProperties.MESSAGE_TABLE_NAME;
+    public static final String TABLE_NAME = AppProperties.TABLE_NAME_MESSAGE;
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME);
 
     private static final int MATCH_CODE = 1;
@@ -25,7 +25,7 @@ public class MsgProvider extends ContentProvider {
     private SqlHelper mHelper;
 
     static {
-        mUriMatcher.addURI(AUTHORITY, AppProperties.MESSAGE_TABLE_NAME, MATCH_CODE);
+        mUriMatcher.addURI(AUTHORITY, AppProperties.TABLE_NAME_MESSAGE, MATCH_CODE);
     }
 
     @Override

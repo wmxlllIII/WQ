@@ -4,14 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 import com.memory.wq.R;
 import com.memory.wq.adapters.SearchFriendAdapter;
 import com.memory.wq.beans.FriendInfo;
@@ -22,7 +20,6 @@ import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.thread.ThreadPoolManager;
 import com.memory.wq.utils.GenerateJson;
-import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
 import org.json.JSONException;
@@ -38,9 +35,8 @@ import okhttp3.Response;
 
 public class SearchUserActivity extends BaseActivity<SearchUserLayoutBinding> {
 
-    private static final String TAG = SearchUserActivity.class.getName();
+    private static final String TAG = "WQ_SearchUserActivity";
     private FriendManager mFriendManager;
-    private SharedPreferences sp;
     private List<FriendInfo> mFriendList;
     private SearchFriendAdapter mAdapter;
 
@@ -59,7 +55,6 @@ public class SearchUserActivity extends BaseActivity<SearchUserLayoutBinding> {
 
     private void initData() {
         mFriendManager = new FriendManager();
-        sp = getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
 
         FriendInfo friendInfo = new FriendInfo();
         friendInfo.setNickname("Test");
@@ -75,18 +70,14 @@ public class SearchUserActivity extends BaseActivity<SearchUserLayoutBinding> {
     private void initView() {
         mBinding.tvTest.setOnClickListener(view -> {
             String account = mBinding.etAccount.getText().toString().trim();
-            String token = sp.getString("token", "");
-            mFriendManager.searchUser(SearchUserType.SEARCH_USER_TYPE_EMAIL, account, token, new ResultCallback<FriendInfo>() {
+
+            mFriendManager.searchUser(SearchUserType.SEARCH_USER_TYPE_EMAIL, account, new ResultCallback<FriendInfo>() {
                 @Override
                 public void onSuccess(FriendInfo result) {
-                    runOnUiThread(() -> {
-                        mFriendList.clear();
-                        mFriendList.add(result);
-                        mAdapter.notifyDataSetChanged();
-
-                    });
-
-                    System.out.println("=================YES " + result.toString());
+                    mFriendList.clear();
+                    mFriendList.add(result);
+                    mAdapter.notifyDataSetChanged();
+                    Log.d(TAG, "[✓] initView searchUser #80" + result);
                 }
 
                 @Override
@@ -101,9 +92,9 @@ public class SearchUserActivity extends BaseActivity<SearchUserLayoutBinding> {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 FriendInfo friendInfo = (FriendInfo) parent.getItemAtPosition(position);
                 Intent intent = new Intent(SearchUserActivity.this, PersonalActivity.class);
-                intent.putExtra("AppProperties.FRIENDINFO", friendInfo);
+                intent.putExtra(AppProperties.PERSON_ID, friendInfo.getUuNumber());
                 startActivity(intent);
-                sendReq(friendInfo.getEmail());
+                Log.d(TAG, "onItemClick: " + friendInfo.getUuNumber());
             }
         });
 
@@ -111,51 +102,5 @@ public class SearchUserActivity extends BaseActivity<SearchUserLayoutBinding> {
             finish();
         });
     }
-
-    private void sendReq(String targetEmail) {
-        String token = sp.getString("token", "");
-        ThreadPoolManager.getInstance().execute(() -> {
-            String json = GenerateJson.getApplyFriendJson(targetEmail);
-            HttpStreamOP.postJson(AppProperties.FRIEND_REQ, token, json, new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    System.out.println("==========请求失败");
-                }
-
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    if (!response.isSuccessful()) {
-                        System.out.println("=========回复失败");
-                    }
-                    String body = response.body().string();
-                    try {
-                        JSONObject jsonObject = new JSONObject(body);
-                        System.out.println("=======body=" + body);
-                        System.out.println("=======jsonObj=" + jsonObject);
-                        int code = jsonObject.getInt("code");
-                        if (code != 1) {
-                            System.out.println("=========code!=1");
-                        }
-                        JSONObject data = jsonObject.getJSONObject("data");
-                        String state = data.getString("state");
-                        if (state.equals("已申请")) {
-                            System.out.println("======pending");
-                            runOnUiThread(() -> {
-
-                            });
-                        } else if (state.equals("已申请")) {
-                            System.out.println("======sended");
-                            runOnUiThread(() -> {
-
-                            });
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        });
-    }
-
 
 }

@@ -1,9 +1,8 @@
-package com.memory.wq.provider;
+package com.memory.wq.sp;
 
 import android.content.Context;
 
 import com.memory.wq.beans.UserInfo;
-import com.memory.wq.helper.SpHelper;
 import com.memory.wq.constants.AppProperties;
 
 public class SPOP {
@@ -13,7 +12,6 @@ public class SPOP {
     private static final String KEY_USER_ID = "userId";
     private static final String KEY_USERNAME = "userName";
     private static final String KEY_AVATAR_URL = "avatarUrl";
-    private static final String KEY_IS_LOGIN = "isLogin";
 
     private final SpHelper spHelper;
 
@@ -29,26 +27,24 @@ public class SPOP {
         if (userInfo.getEmail() != null) {
             spHelper.saveString(KEY_EMAIL, userInfo.getEmail());
         }
-        if (userInfo.getId() != null) {
-            spHelper.saveString(KEY_USER_ID, userInfo.getId());
+        if (userInfo.getUuNumber() > 0) {
+            spHelper.saveLong(KEY_USER_ID, userInfo.getUuNumber());
         }
         if (userInfo.getUserName() != null) {
             spHelper.saveString(KEY_USERNAME, userInfo.getUserName());
         }
-        if (userInfo.getAvatarPath() != null) {
-            spHelper.saveString(KEY_AVATAR_URL, userInfo.getAvatarPath());
+        if (userInfo.getAvatarUrl() != null) {
+            spHelper.saveString(KEY_AVATAR_URL, userInfo.getAvatarUrl());
         }
-        spHelper.saveBoolean(KEY_IS_LOGIN, userInfo.isLogin());
     }
 
     public UserInfo getUserInfo() {
         UserInfo userInfo = new UserInfo();
         userInfo.setToken(spHelper.getString(KEY_TOKEN, null));
         userInfo.setEmail(spHelper.getString(KEY_EMAIL, null));
-        userInfo.setId(spHelper.getString(KEY_USER_ID, null));
+        userInfo.setUuNumber(spHelper.getLong(KEY_USER_ID, -1L));
         userInfo.setUserName(spHelper.getString(KEY_USERNAME, "游客"));
-        userInfo.setLogin(spHelper.getBoolean(KEY_IS_LOGIN, false));
-        userInfo.setAvatarPath(spHelper.getString(KEY_AVATAR_URL,null));
+        userInfo.setAvatarUrl(spHelper.getString(KEY_AVATAR_URL, null));
         return userInfo;
     }
 
@@ -57,7 +53,6 @@ public class SPOP {
         spHelper.removeKey(KEY_EMAIL);
         spHelper.removeKey(KEY_USER_ID);
         spHelper.removeKey(KEY_USERNAME);
-        spHelper.removeKey(KEY_IS_LOGIN);
     }
 
 }

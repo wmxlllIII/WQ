@@ -1,13 +1,13 @@
 package com.memory.wq.constants;
 
 public class AppProperties {
-    public static final String MY_DB_NAME = "Memory.db";
+    public static final String WQ_DB_NAME = "Memory.db";
 
     public static final String SP_NAME = "users";
-    public static final String USER_TABLE_NAME = "users";
-    public static final String FRIEND_TABLE_NAME = "friends";
-    public static final String MESSAGE_TABLE_NAME = "message";
-    public static final String CREATE_TABLE_FRIEND_RELATIONSHIP = "friend_relationship";
+    public static final String TABLE_NAME_USER = "users";
+    public static final String TABLE_NAME_FRIEND = "friends";
+    public static final String TABLE_NAME_MESSAGE = "message";
+    public static final String TABLE_FRIEND_RELATIONSHIP = "friend_relationship";
     public static final String AUTHORITY = "com.memory.wq.albumprovider";
     public static final String AVATAR_RECEIVER_ACTION = "setCurrentAvatar";
 
@@ -52,6 +52,7 @@ public class AppProperties {
     public static final String ROOM_ID = "ROOM_ID";
 
     public static final String CHAT_ID = "ChatId";
+    public static final String PERSON_ID = "personId";
     public static final String SHARE_MESSAGE = "SHARE_MESSAGE";
     public static final String POSTINFO = "postInfo";
 

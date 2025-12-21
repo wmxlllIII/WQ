@@ -164,7 +164,7 @@ public class UserManager {
         //TODO 单独更新
         String json = GenerateJson.getUpdateUserInfoJson(userInfo);
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.UPDATE_USER, token, json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.UPDATE_USER, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
 

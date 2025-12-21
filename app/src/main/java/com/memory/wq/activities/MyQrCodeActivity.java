@@ -1,7 +1,6 @@
 package com.memory.wq.activities;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -16,6 +15,7 @@ import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.ActivityMyQrCodeBinding;
 import com.memory.wq.enumertions.SearchUserType;
+import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.QRCodeManager;
 import com.memory.wq.utils.MyToast;
@@ -23,9 +23,8 @@ import com.memory.wq.utils.ResultCallback;
 
 public class MyQrCodeActivity extends BaseActivity<ActivityMyQrCodeBinding> {
     private static final String TAG = "WQ_MyQrCodeActivity";
-    private SharedPreferences sp;
     private FriendManager mFriendManager;
-    private String token;
+    private final QRCodeManager mQrCodeManager = new QRCodeManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +39,10 @@ public class MyQrCodeActivity extends BaseActivity<ActivityMyQrCodeBinding> {
     }
 
     private void initData() {
-        sp = getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
-        token = sp.getString("token", "");
-        //TODO 使用uuNum
-        long uuNumber = sp.getLong("uuNumber", -1L);
+        long uuNumber = AccountManager.getUserInfo().getUuNumber();
         mBinding.tvUunum.setText(String.valueOf(uuNumber));
 
-        QRCodeManager manager = new QRCodeManager();
-        Bitmap userQRCode = manager.getUserQRCode(this, String.valueOf(uuNumber), 300, 300);
+        Bitmap userQRCode = mQrCodeManager.getUserQRCode(this, String.valueOf(uuNumber), 300, 300);
         if (userQRCode != null)
             mBinding.ivQrcode.setImageBitmap(userQRCode);
 
@@ -55,9 +50,11 @@ public class MyQrCodeActivity extends BaseActivity<ActivityMyQrCodeBinding> {
     }
 
     private void initView() {
-
+        mBinding.ivBack.setOnClickListener(v -> finish());
+        mBinding.tvSave.setOnClickListener(v -> {
+            //todo 保存二维码
+        });
     }
-
 
 
     @Override
@@ -80,14 +77,12 @@ public class MyQrCodeActivity extends BaseActivity<ActivityMyQrCodeBinding> {
     }
 
     private void enterPersonalHome(SearchUserType type, String targetAccount) {
-        mFriendManager.searchUser(type, targetAccount, token, new ResultCallback<FriendInfo>() {
+        mFriendManager.searchUser(type, targetAccount, new ResultCallback<FriendInfo>() {
             @Override
             public void onSuccess(FriendInfo result) {
-                runOnUiThread(() -> {
-                    Intent intent = new Intent(MyQrCodeActivity.this, PersonalActivity.class);
-                    intent.putExtra("AppProperties.FRIENDINFO", result);
-                    startActivity(intent);
-                });
+                Intent intent = new Intent(MyQrCodeActivity.this, PersonalActivity.class);
+                intent.putExtra(AppProperties.PERSON_ID, result.getUuNumber());
+                startActivity(intent);
             }
 
             @Override

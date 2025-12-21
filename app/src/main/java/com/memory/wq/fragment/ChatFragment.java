@@ -26,8 +26,10 @@ import com.memory.wq.beans.UiChatInfo;
 import com.memory.wq.beans.UiMessageState;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.FragmentChatBinding;
+import com.memory.wq.enumertions.ChatPage;
 import com.memory.wq.enumertions.RoleType;
 import com.memory.wq.interfaces.OnMsgItemClickListener;
+import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.MovieManager;
 import com.memory.wq.managers.MsgManager;
 import com.memory.wq.utils.MyToast;
@@ -42,22 +44,18 @@ public class ChatFragment extends Fragment {
 
     private FragmentChatBinding mBinding;
     private final MsgAdapter mAdapter = new MsgAdapter(new MsgItemCLickListener());
-    private MsgManager mMsgManager = new MsgManager();
-
-    private String token;
-    private SharedPreferences sp;
     private MsgInfo mLinkInfo;
     private MovieManager mMovieManager;
     private ChatViewModel mChatVM;
 
-    private Observer<UiChatInfo> mUiChatInfoObserver = this::_proUiChatInfoUpdate;
-    private Observer<UiMessageState> mUiMessageInfoObserver = this::_proUiMessageInfoUpdate;
+    private final Observer<UiChatInfo> mUiChatInfoObserver = this::_proUiChatInfoUpdate;
+    private final Observer<UiMessageState> mUiMessageInfoObserver = this::_proUiMessageInfoUpdate;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = FragmentChatBinding.inflate(inflater, container, false);
-        initView(getViewLifecycleOwner());
+        initView();
         initRecyclerView();
         initData();
         return mBinding.getRoot();
@@ -85,27 +83,21 @@ public class ChatFragment extends Fragment {
     }
 
     private void initData() {
-        sp = getContext().getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
-        token = sp.getString("token", "");
-
         mBinding.rvMsg.setAdapter(mAdapter);
     }
 
-    private void initView(LifecycleOwner lifecycleOwner) {
-        initObserver(lifecycleOwner);
-
+    private void initView() {
+        initObserver();
         mBinding.ivBack.setOnClickListener(v -> requireActivity().finish());
-        mBinding.btnSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendMsg();
-            }
+        mBinding.btnSend.setOnClickListener(v -> sendMsg());
+        mBinding.ivDetail.setOnClickListener(view -> {
+            mChatVM.navigateTo(ChatPage.CHAT_DETAIL);
         });
     }
 
-    private void initObserver(LifecycleOwner lifecycleOwner) {
-        mChatVM.uiChatInfo.observe(lifecycleOwner, mUiChatInfoObserver);
-        mChatVM.uiMessageState.observe(lifecycleOwner, mUiMessageInfoObserver);
+    private void initObserver() {
+        mChatVM.uiChatInfo.observe(getViewLifecycleOwner(), mUiChatInfoObserver);
+        mChatVM.uiMessageState.observe(getViewLifecycleOwner(), mUiMessageInfoObserver);
     }
 
     private void _proUiChatInfoUpdate(UiChatInfo uiChatInfo) {
@@ -138,7 +130,8 @@ public class ChatFragment extends Fragment {
             return;
         }
 
-        mChatVM.sendMsg(token, msg, success -> {
+        mChatVM.sendMsg(msg, success -> {
+            Log.d(TAG, "sendMsg: ===msg" + msg + "===succ" + success);
             if (success) {
                 mBinding.etInputText.setText("");
             }
@@ -183,7 +176,7 @@ public class ChatFragment extends Fragment {
             intent.putExtra(AppProperties.ROLE_TYPE, RoleType.ROLE_TYPE_AUDIENCE);
             intent.putExtra(AppProperties.ROOM_ID, msgInfo.getLinkContent());
             startActivity(intent);
-            System.out.println("=====加入房间id" + msgInfo.getLinkContent());
+            Log.d(TAG, "[✓] onLinkClick #184" + msgInfo.getLinkContent());
         }
 
         @Override

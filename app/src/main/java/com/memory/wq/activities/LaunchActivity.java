@@ -3,6 +3,7 @@ package com.memory.wq.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -15,8 +16,9 @@ import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
 public class LaunchActivity extends BaseActivity<LoginMainLayoutBinding> {
-    private AuthManager mAuthManager;
 
+    private final static String TAG = "WQ_LaunchActivity";
+    private AuthManager mAuthManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,15 +29,16 @@ public class LaunchActivity extends BaseActivity<LoginMainLayoutBinding> {
     }
 
     private void tryAutoLogin() {
-        String oldToken = SPManager.getUserInfo(this).getToken();
+        String oldToken = SPManager.getUserInfo().getToken();
         if (TextUtils.isEmpty(oldToken)) {
             return;
         }
 
+        Log.d(TAG, "tryAutoLogin: ");
         mAuthManager.tryAutoLogin(oldToken, new ResultCallback<UserInfo>() {
             @Override
             public void onSuccess(UserInfo user) {
-                SPManager.saveUserInfo(LaunchActivity.this,user);
+                SPManager.saveUserInfo(LaunchActivity.this, user);
                 Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
@@ -43,7 +46,7 @@ public class LaunchActivity extends BaseActivity<LoginMainLayoutBinding> {
 
             @Override
             public void onError(String err) {
-                MyToast.showToast(LaunchActivity.this,err);
+                MyToast.showToast(LaunchActivity.this, err);
             }
         });
 

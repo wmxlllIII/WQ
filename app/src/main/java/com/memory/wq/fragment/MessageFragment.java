@@ -5,21 +5,17 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.memory.wq.R;
 import com.memory.wq.activities.FriendRelaActivity;
@@ -30,8 +26,10 @@ import com.memory.wq.activities.MyQrCodeActivity;
 import com.memory.wq.adapters.FriendAdapter;
 import com.memory.wq.adapters.MsgsAdapter;
 import com.memory.wq.beans.FriendInfo;
+import com.memory.wq.databinding.MessageLayoutBinding;
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.interfaces.IWebSocketListener;
+import com.memory.wq.interfaces.OnFriItemClickListener;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.constants.AppProperties;
@@ -40,50 +38,60 @@ import com.memory.wq.service.WebService;
 import com.memory.wq.service.WebSocketMessage;
 import com.memory.wq.utils.ResultCallback;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class MessageFragment extends Fragment implements View.OnClickListener, IWebSocketListener, ResultCallback<List<FriendInfo>> {
+public class MessageFragment extends Fragment implements IWebSocketListener {
 
-    private RecyclerView rv_friends;
-    private ListView lv_msg;
-    private FriendAdapter friendAdapter;
-    private List<FriendInfo> friendInfoList;
-    private SharedPreferences sp;
-    private FriendManager friendManager;
+    private final static String TAG = "WQ_MessageFragment";
+    private final FriendAdapter friendAdapter = new FriendAdapter(new onFriClickListener());
+    private final FriendManager mFriendManager = new FriendManager();
 
     private final EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_MSG, EventType.EVENT_TYPE_REQUEST_FRIEND);
     private WebService msgService;
     private MsgConn msgConn;
     private MsgsAdapter msgsAdapter;
     private AppCompatActivity mActivity;
-    private View view;
+    private MessageLayoutBinding mBinding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.message_layout, container, false);
-        if (AccountManager.isVisitorUser(mActivity)) {
-            view.findViewById(R.id.ll_already_login).setVisibility(View.GONE);
-            view.findViewById(R.id.layout_no_login).setVisibility(View.VISIBLE);
-            new AlertDialog.Builder(mActivity)
-                    .setTitle("未登录")
-                    .setMessage("登录后即可体验完整功能哦~")
-                    .setIcon(R.mipmap.ic_bannertest2)
-                    .setNegativeButton("去登录", (dialogInterface, i) -> {
-                        startActivity(new Intent(mActivity, LaunchActivity.class));
-                        getActivity().finish();
-                    })
-                    .setPositiveButton("取消", null)
-                    .setCancelable(false)
-                    .show();
-            return view;
+        mBinding = MessageLayoutBinding.inflate(inflater, container, false);
+        if (ifNeedShowLoginDialog()) {
+            return mBinding.getRoot();
         }
-        initView(view);
+
+        initView();
+        initRecycleView();
         initData();
-        show();
-        return view;
+        return mBinding.getRoot();
+    }
+
+    private void initRecycleView() {
+        mBinding.rvFriends.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false));
+        mBinding.rvFriends.setAdapter(friendAdapter);
+    }
+
+    private boolean ifNeedShowLoginDialog() {
+        if (!AccountManager.isVisitorUser()) {
+            return false;
+        }
+
+        mBinding.llAlreadyLogin.setVisibility(View.GONE);
+        mBinding.layoutNoLogin.getRoot().setVisibility(View.VISIBLE);
+        new AlertDialog.Builder(mActivity)
+                .setTitle("未登录")
+                .setMessage("登录后即可体验完整功能哦~")
+                .setIcon(R.mipmap.ic_bannertest2)
+                .setNegativeButton("去登录", (dialogInterface, i) -> {
+                    startActivity(new Intent(mActivity, LaunchActivity.class));
+                    getActivity().finish();
+                })
+                .setPositiveButton("取消", null)
+                .setCancelable(false)
+                .show();
+        return true;
     }
 
     @Override
@@ -94,85 +102,29 @@ public class MessageFragment extends Fragment implements View.OnClickListener, I
         }
     }
 
-    private void show() {
-        String token = sp.getString("token", "");
-        friendManager.getAllFriends(mActivity, token, this);
-
-    }
-
     private void initData() {
-        friendInfoList = new ArrayList<>();
-
-        //  false,true -1  2,1
-
-//        Collections.sort(friendInfoList, new Comparator<FriendInfo>() {
-//            @Override
-//            public int compare(FriendInfo o1, FriendInfo o2) {
-//                return Boolean.compare(o2.isOnline(),o1.isOnline());
-//            }
-//        });
-        sp = mActivity.getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
-        friendManager = new FriendManager();
-
-        rv_friends.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false));
-        friendAdapter = new FriendAdapter(mActivity, friendInfoList);
-        rv_friends.setAdapter(friendAdapter);
-
-
         Intent intent = new Intent(mActivity, WebService.class);
         msgConn = new MsgConn();
         mActivity.startService(intent);
         mActivity.bindService(intent, msgConn, Context.BIND_AUTO_CREATE);
-
     }
 
-    private void initView(View view) {
-        RelativeLayout iv_add = view.findViewById(R.id.iv_add);
-        RelativeLayout iv_search = view.findViewById(R.id.iv_search);
-        rv_friends = view.findViewById(R.id.rv_friends);
-        lv_msg = view.findViewById(R.id.lv_msg);
+    private void initView() {
+        mBinding.ivAdd.setOnClickListener(v -> startActivity(new Intent(mActivity, MyQrCodeActivity.class)));
 
-        iv_add.setOnClickListener(this);
-        iv_search.setOnClickListener(this);
-        lv_msg.setOnItemClickListener((parent, view1, position, id) -> {
+        mBinding.ivSearch.setOnClickListener(v -> startActivity(new Intent(mActivity, FriendRelaActivity.class)));
+
+        mBinding.lvMsg.setOnItemClickListener((parent, view1, position, id) -> {
             FriendInfo friendInfo = (FriendInfo) parent.getItemAtPosition(position);
             Intent intent = new Intent(mActivity, ChatActivity.class);
-            //TODO 使用哪个chatId
-            intent.putExtra(AppProperties.CHAT_ID, friendInfo.getEmail());
+            intent.putExtra(AppProperties.CHAT_ID, friendInfo.getUuNumber());
             mActivity.startActivity(intent);
         });
-
+        loadFriends();
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.iv_add:
-                startActivity(new Intent(mActivity, FriendRelaActivity.class));
-                break;
-            case R.id.iv_search:
-                startActivity(new Intent(mActivity, MyQrCodeActivity.class));
-                break;
-
-        }
-    }
-
-    @Override
-    public void onSuccess(List<FriendInfo> friendInfoList) {
-        mActivity.runOnUiThread(() -> {
-            if (friendAdapter != null) {
-                friendAdapter.updateList(friendInfoList);
-                this.friendInfoList = friendInfoList;
-                msgsAdapter = new MsgsAdapter(mActivity, friendInfoList);
-                lv_msg.setAdapter(msgsAdapter);
-            }
-
-        });
-    }
-
-    @Override
-    public void onError(String err) {
-
+    private void loadFriends() {
+        mFriendManager.getFriends(new Friend());
     }
 
     @Override
@@ -208,6 +160,47 @@ public class MessageFragment extends Fragment implements View.OnClickListener, I
         @Override
         public void onServiceDisconnected(ComponentName name) {
             msgService.unregisterListener(MessageFragment.this);
+        }
+    }
+
+    class Friend implements ResultCallback<List<FriendInfo>> {
+
+        @Override
+        public void onSuccess(List<FriendInfo> result) {
+            friendAdapter.submitList(result);
+            msgsAdapter = new MsgsAdapter(mActivity, result);
+            mBinding.lvMsg.setAdapter(msgsAdapter);
+
+        }
+
+        @Override
+        public void onError(String err) {
+
+        }
+    }
+
+    class onFriClickListener implements OnFriItemClickListener {
+
+        @Override
+        public void onItemClick(long targetId) {
+            Intent intent = new Intent(getContext(), ChatActivity.class);
+            intent.putExtra(AppProperties.CHAT_ID, targetId);
+            startActivity(intent);
+        }
+
+        @Override
+        public void onItemLongClick() {
+
+        }
+
+        @Override
+        public void onAcceptClick(long targetId) {
+
+        }
+
+        @Override
+        public void onRejectClick(long targetId) {
+
         }
     }
 }

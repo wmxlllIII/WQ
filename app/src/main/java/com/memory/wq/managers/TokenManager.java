@@ -32,7 +32,7 @@ public class TokenManager {
         String json = GenerateJson.getRtcToken(roomId, role, userId);
 
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.AGORA_TOKEN, token, json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.AGORA_TOKEN, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
 
