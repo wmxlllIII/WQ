@@ -60,6 +60,7 @@ public class FriendManager {
 
                     try {
                         JSONObject json = new JSONObject(response.body().string());
+                        Log.d(TAG, "[test] searchUser #63 "+json);
                         int code = json.getInt("code");
                         if (code == 1) {
                             FriendInfo friendInfo = JsonParser.searchFriendParser(json);

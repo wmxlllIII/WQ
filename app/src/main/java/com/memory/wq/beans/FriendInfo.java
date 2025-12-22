@@ -11,6 +11,24 @@ public class FriendInfo implements Serializable {
     private boolean isOnline;
     private String email;
     private long updateAt;
+    private boolean isFriend;
+    private boolean isBlack;
+
+    public boolean isFriend() {
+        return isFriend;
+    }
+
+    public void setFriend(boolean friend) {
+        isFriend = friend;
+    }
+
+    public boolean isBlack() {
+        return isBlack;
+    }
+
+    public void setBlack(boolean black) {
+        isBlack = black;
+    }
 
     public long getUuNumber() {
         return uuNumber;
@@ -78,6 +96,8 @@ public class FriendInfo implements Serializable {
                 ", isOnline=" + isOnline +
                 ", email='" + email + '\'' +
                 ", updateAt=" + updateAt +
+                ", isFriend=" + isFriend +
+                ", isBlack=" + isBlack +
                 '}';
     }
 }

@@ -101,6 +101,9 @@ public class FriendSqlOP {
                     "rela_id = ?",
                     new String[]{String.valueOf(friendRela.getRelaId())}
             );
+            if (rowsUpdated <= 0) {
+                Log.d(TAG, "[test] updateRelations #77 rowsUpdated <= 0");
+            }
         }
     }
 

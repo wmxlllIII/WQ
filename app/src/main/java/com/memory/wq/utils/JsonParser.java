@@ -134,14 +134,18 @@ public class JsonParser {
         return friendList;
     }
 
-    public static FriendRelaInfo friRelaParser(JSONObject friRespJson) {
-        FriendRelaInfo friendRela = null;
-        try {
-            friendRela = parseFriReq(friRespJson);
+    public static FriendRelaInfo friRelaParser(JSONObject item) {
+        FriendRelaInfo friendRela = new FriendRelaInfo();
+        friendRela.setRelaId(item.optInt("id"));
+        friendRela.setSourceId(item.optLong("senderId"));
+        friendRela.setTargetId(item.optLong("receiverId"));
 
-        } catch (JSONException e) {
-            Log.d(TAG, "[x] friRelaParser #152 " + e.getMessage());
-        }
+        friendRela.setValidMsg(item.optString("validMsg"));
+        long createAt = item.optLong("createAt");
+        long updateAt = item.optLong("updateAt");
+        friendRela.setCreateAt(createAt);
+        friendRela.setUpdateAt(updateAt);
+        friendRela.setState(item.optString("status"));
         return friendRela;
     }
 
@@ -153,15 +157,22 @@ public class JsonParser {
         FriendInfo friendInfo = new FriendInfo();
         try {
             JSONObject data = json.getJSONObject("data");
-            String avatarUrl = data.getString("avatarUrl");
-            String email = data.getString("email");
-            String username = data.getString("username");
-            long uuNumber = data.getLong("uuNumber");
+            JSONObject friendVOJson = data.getJSONObject("friendInfoVO");
+            String avatarUrl = friendVOJson.getString("avatarUrl");
+            String email = friendVOJson.getString("email");
+            String username = friendVOJson.getString("username");
+            long uuNumber = friendVOJson.getLong("uuNumber");
+            long updateAt = friendVOJson.getLong("updateAt");
+            boolean isFriend = data.getBoolean("friend");
+            boolean inBlackList = data.getBoolean("inBlackList");
 
             friendInfo.setAvatarUrl(avatarUrl);
             friendInfo.setEmail(email);
             friendInfo.setNickname(username);
             friendInfo.setUuNumber(uuNumber);
+            friendInfo.setUpdateAt(updateAt);
+            friendInfo.setFriend(isFriend);
+            friendInfo.setBlack(inBlackList);
         } catch (JSONException e) {
             Log.d(TAG, "[x] searchFriendParser #148" + e.getMessage());
         }

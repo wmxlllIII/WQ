@@ -3,8 +3,12 @@ package com.memory.wq.activities;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -24,6 +28,7 @@ import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.interfaces.OnFriItemClickListener;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.MsgManager;
+import com.memory.wq.provider.FriendProvider;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
 import com.memory.wq.service.WebSocketMessage;
@@ -33,7 +38,7 @@ import com.memory.wq.utils.ResultCallback;
 import java.util.EnumSet;
 import java.util.List;
 
-public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBinding> implements IWebSocketListener, ResultCallback<List<FriendRelaInfo>> {
+public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBinding> implements IWebSocketListener {
 
     private static final String TAG = "WQ_FriendRelaActivity";
 
@@ -44,13 +49,42 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     private final FriendRelaAdapter mAdapter = new FriendRelaAdapter(new FriItemClickListener());
     private MsgManager mMsgManager;
     private FriendManager mFriendManager;
+    private ContentObserver mFriRelaProvider;
+    private final FriRelaCallback mFriRelaCallback = new FriRelaCallback();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
+        registerContentObserver();
         initData();
         showLV();
+    }
+
+    private void registerContentObserver() {
+        mFriRelaProvider = new ContentObserver(new Handler(Looper.getMainLooper())) {
+            @Override
+            public void onChange(boolean selfChange) {
+                super.onChange(selfChange);
+                refreshData();
+            }
+
+            @Override
+            public void onChange(boolean selfChange, Uri uri) {
+                super.onChange(selfChange, uri);
+                refreshData();
+            }
+        };
+
+        getContentResolver().registerContentObserver(
+                FriendProvider.CONTENT_URI_FRIEND_RELATIONSHIP,
+                true,
+                mFriRelaProvider
+        );
+    }
+
+    private void refreshData() {
+        mMsgManager.getRelation(mFriRelaCallback);
     }
 
     @Override
@@ -70,7 +104,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     private void showLV() {
         mBinding.rvFriendReq.setLayoutManager(new LinearLayoutManager(this));
         mBinding.rvFriendReq.setAdapter(mAdapter);
-        mMsgManager.getRelation(this);
+        refreshData();
     }
 
     private void initView() {
@@ -109,17 +143,6 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
 
     }
 
-    @Override
-    public void onSuccess(List<FriendRelaInfo> result) {
-        mAdapter.submitList(result);
-
-    }
-
-    @Override
-    public void onError(String err) {
-
-    }
-
     private class MyConn implements ServiceConnection {
 
         @Override
@@ -139,10 +162,13 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mFriRelaProvider != null) {
+            getContentResolver().unregisterContentObserver(mFriRelaProvider);
+        }
+
         if (isBind) {
             mWebService.unregisterListener(this);
             unbindService(mConn);
-
         }
     }
 
@@ -234,4 +260,18 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
             });
         }
     }
+
+    private class FriRelaCallback implements ResultCallback<List<FriendRelaInfo>> {
+
+        @Override
+        public void onSuccess(List<FriendRelaInfo> result) {
+            mAdapter.submitList(result);
+        }
+
+        @Override
+        public void onError(String err) {
+
+        }
+    }
+
 }
