@@ -1,9 +1,10 @@
 package com.memory.wq.beans;
 
+import java.util.List;
+
 public class UiChatInfo {
     private String displayName;
-    private String nickname;
-    private String avatarUrl;
+    private List<FriendInfo> members;
 
     public String getDisplayName() {
         return displayName;
@@ -13,19 +14,11 @@ public class UiChatInfo {
         this.displayName = displayName;
     }
 
-    public String getNickname() {
-        return nickname;
+    public List<FriendInfo> getMembers() {
+        return members;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
+    public void setMembers(List<FriendInfo> members) {
+        this.members = members;
     }
 }

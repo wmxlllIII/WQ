@@ -32,7 +32,7 @@ public class UserSqlOP {
         db.beginTransaction();
         ContentValues values = new ContentValues();
         values.put("email", userInfo.getEmail());
-        values.put("nickname", userInfo.getUserName());
+        values.put("nickname", userInfo.getUsername());
         values.put("avatar_url", userInfo.getAvatarUrl());
         values.put("uu_number", userInfo.getUuNumber());
         long result = db.insertWithOnConflict(AppProperties.TABLE_NAME_USER, null, values, SQLiteDatabase.CONFLICT_REPLACE);

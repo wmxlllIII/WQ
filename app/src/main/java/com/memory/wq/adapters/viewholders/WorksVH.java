@@ -1,4 +1,4 @@
-package com.memory.wq.viewholders;
+package com.memory.wq.adapters.viewholders;
 
 import android.view.View;
 import android.widget.ImageView;

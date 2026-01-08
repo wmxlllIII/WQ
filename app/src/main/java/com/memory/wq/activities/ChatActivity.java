@@ -16,7 +16,7 @@ import com.memory.wq.R;
 import com.memory.wq.databinding.ActivityChatBinding;
 import com.memory.wq.enumertions.ChatPage;
 import com.memory.wq.fragment.ChatDetailFragment;
-import com.memory.wq.managers.AccountManager;
+import com.memory.wq.fragment.InviteMemberFragment;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.vm.ChatViewModel;
 
@@ -103,10 +103,12 @@ public class ChatActivity extends BaseActivity<ActivityChatBinding> {
 
     private Fragment createFragment(ChatPage page) {
         switch (page) {
-            case CHAT:
+            case CHAT_INDIVIDUAL:
                 return new ChatFragment();
             case CHAT_DETAIL:
                 return new ChatDetailFragment();
+            case CHAT_INVITE_MEMBER:
+                return new InviteMemberFragment();
             default:
                 return null;
         }

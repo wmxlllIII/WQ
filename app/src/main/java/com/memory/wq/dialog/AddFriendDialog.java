@@ -59,6 +59,10 @@ public class AddFriendDialog extends Dialog {
         mBinding.etContent.setSelection(text.length());
     }
 
+    public void setTitle(String title){
+        mBinding.tvTitle.setText(title);
+    }
+
     public interface OnConfirmListener {
         void onConfirm(String content);
         void onCancel();

@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.memory.wq.activities.PostInfoActivity;
+import com.memory.wq.activities.PostDetailActivity;
 import com.memory.wq.adapters.WorksAdapter;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.QueryPostInfo;
@@ -63,7 +63,7 @@ public class WorksFragment extends Fragment {
 
     private void initView() {
         mAdapter.setOnItemClickListener((post, position) -> {
-            Intent intent = new Intent(getContext(), PostInfoActivity.class);
+            Intent intent = new Intent(getContext(), PostDetailActivity.class);
             intent.putExtra(AppProperties.POSTINFO, post);
             startActivity(intent);
         });

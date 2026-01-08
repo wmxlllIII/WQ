@@ -1,6 +1,7 @@
 package com.memory.wq.adapters;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,13 @@ import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.constants.AppProperties;
+import com.memory.wq.databinding.ItemRecommendBinding;
 
 import java.util.List;
 
 public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public static final String TAG = "RecommendAdapter";
+    public static final String TAG = "WQ_RecommendAdapter";
 
     private List<PostInfo> recommentList;
 
@@ -34,14 +36,15 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recommend, parent, false);
-        return new ItemViewHolder(view);
+        ItemRecommendBinding binding = ItemRecommendBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ItemViewHolder(binding.getRoot());
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         PostInfo postInfo = recommentList.get(position);
         ItemViewHolder itemHolder = (ItemViewHolder) holder;
+        Log.d(TAG, "[test] onBindViewHolder #46"+postInfo);
         setItemHolder(itemHolder, postInfo);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,7 +74,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         } else {
             Glide.with(holder.iv_avatar.getContext())
-                    .load(AppProperties.HTTP_SERVER_ADDRESS + postInfo.getPosterAvatar())
+                    .load(postInfo.getPosterAvatar())
                     .placeholder(R.mipmap.loading_default)
                     .error(R.mipmap.loading_failure)
                     .into(holder.iv_avatar);

@@ -15,7 +15,7 @@ import com.memory.wq.utils.ResultCallback;
 
 import java.util.List;
 
-public class ChooseMovieActivity extends BaseActivity<ActivityChooseMovieBinding> {
+public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding> {
 
     private MoviesAdapter adapter;
 
@@ -40,7 +40,7 @@ public class ChooseMovieActivity extends BaseActivity<ActivityChooseMovieBinding
             public void onSuccess(List<MovieInfo> result) {
 
                 runOnUiThread(() -> {
-                    adapter = new MoviesAdapter(ChooseMovieActivity.this, result);
+                    adapter = new MoviesAdapter(SearchMovieActivity.this, result);
                     mBinding.rvMovies.setAdapter(adapter);
                 });
             }

@@ -27,7 +27,7 @@ public class TokenManager {
     public static final String TAG = "WQ_Agora_TokenManager";
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    public void getToken(String userId, String token, String roomId, int role, ResultCallback<RtcInfo> callback) {
+    public void getToken(long userId, String token, long roomId, int role, ResultCallback<RtcInfo> callback) {
         //TODO 用户如果不是邮箱登录呢
         String json = GenerateJson.getRtcToken(roomId, role, userId);
 
@@ -46,7 +46,7 @@ public class TokenManager {
                     try {
                         JSONObject json = new JSONObject(response.body().string());
                         int code = json.getInt("code");
-                        Log.d(TAG, "onResponse: ======声网token:" + json.toString());
+                        Log.d(TAG, "[test] getToken #49" + json.toString());
                         if (code == 1) {
                             JSONObject data = json.getJSONObject("data");
                             RtcInfo rtcInfo = JsonParser.rtcTokenParser(data);

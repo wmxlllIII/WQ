@@ -31,6 +31,7 @@ import com.memory.wq.beans.RtcInfo;
 import com.memory.wq.databinding.ActivityAudioBinding;
 import com.memory.wq.enumertions.ContentType;
 import com.memory.wq.enumertions.RoleType;
+import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.AgoraManager;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.MovieManager;
@@ -50,7 +51,7 @@ import java.util.List;
 
 import io.agora.mediaplayer.Constants;
 
-public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements View.OnClickListener, AgoraManager.AgoraEventListener {
+public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements AgoraManager.AgoraEventListener {
     private static final String TAG = AudioActivity.class.getName();
 
     private static final int PERMISSION_REQ_ID = 22;
@@ -64,10 +65,10 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
 
     private AgoraManager mAgoraManager;
     private RoleType roleType;
-    private String mRoomId;
+    private long mRoomId;
     private MovieManager mMovieManager;
     private PermissionManager mPermissionManager;
-    private String mUserId;
+    private long mUserId;
     private String token;
     private MovieCommentAdapter mAdapter;
     private boolean isFullScreen = false;
@@ -106,13 +107,12 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
 
     private void initData() {
 
-        SharedPreferences sp = getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
-        token = sp.getString("token", "");
-        mUserId = sp.getString("userId", "");
+        token = AccountManager.getUserInfo().getToken();
+        mUserId = AccountManager.getUserId();
 
         Intent intent = getIntent();
         roleType = (RoleType) intent.getSerializableExtra(AppProperties.ROLE_TYPE);
-        mRoomId = roleType == RoleType.ROLE_TYPE_BROADCASTER ? mUserId : intent.getStringExtra(AppProperties.ROOM_ID);
+        mRoomId = roleType == RoleType.ROLE_TYPE_BROADCASTER ? mUserId : intent.getLongExtra(AppProperties.ROOM_ID,-1L);
 
 
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
@@ -209,20 +209,31 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
         remote_video_view_containerParams = mBinding.remoteVideoViewContainer.getLayoutParams();
         rl_controllersParams = mBinding.rlControllers.getLayoutParams();
         rl_video_containerParams = mBinding.rlVideoContainer.getLayoutParams();
-
-        mBinding.remoteVideoViewContainer.setOnClickListener(this);
         mBinding.rlControllers.setVisibility(View.GONE);
-        mBinding.btnPlayPause.setOnClickListener(this);
-        mBinding.btnSend.setOnClickListener(this);
-        mBinding.ivLandscape.setOnClickListener(this);
-        mBinding.ivMenu.setOnClickListener(this);
+
+        mBinding.remoteVideoViewContainer.setOnClickListener(V -> {
+            adjustControlBar();
+        });
+
+        mBinding.btnPlayPause.setOnClickListener(V -> {
+            switchPlayPause();
+        });
+        mBinding.btnSend.setOnClickListener(V -> {
+            sendComment();
+        });
+        mBinding.ivLandscape.setOnClickListener(V -> {
+            switchOrientation();
+        });
+        mBinding.ivMenu.setOnClickListener(V -> {
+            showOptions();
+        });
 
 
         mBinding.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser && mAgoraManager != null) {
-                    mAgoraManager.seek((long) (progress * 1000));
+                    mAgoraManager.seek(progress * 1000L);
 
                     if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
                         mAgoraManager.sendSyncCommand(progress, System.currentTimeMillis());
@@ -308,7 +319,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
                     String content = json.getString("content");
                     long timestamp = json.getLong("timestamp");
                     runOnUiThread(() -> {
-                        if (!mUserId.equals(sender)) {
+                        if (!String.valueOf(mUserId).equals(sender)) {
                             addComment(sender, content, timestamp);
                         }
                     });
@@ -350,29 +361,6 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
         });
     }
 
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_play_pause:
-                switchPlayPause();
-                break;
-            case R.id.btn_send:
-                sendComment();
-                break;
-            case R.id.remote_video_view_container:
-                adjustControlBar();
-                break;
-            case R.id.iv_landscape:
-                switchOrientation();
-                break;
-            case R.id.iv_menu:
-                showOptions();
-                break;
-        }
-
-    }
-
     private void switchPlayPause() {
         if (mAgoraManager.isPlaying()) {
             mAgoraManager.pause();
@@ -388,7 +376,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
     private void sendComment() {
         String comment = mBinding.etComment.getText().toString();
         if (!TextUtils.isEmpty(comment)) {
-            addComment(mUserId, comment, System.currentTimeMillis());
+            addComment(String.valueOf(mUserId), comment, System.currentTimeMillis());
             mAgoraManager.sendComment(comment);
             mBinding.etComment.setText("");
         }
@@ -410,7 +398,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
 
 
     private void showOptions() {
-        new FriendManager().getAllFriends( new ResultCallback<List<FriendInfo>>() {
+        new FriendManager().getAllFriends(new ResultCallback<List<FriendInfo>>() {
             @Override
             public void onSuccess(List<FriendInfo> result) {
                 friendList.clear();
@@ -449,7 +437,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
         shareMsg.setMsgType(ContentType.TYPE_LINK);
         shareMsg.setLinkTitle("加入共享房间");
         shareMsg.setContent("点击链接加入观看" + movieInfo.getTitle());
-        shareMsg.setLinkContent(mRoomId);
+        shareMsg.setLinkContent(String.valueOf(mRoomId));
 
         shareMsg.setLinkImageUrl(movieInfo.getCoverUrl());
         shareMsg.setSenderId(SPManager.getUserInfo().getUuNumber());
@@ -502,7 +490,6 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
             mBinding.rlControllers.setLayoutParams(controllerParams);
 
 
-
         } catch (Exception e) {
             e.printStackTrace();
             Log.d(TAG, "enterFullScreenMode: ===进入全屏模式错误" + e.getMessage());
@@ -522,7 +509,6 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
 
             mBinding.remoteVideoViewContainer.setLayoutParams(remote_video_view_containerParams);
             mBinding.rlControllers.setLayoutParams(rl_controllersParams);
-
 
 
         } catch (Exception e) {
@@ -561,7 +547,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
         }
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
             MovieManager movieManager = new MovieManager();
-            movieManager.releaseRoom(token, mRoomId);
+            movieManager.releaseRoom(token, String.valueOf(mRoomId));
         }
     }
 

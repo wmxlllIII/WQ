@@ -26,9 +26,9 @@ import com.memory.wq.utils.ResultCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostInfoActivity extends BaseActivity<ActivityPostInfoBinding> {
+public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
 
-    public static final String TAG = "PostInfoActivity";
+    public static final String TAG = "WQ_PostDetailActivity";
     private PostInfo mPostInfo;
     private final List<PostCommentInfo> mCommentInfoList = new ArrayList<>();
     private CommentManager mCommentManager;
@@ -84,9 +84,9 @@ public class PostInfoActivity extends BaseActivity<ActivityPostInfoBinding> {
         adapter.setOnCommentActionListener(new PostCommentAdapter.OnCommentActionListener() {
             @Override
             public void onReplyToComment(PostCommentInfo comment) {
-                PostInfoActivity.this.mComment = comment;
+                PostDetailActivity.this.mComment = comment;
                 showKeyboard(mBinding.etComment);
-                MyToast.showToast(PostInfoActivity.this, "点击了回复" + comment.getUserName());
+                MyToast.showToast(PostDetailActivity.this, "点击了回复" + comment.getUserName());
             }
         });
     }
@@ -137,7 +137,7 @@ public class PostInfoActivity extends BaseActivity<ActivityPostInfoBinding> {
         mBinding.tvSend.setOnClickListener(view -> {
             String commentContent = mBinding.etComment.getText().toString().trim();
             if (commentContent.isEmpty()) {
-                MyToast.showToast(PostInfoActivity.this, "评论内容不能为空");
+                MyToast.showToast(PostDetailActivity.this, "评论内容不能为空");
                 return;
             }
 
@@ -178,13 +178,13 @@ public class PostInfoActivity extends BaseActivity<ActivityPostInfoBinding> {
             public void onSuccess(Boolean result) {
                 mBinding.etComment.setText("");
                 hideKeyboard();
-                MyToast.showToast(PostInfoActivity.this, "发布成功");
+                MyToast.showToast(PostDetailActivity.this, "发布成功");
 
             }
 
             @Override
             public void onError(String err) {
-                MyToast.showToast(PostInfoActivity.this, "发布失败");
+                MyToast.showToast(PostDetailActivity.this, "发布失败");
             }
         });
     }

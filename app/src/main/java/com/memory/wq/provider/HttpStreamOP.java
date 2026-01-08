@@ -3,6 +3,7 @@ package com.memory.wq.provider;
 
 import android.util.Log;
 
+import com.memory.wq.beans.PostInfo;
 import com.memory.wq.managers.AccountManager;
 
 import java.io.File;
@@ -35,7 +36,7 @@ public class HttpStreamOP {
                 .header("token", token == null ? "" : token)
                 .post(requestBody)
                 .build();
-        Log.d(TAG, "[TOKEN] postJson: " + token);
+
         sendOkhttpRequest(request, callback);
     }
 
@@ -66,11 +67,12 @@ public class HttpStreamOP {
         sendOkhttpRequest(request, callback);
     }
 
-    public static void publishPost(String url, String token, String json, List<File> imagesList, Callback callback) {
+    public static void publishPost(String url, String token, PostInfo post, List<File> imagesList, Callback callback) {
 
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("content", json);
+                .addFormDataPart("title", post.getTitle())
+                .addFormDataPart("content", post.getContent());
 
         for (File image : imagesList) {
             builder.addFormDataPart("images", image.getName(), RequestBody.create(image, getMediaType(image)));

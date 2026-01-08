@@ -25,58 +25,52 @@ import com.google.android.material.navigation.NavigationView;
 import com.memory.wq.R;
 import com.memory.wq.activities.AvatarActivity;
 import com.memory.wq.activities.BaseActivity;
-import com.memory.wq.activities.UploadPostActivity;
 import com.memory.wq.activities.LaunchActivity;
-import com.memory.wq.activities.UserInfoActivity;
+import com.memory.wq.activities.ProfileActivity;
+import com.memory.wq.activities.UploadPostActivity;
 import com.memory.wq.constants.AppProperties;
+import com.memory.wq.databinding.DiscoverLayoutBinding;
+import com.memory.wq.managers.AccountManager;
 
-public class DiscoverFragment extends Fragment implements View.OnClickListener {
-
-    private TextView tv_concern;
-    private TextView tv_recommend;
-
+public class DiscoverFragment extends Fragment {
     private Fragment currentFragment;
     private Fragment recommendFragment;
     private Fragment concernFragment;
     private DrawerLayout dl_main;
-    private ImageView iv_open_drawer;
     private ImageView iv_avatar;
     private TextView tv_nickname;
     private TextView tv_nickname_hint;
 
     private NavigationView nv_side;
 
-
-    private String email;
-    private SharedPreferences sp;
     private TextView tv_usernumber;
-    private ImageView iv_edit;
     private LinearLayout ll_userid;
+    private DiscoverLayoutBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.discover_layout, null, false);
-        initView(view);
+        binding = DiscoverLayoutBinding.inflate(inflater, container, false);
+        initView();
         initFragmentHolder();
         initDefaultFragment();
         initData();
         initDrawer();
-        return view;
+        return binding.getRoot();
     }
 
     private void initData() {
-        sp = getContext().getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
     }
 
     private void initDrawer() {
         nv_side.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.nv_info:
-                    startActivity(new Intent(getContext(), UserInfoActivity.class));
+                    startActivity(new Intent(getContext(), ProfileActivity.class));
                     break;
                 case R.id.nv_logout:
                     //TODO
+                    SharedPreferences sp = getContext().getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
                     sp.edit().clear().commit();
                     BaseActivity.finishAll();
                     Intent intent = new Intent(getContext(), LaunchActivity.class);
@@ -92,27 +86,24 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        String userName = sp.getString("userName", "");
-        String avatarUrl = sp.getString("avatarUrl", "");
-        long uuNumber = sp.getLong("uuNumber", -1L);
 
         Glide.with(getContext())
-                .load(AppProperties.HTTP_SERVER_ADDRESS + avatarUrl)
+                .load(AccountManager.getUserInfo().getAvatarUrl())
                 .circleCrop()
-                .into(iv_open_drawer);
+                .into(binding.ivOpenDrawer);
 
         Glide.with(getContext())
-                .load(AppProperties.HTTP_SERVER_ADDRESS + avatarUrl)
+                .load(AccountManager.getUserInfo().getAvatarUrl())
                 .transform(new RoundedCorners(15))
                 .into(iv_avatar);
 
-        tv_nickname.setText(userName);
-        if (uuNumber==-1){
+        tv_nickname.setText(AccountManager.getUserInfo().getUsername());
+        if (AccountManager.getUserId() <= 0) {
             ll_userid.setVisibility(View.GONE);
             tv_nickname_hint.setText("登录后可体验完整功能哦~");
         }
 
-        tv_usernumber.setText(String.valueOf(uuNumber));
+        tv_usernumber.setText(String.valueOf(AccountManager.getUserId()));
     }
 
     private void initFragmentHolder() {
@@ -125,7 +116,7 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initDefaultFragment() {
-        tv_recommend.performClick();
+        binding.tvRecommend.performClick();
     }
 
     private void switchFragment(int position) {
@@ -157,14 +148,9 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void initView(View view) {
-        tv_recommend = (TextView) view.findViewById(R.id.tv_recommend);
-        tv_concern = (TextView) view.findViewById(R.id.tv_concern);
-        iv_edit = (ImageView) view.findViewById(R.id.iv_edit);
+    private void initView() {
 
         dl_main = (DrawerLayout) getActivity().findViewById(R.id.dl_main);
-        iv_open_drawer = (ImageView) view.findViewById(R.id.iv_open_drawer);
-
         nv_side = (NavigationView) getActivity().findViewById(R.id.nv_side);
         View headerView = nv_side.getHeaderView(0);
         iv_avatar = (ImageView) headerView.findViewById(R.id.iv_avatar);
@@ -174,47 +160,36 @@ public class DiscoverFragment extends Fragment implements View.OnClickListener {
         ll_userid = (LinearLayout) headerView.findViewById(R.id.ll_userid);
 
 
-        iv_open_drawer.setOnClickListener(this);
-        tv_recommend.setOnClickListener(this);
-        tv_concern.setOnClickListener(this);
+        binding.ivOpenDrawer.setOnClickListener(v -> dl_main.openDrawer(Gravity.LEFT));
 
-        tv_nickname.setOnClickListener(this);
-        iv_avatar.setOnClickListener(this);
-        iv_edit.setOnClickListener(this);
+        binding.tvRecommend.setOnClickListener(v -> {
+            switchFragment(0);
+            resetcolor();
+            binding.tvRecommend.setTextColor(getResources().getColor(R.color.light_blue_600));
+        });
 
-    }
+        binding.tvConcern.setOnClickListener(v -> {
+            switchFragment(1);
+            resetcolor();
+            binding.tvConcern.setTextColor(getResources().getColor(R.color.light_blue_600));
+        });
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.tv_recommend:
-                switchFragment(0);
-                resetcolor();
-                tv_recommend.setTextColor(getResources().getColor(R.color.light_blue_600));
-                break;
-            case R.id.tv_concern:
-                switchFragment(1);
-                resetcolor();
-                tv_concern.setTextColor(getResources().getColor(R.color.light_blue_600));
-                break;
-            case R.id.iv_open_drawer:
-                dl_main.openDrawer(Gravity.LEFT);
-                break;
-            case R.id.iv_avatar:
-                startActivity(new Intent(getContext(), AvatarActivity.class));
-                break;
-            case R.id.tv_nickname:
+        tv_nickname.setOnClickListener(v -> {
 
-                break;
-            case R.id.iv_edit:
-                startActivity(new Intent(getContext(), UploadPostActivity.class));
-                break;
+        });
 
-        }
+        iv_avatar.setOnClickListener(v -> {
+            startActivity(new Intent(getContext(), AvatarActivity.class));
+        });
+
+        binding.ivEdit.setOnClickListener(v -> {
+            startActivity(new Intent(getContext(), UploadPostActivity.class));
+        });
+
     }
 
     private void resetcolor() {
-        tv_recommend.setTextColor(getResources().getColor(R.color.white_80));
-        tv_concern.setTextColor(getResources().getColor(R.color.white_80));
+        binding.tvRecommend.setTextColor(getResources().getColor(R.color.white_80));
+        binding.tvConcern.setTextColor(getResources().getColor(R.color.white_80));
     }
 }

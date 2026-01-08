@@ -19,7 +19,7 @@ import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.enumertions.ContentType;
 import com.memory.wq.interfaces.OnMsgItemClickListener;
 import com.memory.wq.managers.AccountManager;
-import com.memory.wq.utils.diffutils.MsgInfoDiffCallback;
+import com.memory.wq.adapters.diffcallbacks.MsgInfoDiffCallback;
 
 public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
 
@@ -132,6 +132,18 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
             holder.tv_leftMsg.setText(msgInfo.getContent());
         }
 
+        holder.iv_my_avatar.setOnClickListener(v ->
+                listener.onAvatarClick(
+                        msgInfo.getSenderId() == AccountManager.getUserInfo().getUuNumber() ?
+                                msgInfo.getSenderId() : msgInfo.getReceiverId()
+                )
+        );
+        holder.iv_friend_avatar.setOnClickListener(v ->
+                listener.onAvatarClick(
+                        msgInfo.getSenderId() == AccountManager.getUserInfo().getUuNumber() ?
+                                msgInfo.getReceiverId() : msgInfo.getSenderId()
+                )
+        );
 //        Glide.with(holder.iv_friend_avatar.getContext())
 //                .load(msgInfo.getReceiverAvatar())
 //                .into(holder.iv_friend_avatar);

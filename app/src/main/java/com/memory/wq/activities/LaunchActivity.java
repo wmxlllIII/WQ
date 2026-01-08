@@ -23,34 +23,10 @@ public class LaunchActivity extends BaseActivity<LoginMainLayoutBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tryAutoLogin();
         initView();
         initData();
     }
 
-    private void tryAutoLogin() {
-        String oldToken = SPManager.getUserInfo().getToken();
-        if (TextUtils.isEmpty(oldToken)) {
-            return;
-        }
-
-        Log.d(TAG, "tryAutoLogin: ");
-        mAuthManager.tryAutoLogin(oldToken, new ResultCallback<UserInfo>() {
-            @Override
-            public void onSuccess(UserInfo user) {
-                SPManager.saveUserInfo(LaunchActivity.this, user);
-                Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
-
-            @Override
-            public void onError(String err) {
-                MyToast.showToast(LaunchActivity.this, err);
-            }
-        });
-
-    }
 
     @Override
     protected int getLayoutId() {

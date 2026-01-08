@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.memory.wq.activities.AudioActivity;
-import com.memory.wq.activities.ChooseMovieActivity;
+import com.memory.wq.activities.SearchMovieActivity;
 import com.memory.wq.adapters.RoomAdapter;
 import com.memory.wq.beans.RoomInfo;
 import com.memory.wq.databinding.CowatchLayoutBinding;
@@ -65,7 +65,7 @@ public class CowatchFragment extends Fragment {
 
     private void initView() {
         mBinding.tvCreateRoom.setOnClickListener(view -> {
-            startActivity(new Intent(getContext(), ChooseMovieActivity.class));
+            startActivity(new Intent(getContext(), SearchMovieActivity.class));
         });
 
         mBinding.tvJoinRandom.setOnClickListener(view -> {

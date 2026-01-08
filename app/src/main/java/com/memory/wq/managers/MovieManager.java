@@ -96,7 +96,7 @@ public class MovieManager {
         });
     }
 
-    public void saveRoom(String token, String roomId, int movieId) {
+    public void saveRoom(String token, long roomId, int movieId) {
         String json = GenerateJson.getSaveRoomJson(roomId, movieId);
 
         ThreadPoolManager.getInstance().execute(() -> {

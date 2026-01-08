@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.constants.AppProperties;
-import com.memory.wq.viewholders.WorksVH;
+import com.memory.wq.adapters.viewholders.WorksVH;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class WorksAdapter extends RecyclerView.Adapter<WorksVH> {
     public void onBindViewHolder(@NonNull WorksVH holder, int position) {
         PostInfo post = workList.get(position);
         Glide.with(holder.itemView.getContext())
-                .load(AppProperties.HTTP_SERVER_ADDRESS + post.getCommentCoverUrl())
+                .load(post.getCommentCoverUrl())
                 .into(holder.cover);
         holder.itemView.setOnClickListener(v -> {
             if (listener == null) {

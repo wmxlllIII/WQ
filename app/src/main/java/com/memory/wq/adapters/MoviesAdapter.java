@@ -45,7 +45,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
                 .error(R.mipmap.loading_failure)
                 .into(holder.iv_cover);
         holder.tv_movie_name.setText(movieInfo.getTitle());
-        holder.tv_movie_length.setText(movieInfo.getLength()+"");
+        holder.tv_movie_length.setText(String.valueOf(movieInfo.getLength()));
         holder.iv_cover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -2,13 +2,10 @@ package com.memory.wq.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.constants.AppProperties;
@@ -37,6 +34,7 @@ public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
     private static final String TAG = "WQ_PersonalActivity";
     private final FriendManager mFriendManager = new FriendManager();
     private long mFriendId;
+    private FriendInfo mFriendInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,41 +50,34 @@ public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
     }
 
     private void initView() {
+        mBinding.pivId.setTitle("WQID");
         mBinding.ivBack.setOnClickListener(view -> finish());
 
-        mBinding.ivAdd.setOnClickListener(view -> {
-            AddFriendDialog dialog = new AddFriendDialog(mBinding.getRoot().getContext());
-            dialog.setContent("我是" + AccountManager.getUserInfo().getUserName());
-            dialog.setOnConfirmListener(new AddFriendDialog.OnConfirmListener() {
-                @Override
-                public void onConfirm(String content) {
-                    sendReq(mFriendId, content);
-                }
-
-                @Override
-                public void onCancel() {
-                }
-            });
-            dialog.show();
-        });
+        mBinding.ivAdd.setOnClickListener(view -> showAddDialog());
 
         mBinding.ivChat.setOnClickListener(v -> {
             Intent intent = new Intent(mBinding.getRoot().getContext(), ChatActivity.class);
             intent.putExtra(AppProperties.CHAT_ID, mFriendId);
             startActivity(intent);
         });
-        loadPersonalInfo();
+
+        mBinding.ivFollow.setOnClickListener(view -> {
+            if (mFriendInfo.isFollow()) {
+                unfollowUser();
+            } else {
+                followUser();
+            }
+        });
     }
 
     private void loadPersonalInfo() {
         mFriendManager.searchUser(SearchUserType.SEARCH_USER_TYPE_UUNUM, String.valueOf(mFriendId), new ResultCallback<FriendInfo>() {
             @Override
             public void onSuccess(FriendInfo friend) {
+                mFriendInfo = friend;
                 mBinding.tvNickname.setText(friend.getNickname());
-                mBinding.tvUunum.setText(String.valueOf(mFriendId));
-                mBinding.tvSignature.setText("todo");
-//                mBinding.ivAdd.setVisibility();
-//                mBinding.ivChat.setVisibility();
+                mBinding.pivId.setValue(String.valueOf(mFriendId));
+                mBinding.tvFollow.setText(friend.isFollow() ? "取消关注" : "关注");
             }
 
             @Override
@@ -102,7 +93,7 @@ public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
     }
 
     private void initData() {
-
+        loadPersonalInfo();
     }
 
     private void sendReq(long targetId, String validMsg) {
@@ -147,4 +138,50 @@ public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
             });
         });
     }
+
+
+    private void followUser() {
+        mFriendManager.followUser(mFriendId, new ResultCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                MyToast.showToast(PersonalActivity.this, "关注成功");
+            }
+
+            @Override
+            public void onError(String err) {
+                MyToast.showToast(PersonalActivity.this, "关注失败");
+            }
+        });
+    }
+
+    private void unfollowUser() {
+        mFriendManager.unfollowUser(mFriendId, new ResultCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                MyToast.showToast(PersonalActivity.this, "取关成功");
+            }
+
+            @Override
+            public void onError(String err) {
+                MyToast.showToast(PersonalActivity.this, "取关失败");
+            }
+        });
+    }
+
+    private void showAddDialog() {
+        AddFriendDialog dialog = new AddFriendDialog(mBinding.getRoot().getContext());
+        dialog.setContent("我是" + AccountManager.getUserInfo().getUsername());
+        dialog.setOnConfirmListener(new AddFriendDialog.OnConfirmListener() {
+            @Override
+            public void onConfirm(String content) {
+                sendReq(mFriendId, content);
+            }
+
+            @Override
+            public void onCancel() {
+            }
+        });
+        dialog.show();
+    }
+
 }

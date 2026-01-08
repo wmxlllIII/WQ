@@ -1,6 +1,4 @@
-package com.memory.wq.utils.diffutils;
-
-import android.text.TextUtils;
+package com.memory.wq.adapters.diffcallbacks;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;

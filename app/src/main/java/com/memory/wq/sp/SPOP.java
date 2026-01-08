@@ -30,8 +30,8 @@ public class SPOP {
         if (userInfo.getUuNumber() > 0) {
             spHelper.saveLong(KEY_USER_ID, userInfo.getUuNumber());
         }
-        if (userInfo.getUserName() != null) {
-            spHelper.saveString(KEY_USERNAME, userInfo.getUserName());
+        if (userInfo.getUsername() != null) {
+            spHelper.saveString(KEY_USERNAME, userInfo.getUsername());
         }
         if (userInfo.getAvatarUrl() != null) {
             spHelper.saveString(KEY_AVATAR_URL, userInfo.getAvatarUrl());
@@ -43,7 +43,7 @@ public class SPOP {
         userInfo.setToken(spHelper.getString(KEY_TOKEN, null));
         userInfo.setEmail(spHelper.getString(KEY_EMAIL, null));
         userInfo.setUuNumber(spHelper.getLong(KEY_USER_ID, -1L));
-        userInfo.setUserName(spHelper.getString(KEY_USERNAME, "游客"));
+        userInfo.setUsername(spHelper.getString(KEY_USERNAME, "游客"));
         userInfo.setAvatarUrl(spHelper.getString(KEY_AVATAR_URL, null));
         return userInfo;
     }

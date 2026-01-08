@@ -13,6 +13,15 @@ public class FriendInfo implements Serializable {
     private long updateAt;
     private boolean isFriend;
     private boolean isBlack;
+    private boolean isFollow;
+
+    public boolean isFollow() {
+        return isFollow;
+    }
+
+    public void setFollow(boolean follow) {
+        isFollow = follow;
+    }
 
     public boolean isFriend() {
         return isFriend;
@@ -98,6 +107,7 @@ public class FriendInfo implements Serializable {
                 ", updateAt=" + updateAt +
                 ", isFriend=" + isFriend +
                 ", isBlack=" + isBlack +
+                ", isFollow=" + isFollow +
                 '}';
     }
 }

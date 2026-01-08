@@ -2,282 +2,136 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#3E306A"
         android:fitsSystemWindows="true"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:paddingHorizontal="@dimen/common_title_pad_hori"
+            android:paddingVertical="@dimen/common_title_vert"
+            android:id="@+id/cl_title_zone"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="个人信息"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
-        <ImageView
-            android:id="@+id/iv_avatar"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@color/black_overlay"/>
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            app:layout_constraintTop_toTopOf="parent">
+
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@color/black"/>//加号
+                android:id="@+id/iv_back"
+                android:layout_width="@dimen/common_back_size"
+                android:layout_height="@dimen/common_back_size"
+                android:src="@mipmap/icon_back_light"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
+                android:id="@+id/tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="关注"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="7dp"
-            android:background="#6B6969" />
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/tv_nickname_hint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:paddingVertical="10dp"
-                android:text="昵称"
+                android:layout_gravity="center_horizontal"
+                android:text="个人信息"
                 android:textColor="@color/white"
-                android:textSize="18sp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_nickname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="200dp"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:text="昵称昵称昵称昵称昵称昵称昵称昵称昵称昵称昵称昵称"
-                android:textColor="@color/white"
-                android:textSize="17sp"
-                app:layout_constraintEnd_toStartOf="@id/iv_nickname_enter"
-                app:layout_constraintTop_toTopOf="@id/tv_nickname_hint"
-                app:layout_constraintBottom_toBottomOf="@id/tv_nickname_hint" />
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="@id/iv_back"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/iv_back" />
 
             <ImageView
-                android:id="@+id/iv_nickname_enter"
-                android:layout_width="20dp"
-                android:layout_height="24dp"
-                android:src="@mipmap/icon_enter"
-                android:layout_marginEnd="15dp"
+                android:id="@+id/iv_avatar"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@color/black_overlay"
+                app:layout_constraintBottom_toBottomOf="@id/iv_back"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_nickname_hint"
-                app:layout_constraintBottom_toBottomOf="@id/tv_nickname_hint" />
+                app:layout_constraintTop_toTopOf="@id/iv_back" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:background="@color/white"
-                app:layout_constraintStart_toStartOf="@id/tv_nickname_hint"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_nickname_hint" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/tv_phone_hint"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/cl_title_zone">
+
+            <com.memory.wq.views.ProfileItemView
+                android:id="@+id/cl_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:paddingVertical="10dp"
-                android:text="手机号"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                />
 
-            <TextView
-                android:id="@+id/tv_phone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="200dp"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:text="138****1234"
-                android:textColor="@color/white"
-                android:textSize="17sp"
-                app:layout_constraintEnd_toStartOf="@id/iv_phone_enter"
-                app:layout_constraintTop_toTopOf="@id/tv_phone_hint"
-                app:layout_constraintBottom_toBottomOf="@id/tv_phone_hint" />
-
-            <ImageView
-                android:id="@+id/iv_phone_enter"
-                android:layout_width="20dp"
-                android:layout_height="24dp"
-                android:src="@mipmap/icon_enter"
-                android:layout_marginEnd="15dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_phone_hint"
-                app:layout_constraintBottom_toBottomOf="@id/tv_phone_hint" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:background="@color/white"
-                app:layout_constraintStart_toStartOf="@id/tv_phone_hint"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_phone_hint" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/tv_email_hint"
+            <com.memory.wq.views.ProfileItemView
+                android:id="@+id/cl_nickname"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:paddingVertical="10dp"
-                android:text="邮箱"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/tv_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="200dp"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:text="example@example.com"
-                android:textColor="@color/white"
-                android:textSize="17sp"
-                app:layout_constraintEnd_toStartOf="@id/iv_email_enter"
-                app:layout_constraintTop_toTopOf="@id/tv_email_hint"
-                app:layout_constraintBottom_toBottomOf="@id/tv_email_hint" />
-
-            <ImageView
-                android:id="@+id/iv_email_enter"
-                android:layout_width="20dp"
-                android:layout_height="24dp"
-                android:src="@mipmap/icon_enter"
-                android:layout_marginEnd="15dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_email_hint"
-                app:layout_constraintBottom_toBottomOf="@id/tv_email_hint" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:background="@color/white"
-                app:layout_constraintStart_toStartOf="@id/tv_email_hint"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_email_hint" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/tv_signature_hint"
+            <com.memory.wq.views.ProfileItemView
+                android:id="@+id/cl_phone"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:paddingVertical="10dp"
-                android:text="签名"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/tv_signature"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="200dp"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:text="这个人很懒，什么都没留下～"
-                android:textColor="@color/white"
-                android:textSize="17sp"
-                app:layout_constraintEnd_toStartOf="@id/iv_signature_enter"
-                app:layout_constraintTop_toTopOf="@id/tv_signature_hint"
-                app:layout_constraintBottom_toBottomOf="@id/tv_signature_hint" />
-
-            <ImageView
-                android:id="@+id/iv_signature_enter"
-                android:layout_width="20dp"
-                android:layout_height="24dp"
-                android:src="@mipmap/icon_enter"
-                android:layout_marginEnd="15dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_signature_hint"
-                app:layout_constraintBottom_toBottomOf="@id/tv_signature_hint" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:background="@color/white"
-                app:layout_constraintStart_toStartOf="@id/tv_signature_hint"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_signature_hint" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/tv_qrcode_hint"
+            <com.memory.wq.views.ProfileItemView
+                android:id="@+id/cl_email"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:paddingVertical="10dp"
-                android:text="我的二维码"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:layout_height="wrap_content" />
 
-            <ImageView
-                android:id="@+id/iv_qrcode_enter"
-                android:layout_width="20dp"
-                android:layout_height="24dp"
-                android:src="@mipmap/icon_enter"
-                android:layout_marginEnd="15dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_qrcode_hint"
-                app:layout_constraintBottom_toBottomOf="@id/tv_qrcode_hint" />
+            <com.memory.wq.views.ProfileItemView
+                android:id="@+id/cl_gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:background="@color/white"
-                app:layout_constraintStart_toStartOf="@id/tv_qrcode_hint"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_qrcode_hint" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.memory.wq.views.ProfileItemView
+                android:id="@+id/cl_qrcode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    </LinearLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_signature_zone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_signature_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:paddingVertical="10dp"
+                    android:text="个性签名"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_signature"
+                    android:layout_width="match_parent"
+                    android:layout_height="130dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="10dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:text="这个人很懒，什么都没留下～"
+                    android:textColor="@color/white"
+                    android:textSize="17sp"
+                    android:background="@drawable/bg_signature"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_signature_hint" />
+
+                <ImageView
+                    android:id="@+id/iv_signature_enter"
+                    android:layout_width="20dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="15dp"
+                    android:src="@mipmap/icon_enter"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_signature_hint"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_signature_hint" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

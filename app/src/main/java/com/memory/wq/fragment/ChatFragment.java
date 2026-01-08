@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.memory.wq.activities.AudioActivity;
+import com.memory.wq.activities.PersonalActivity;
 import com.memory.wq.adapters.MsgAdapter;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.MsgInfo;
@@ -88,7 +89,7 @@ public class ChatFragment extends Fragment {
 
     private void initView() {
         initObserver();
-        mBinding.ivBack.setOnClickListener(v -> requireActivity().finish());
+        mBinding.ivBack.setOnClickListener(v -> mChatVM.navigateBack());
         mBinding.btnSend.setOnClickListener(v -> sendMsg());
         mBinding.ivDetail.setOnClickListener(view -> {
             mChatVM.navigateTo(ChatPage.CHAT_DETAIL);
@@ -106,8 +107,12 @@ public class ChatFragment extends Fragment {
             return;
         }
 
-        String displayTitle = uiChatInfo.getDisplayName() != null ? uiChatInfo.getDisplayName() : uiChatInfo.getNickname();
-        mBinding.tvNickname.setText(displayTitle);
+        String displayName = uiChatInfo.getDisplayName();
+        mBinding.tvNickname.setText(
+                TextUtils.isEmpty(displayName) ?
+                        uiChatInfo.getMembers().get(0).getNickname() :
+                        displayName
+        );
     }
 
     private void _proUiMessageInfoUpdate(UiMessageState state) {
@@ -182,6 +187,13 @@ public class ChatFragment extends Fragment {
         @Override
         public void onMsgLongClick(MsgInfo msgInfo) {
 
+        }
+
+        @Override
+        public void onAvatarClick(long userId) {
+            Intent intent = new Intent(getContext(), PersonalActivity.class);
+            intent.putExtra(AppProperties.PERSON_ID, userId);
+            startActivity(intent);
         }
     }
 

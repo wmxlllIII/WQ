@@ -38,7 +38,7 @@ import io.agora.rtm.SubscribeOptions;
 public class AgoraManager {
     public static final String TAG = "WQ_AgoraManager";
 
-    private String userId;
+    private long userId;
     private String channelName;
     private String appId;
     private String moviePath;
@@ -56,10 +56,10 @@ public class AgoraManager {
     private AgoraEventListener eventListener;
 
 
-    public AgoraManager(Context context, String userId, String channelName, RtcInfo rtcInfo) {
+    public AgoraManager(Context context, long userId, long channelName, RtcInfo rtcInfo) {
         this.context = context;
         this.userId = userId;
-        this.channelName = channelName;
+        this.channelName = String.valueOf(channelName);
 
         this.appId = rtcInfo.getAppId();
         this.rtcToken = rtcInfo.getToken();
@@ -98,7 +98,7 @@ public class AgoraManager {
 
     private void initRtmClient() {
         Log.d(TAG, "===initRtcEngine");
-        RtmConfig rtmConfig = new RtmConfig.Builder(appId, userId)
+        RtmConfig rtmConfig = new RtmConfig.Builder(appId, String.valueOf(userId))
                 .eventListener(rtmEventListener)
                 .build();
 
@@ -193,7 +193,7 @@ public class AgoraManager {
             options.publishCameraTrack = false;
             options.publishMicrophoneTrack = false;
         }
-        int code = mRtcEngine.joinChannelWithUserAccount(rtcToken, channelName, userId, options);
+        int code = mRtcEngine.joinChannelWithUserAccount(rtcToken, channelName, String.valueOf(userId), options);
         Log.d(TAG, "joinChannel: ===加入rtc频道返回码" + code);
         Log.d(TAG, "===发布媒体ID: " + options.publishMediaPlayerId);
         Log.d(TAG, "===媒体状态: " + isMediaOpened);

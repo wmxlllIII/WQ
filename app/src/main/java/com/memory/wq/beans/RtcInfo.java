@@ -3,7 +3,7 @@ package com.memory.wq.beans;
 public class RtcInfo {
     private String token;
     private String appId;
-    private String channelName;
+    private long channelName;
 
     public String getToken() {
         return token;
@@ -21,11 +21,11 @@ public class RtcInfo {
         this.appId = appId;
     }
 
-    public String getChannelName() {
+    public long getChannelName() {
         return channelName;
     }
 
-    public void setChannelName(String channelName) {
+    public void setChannelName(long channelName) {
         this.channelName = channelName;
     }
 

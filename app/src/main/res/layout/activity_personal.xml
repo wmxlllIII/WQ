@@ -6,7 +6,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#000000">
+        android:background="@color/wq_primary_background">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_title_zone"
@@ -81,81 +81,56 @@
                 android:textSize="15dp" />
         </LinearLayout>
 
-        <!--        <LinearLayout-->
-        <!--            android:id="@+id/ll_email_zone"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:orientation="horizontal">-->
-
-        <!--            <TextView-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:text="邮箱："-->
-        <!--                android:textColor="#666666"-->
-        <!--                android:textSize="15dp" />-->
-
-        <!--            <TextView-->
-        <!--                android:id="@+id/tv_email"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:text="2351641616@163.com"-->
-        <!--                android:textColor="#666666"-->
-        <!--                android:textSize="15dp" />-->
-        <!--        </LinearLayout>-->
-
         <LinearLayout
-            android:id="@+id/ll_id_zone"
+            android:id="@+id/ll_content_zone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="20dp"
-            android:orientation="horizontal"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@id/ll_fun_zone"
             app:layout_constraintTop_toBottomOf="@id/iv_avatar">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="WQID: "
-                android:textColor="#666666"
-                android:textSize="15dp" />
-
-            <TextView
-                android:id="@+id/tv_uunum"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="2506071526"
-                android:textColor="#666666"
-                android:textSize="15dp" />
-        </LinearLayout>
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="10dp">
 
-        <LinearLayout
-            android:id="@+id/ll_signature_zone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@id/ll_id_zone">
+                <ImageView
+                    android:id="@+id/iv_follow"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@mipmap/icon_add" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="个性签名"
-                android:textColor="#666666"
-                android:textSize="15dp" />
+                <TextView
+                    android:id="@+id/tv_follow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="取消关注"
+                    android:textColor="@color/white_80"
+                    android:textSize="16dp" />
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_signature"
+
+            <com.memory.wq.views.ProfileItemView
+                android:id="@+id/piv_id"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="蒋是姓 帅是病，我叫蒋帅有姓病"
-                android:textColor="#666666"
-                android:textSize="15dp" />
+                android:layout_height="wrap_content" />
+
+            <com.memory.wq.views.ProfileItemView
+                android:id="@+id/piv_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
+
         <LinearLayout
+            android:id="@+id/ll_fun_zone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="40dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 

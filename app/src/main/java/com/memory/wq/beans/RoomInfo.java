@@ -2,7 +2,7 @@ package com.memory.wq.beans;
 
 public class RoomInfo {
 
-    private String roomId;
+    private long roomId;
     private String movieUrl;
     private String movieName;
     private String movieCover;
@@ -23,11 +23,11 @@ public class RoomInfo {
         this.movieCover = movieCover;
     }
 
-    public String getRoomId() {
+    public long getRoomId() {
         return roomId;
     }
 
-    public void setRoomId(String roomId) {
+    public void setRoomId(long roomId) {
         this.roomId = roomId;
     }
 

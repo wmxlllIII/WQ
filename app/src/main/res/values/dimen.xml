@@ -4,5 +4,6 @@
     <dimen name="common_title_pad_hori">15dp</dimen>
     <dimen name="common_title_vert">10dp</dimen>
     <dimen name="common_back_size">40dp</dimen>
+    <dimen name="common_padding_top">25dp</dimen>
     <dimen name="common_title_font_size">24dp</dimen>
 </resources>

@@ -1,6 +1,7 @@
 package com.memory.wq.managers;
 
 
+import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -10,9 +11,13 @@ import android.util.Patterns;
 import androidx.annotation.NonNull;
 
 import com.memory.wq.beans.UserInfo;
+import com.memory.wq.db.op.UserSqlOP;
 import com.memory.wq.enumertions.JsonType;
 import com.memory.wq.constants.AppProperties;
+import com.memory.wq.enumertions.UpdateInfoType;
 import com.memory.wq.provider.HttpStreamOP;
+import com.memory.wq.provider.WqApplication;
+import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.GenerateJson;
 import com.memory.wq.utils.JsonParser;
@@ -34,10 +39,10 @@ public class AuthManager {
     public static final int MISMATCH_PWD = 1;
     public static final int OK_PWD = 2;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final UserSqlOP mUserSqlOP = new UserSqlOP(WqApplication.getInstance());
 
     public void login(String account, String pwd, ResultCallback<UserInfo> callback) {
         String loginJson = GenerateJson.generateJson(JsonType.JSONTYPE_LOGIN, account, 0, pwd);
-        System.out.println("===login===AuthOP" + loginJson);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.LOGIN_URL, loginJson, new Callback() {
 
@@ -46,7 +51,7 @@ public class AuthManager {
 
                     if (!response.isSuccessful()) {
                         Log.d(TAG, "[x] login #48");
-                        mHandler.post(()-> callback.onError("登录失败，请稍后再试"));
+                        mHandler.post(() -> callback.onError("登录失败，请稍后再试"));
                         return;
                     }
                     try {
@@ -54,11 +59,10 @@ public class AuthManager {
                         int code = json.getInt("code");
                         if (code == 1) {
                             UserInfo userInfo = JsonParser.loginParser(json);
-                            System.out.println("=======login==成功了" + userInfo);
                             mHandler.post(() -> callback.onSuccess(userInfo));
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, "[x] login #59 " + e.getMessage());
                     }
                 }
 
@@ -72,7 +76,6 @@ public class AuthManager {
     }
 
     public void tryAutoLogin(String token, ResultCallback<UserInfo> callback) {
-        Log.d(TAG, "tryAutoLogin");
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.AUTOLOGIN_URL, token, new Callback() {
                 @Override
@@ -91,18 +94,16 @@ public class AuthManager {
 
                     try {
                         String responseBody = response.body().string();
-                        Log.d(TAG, "=====================tryAutoLogin response: " + responseBody);
-                        JSONObject json = new JSONObject(response.body().string());
+                        Log.d(TAG, "[✓] tryAutoLogin response #91" + responseBody);
+                        JSONObject json = new JSONObject(responseBody);
                         if (json.getInt("code") == 1) {
-                            //TODO onSuccess("token")
                             UserInfo userInfo = JsonParser.loginParser(json);
                             mHandler.post(() -> callback.onSuccess(userInfo));
                         } else {
                             mHandler.post(() -> callback.onError(response.message()));
                         }
                     } catch (JSONException e) {
-                        Log.d(TAG, "[x] tryAutoLogin #103");
-                        e.printStackTrace();
+                        Log.d(TAG, "[x] tryAutoLogin #103 " + e.getMessage());
                     }
                 }
             });
@@ -118,11 +119,9 @@ public class AuthManager {
     }
 
     public int checkPwd(String pwd1, String pwd2) {
-
         if (TextUtils.isEmpty(pwd1) || TextUtils.isEmpty(pwd2)) {
             return EMPTY_PWD;
         } else if (!pwd1.equals(pwd2)) {
-
             return MISMATCH_PWD;
         } else {
             return OK_PWD;
@@ -139,18 +138,17 @@ public class AuthManager {
 
     public void register(String email, int code, String password, ResultCallback<UserInfo> callback) {
         String json = GenerateJson.generateJson(JsonType.JSONTYPE_REGISTER, email, code, password);
-        System.out.println("===register===AuthOP" + json);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.REGISTER_URL, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    callback.onError(e.getMessage());
+                    mHandler.post(() -> callback.onError(e.getMessage()));
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        callback.onError(response.toString());
+                        mHandler.post(() -> callback.onError(response.toString()));
                         return;
                     }
                     try {
@@ -158,14 +156,15 @@ public class AuthManager {
                         int code = json.getInt("code");
                         if (code == 1) {
                             UserInfo userInfo = JsonParser.registerParser(json);
-                            Log.d(TAG, "onResponse: ===注册返回数据" + userInfo);
-                            callback.onSuccess(userInfo);
+                            Log.d(TAG, "[✓] register response #153" + userInfo);
+                            mHandler.post(() -> {
+                                callback.onSuccess(userInfo);
+                            });
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, "[x] register #159" + e.getMessage());
                     }
-                    callback.onError("验证码错误,请重试");
-
+                    mHandler.post(() -> callback.onError("验证码错误,请重试"));
                 }
             });
         });
@@ -178,13 +177,13 @@ public class AuthManager {
             HttpStreamOP.postJson(AppProperties.REQUEST_URL, getCodeJson, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    callback.onError(e.getMessage());
+                    mHandler.post(() -> callback.onError(e.getMessage()));
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        callback.onError(response.toString());
+                        mHandler.post(() -> callback.onError(response.toString()));
                         return;
                     }
 
@@ -192,17 +191,52 @@ public class AuthManager {
                         JSONObject json = new JSONObject(response.body().string());
                         int code = json.getInt("code");
                         if (code == 1)
-                            callback.onSuccess(true);
+                            mHandler.post(() -> callback.onSuccess(true));
                         else
-                            callback.onError("===请输入正确邮箱地址");
+                            mHandler.post(() -> callback.onError("===请输入正确邮箱地址"));
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, "[x] getCode #192 " + e.getMessage());
                     }
 
                 }
             });
         });
+    }
 
+    public void updateProfileInformation(UpdateInfoType updateType, Object data, ResultCallback<Boolean> callback) {
+        String json = GenerateJson.getUpdateUserInfoJson(updateType, data);
+        Log.d(TAG, "[✓] updateProfileInformation #205 " + json);
+        ThreadPoolManager.getInstance().execute(() -> {
+            HttpStreamOP.postJson(AppProperties.UPDATE_USER, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] updateProfileInformation #210 " + e.getMessage());
+                    mHandler.post(() -> callback.onError("更新失败"));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] updateProfileInformation #217 " + response.message());
+                        mHandler.post(() -> callback.onError("更新失败"));
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        Log.d(TAG, "[✓] updateProfileInformation #223" + json);
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            UserInfo userInfo = JsonParser.loginParser(json);
+                            mUserSqlOP.insertUser(userInfo);
+                            mHandler.post(() -> callback.onSuccess(true));
+                        }
+                    } catch (JSONException e) {
+                        Log.d(TAG, "[x] updateProfileInformation #234 " + e.getMessage());
+                    }
+                }
+            });
+        });
     }
 
 }

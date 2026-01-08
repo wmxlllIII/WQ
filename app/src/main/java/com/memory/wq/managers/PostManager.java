@@ -20,7 +20,9 @@ import com.memory.wq.utils.ResultCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -30,10 +32,11 @@ public class PostManager {
     public static final String TAG = "WQ_PostManager";
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    public void publishPost(String token, PostInfo postInfo, ResultCallback<Boolean> callback) {
+    public void publishPost(String token, PostInfo postInfo, List<File> imageList, ResultCallback<Boolean> callback) {
         String json = GenerateJson.getPostContentJson(postInfo);
+        Log.d(TAG, "[test] publishPost #37"+json);
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.POST_PUBLISH, json, new Callback() {
+            HttpStreamOP.publishPost(AppProperties.POST_PUBLISH, token, postInfo, imageList, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     mHandler.post(() -> {
@@ -66,11 +69,44 @@ public class PostManager {
                     }
 
                 }
+//            HttpStreamOP.postJson(AppProperties.POST_PUBLISH, json, new Callback() {
+//                @Override
+//                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+//                    mHandler.post(() -> {
+//                        callback.onError(e.getMessage());
+//                    });
+//                }
+//
+//                @Override
+//                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+//                    if (!response.isSuccessful()) {
+//                        Log.d(TAG, "===[x] publishPost #54");
+//                        mHandler.post(() -> {
+//                            callback.onError(response.message());
+//                        });
+//                        return;
+//                    }
+//
+//                    try {
+//                        JSONObject json = new JSONObject(response.body().string());
+//                        int code = json.getInt("code");
+//                        if (code == 1) {
+//                            //TODO 成功上传,保存本地
+//                            mHandler.post(() -> {
+//                                callback.onSuccess(true);
+//                            });
+//                            Log.d(TAG, "onResponse: ===发布成功");
+//                        }
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                }
             });
         });
     }
 
-    public void getPosts(String token, QueryPostInfo queryPostInfo, ResultCallback<PageResult<PostInfo>> callback) {
+    public void getPosts(QueryPostInfo queryPostInfo, ResultCallback<PageResult<PostInfo>> callback) {
         String json = GenerateJson.getQueryPostJson(queryPostInfo);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.POST_GET, json, new Callback() {

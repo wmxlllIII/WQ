@@ -18,4 +18,5 @@
     <color name="transparent_black_50">#80000000</color>
     <color name="blue_light">#4A90E2</color>
     <color name="white_80">#CCFFFFFF</color>
+    <color name="wq_primary_background">#1F1A3E</color>
 </resources>

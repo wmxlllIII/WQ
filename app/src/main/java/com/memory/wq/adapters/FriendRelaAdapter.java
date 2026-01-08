@@ -4,7 +4,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,7 +15,7 @@ import com.memory.wq.R;
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.interfaces.OnFriItemClickListener;
 import com.memory.wq.managers.AccountManager;
-import com.memory.wq.utils.diffutils.FriRelaDiffCallback;
+import com.memory.wq.adapters.diffcallbacks.FriRelaDiffCallback;
 
 public class FriendRelaAdapter extends ListAdapter<FriendRelaInfo, RecyclerView.ViewHolder> {
     public static final String TAG = "WQ_FriendRelaAdapter";

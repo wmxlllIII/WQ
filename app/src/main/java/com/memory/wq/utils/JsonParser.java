@@ -38,7 +38,7 @@ public class JsonParser {
 
             userInfo.setEmail(dataEmail);
             userInfo.setToken(token);
-            userInfo.setUserName(userName);
+            userInfo.setUsername(userName);
             userInfo.setAvatarUrl(avatarUrl);
             userInfo.setUuNumber(uuNumber);
             Log.d(TAG, "registerParser: ===解析信息" + userInfo.toString());
@@ -55,22 +55,21 @@ public class JsonParser {
             JSONObject data = json.getJSONObject("data");
             String avatarUrl = data.optString("avatarUrl");
             String dataEmail = data.getString("email");
-            String userName = data.getString("name");
+            String username = data.getString("name");
             String token = data.getString("token");
             long uuNumber = data.getLong("uuNumber");
 
             userInfo.setEmail(dataEmail);
             userInfo.setToken(token);
-            userInfo.setUserName(userName);
+            userInfo.setUsername(username);
             userInfo.setAvatarUrl(avatarUrl);
             userInfo.setUuNumber(uuNumber);
 
-            System.out.println("================2userinfoTostring" + userInfo.toString());
+            Log.d(TAG, "[✓] loginParser #68 " + userInfo);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
 
         return userInfo;
     }
@@ -97,7 +96,7 @@ public class JsonParser {
             for (int i = 0; i < requestList.length(); i++) {
                 JSONObject item = requestList.getJSONObject(i);
                 FriendRelaInfo friendReqInfo = parseFriReq(item);
-                Log.d(TAG, "friendRelaParser: ===================friendReqInfo" + friendReqInfo);
+                Log.d(TAG, "[✓] friReqParser #100 " + friendReqInfo);
                 friendRelaList.add(friendReqInfo);
             }
         } catch (JSONException e) {
@@ -325,7 +324,7 @@ public class JsonParser {
 
         roomInfo.setMovieName(movieName);
         roomInfo.setMovieCover(movieCover);
-        roomInfo.setRoomId(roomId);
+        roomInfo.setRoomId(Long.parseLong(roomId));
         roomInfo.setMovieUrl(movieUrl);
         return roomInfo;
     }
@@ -334,8 +333,8 @@ public class JsonParser {
         RtcInfo rtcInfo = new RtcInfo();
         String token = json.getString("token");
         String appId = json.getString("appId");
-        String channelName = json.getString("channelName");
-        String userId = json.getString("userId");
+        long channelName = json.getLong("channelName");
+        long userId = json.getLong("userId");
         int role = json.getInt("role");
         int expireTime = json.getInt("expireTime");
         rtcInfo.setToken(token);

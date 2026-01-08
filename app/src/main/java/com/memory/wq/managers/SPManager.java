@@ -11,7 +11,6 @@ import com.memory.wq.provider.WqApplication;
 public class SPManager {
     private static final String KEY_TOKEN = "token";
     private static final String KEY_EMAIL = "email";
-    private static final String KEY_USER_ID = "userId";
     private static final String KEY_USERNAME = "userName";
     private static final String KEY_AVATAR_URL = "avatarUrl";
     private static final String KEY_UU_NUMBER = "uuNumber";
@@ -22,7 +21,7 @@ public class SPManager {
         SharedPreferences.Editor editor = sp.edit();
         String token = userInfo.getToken();
         String email = userInfo.getEmail();
-        String userName = userInfo.getUserName();
+        String userName = userInfo.getUsername();
         String avatarPath = userInfo.getAvatarUrl();
         long uuNumber = userInfo.getUuNumber();
         if (!TextUtils.isEmpty(token))
@@ -44,7 +43,7 @@ public class SPManager {
         UserInfo userInfo = new UserInfo();
         userInfo.setToken(sp.getString(KEY_TOKEN, null));
         userInfo.setEmail(sp.getString(KEY_EMAIL, null));
-        userInfo.setUserName(sp.getString(KEY_USERNAME, "游客"));
+        userInfo.setUsername(sp.getString(KEY_USERNAME, "游客"));
         userInfo.setAvatarUrl(sp.getString(KEY_AVATAR_URL, null));
         userInfo.setUuNumber(sp.getLong(KEY_UU_NUMBER, -1L));
         return userInfo;

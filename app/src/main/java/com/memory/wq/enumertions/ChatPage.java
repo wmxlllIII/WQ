@@ -1,8 +1,9 @@
 package com.memory.wq.enumertions;
 
 public enum ChatPage {
-    CHAT(true),
-    CHAT_DETAIL(true);
+    CHAT_INDIVIDUAL(true),
+    CHAT_DETAIL(true),
+    CHAT_INVITE_MEMBER(true);
 
     private final boolean reusable;
 

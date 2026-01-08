@@ -6,4 +6,6 @@ public interface OnMsgItemClickListener {
     void onLinkClick(MsgInfo msgInfo);
 
     void onMsgLongClick(MsgInfo msgInfo);
+
+    void onAvatarClick(long userId);
 }

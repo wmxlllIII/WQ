@@ -5,7 +5,6 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -40,12 +39,12 @@ public class ChatViewModel extends ViewModel {
     private final MsgManager mMsgManager = new MsgManager();
     private final long curUser = AccountManager.getUserInfo().getUuNumber();
 
-    private final MutableLiveData<ChatPage> _chatPage = new MutableLiveData<>(ChatPage.CHAT);
+    private final MutableLiveData<ChatPage> _chatPage = new MutableLiveData<>(ChatPage.CHAT_INDIVIDUAL);
     public LiveData<ChatPage> chatPage = _chatPage;
 
     public void setChatId(long chatId) {
         _chatId.setValue(chatId);
-        loadChatInfo(chatId);
+        loadChatInfo();
         registerDBObserver();
         loadMessages();
     }
@@ -85,7 +84,7 @@ public class ChatViewModel extends ViewModel {
 
     }
 
-    private void loadChatInfo(long chatId) {
+    private void loadChatInfo() {
 
     }
 
@@ -147,6 +146,14 @@ public class ChatViewModel extends ViewModel {
 
     public void navigateTo(ChatPage page) {
         _chatPage.setValue(page);
+    }
+
+    public void navigateBack() {
+
+    }
+
+    public void buildGroupOrChat() {
+
     }
 }
 

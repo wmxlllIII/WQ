@@ -9,6 +9,7 @@ import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.UserInfo;
 import com.memory.wq.enumertions.JsonType;
 import com.memory.wq.enumertions.SearchUserType;
+import com.memory.wq.enumertions.UpdateInfoType;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,7 +36,7 @@ public class GenerateJson {
         return json;
     }
 
-    public static String getApplyFriendJson(long targetId,String validMsg) {
+    public static String getApplyFriendJson(long targetId, String validMsg) {
         JSONObject object = new JSONObject();
         try {
             object.put("targetId", targetId);
@@ -82,7 +83,7 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getSendMsgJson(long targetUuNumber, String content,int msgType) {
+    public static String getSendMsgJson(long targetUuNumber, String content, int msgType) {
         JSONObject object = new JSONObject();
         try {
             object.put("msg", content);
@@ -94,7 +95,7 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getSaveRoomJson(String roomId, int movieId) {
+    public static String getSaveRoomJson(long roomId, int movieId) {
         JSONObject object = new JSONObject();
         try {
             object.put("roomId", roomId);
@@ -115,7 +116,7 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getRtcToken(String roomId, int role, String userId) {
+    public static String getRtcToken(long roomId, int role, long userId) {
 
         JSONObject object = new JSONObject();
         try {
@@ -130,14 +131,23 @@ public class GenerateJson {
     }
 
 
-    public static String getUpdateUserInfoJson(UserInfo userInfo) {
+    public static String getUpdateUserInfoJson(UpdateInfoType updateType, Object data) {
         JSONObject object = new JSONObject();
         try {
-            object.put("userName", userInfo.getUserName());
-
+            object.put("type", updateType);
+            switch (updateType) {
+                case USERNAME:
+                case EMAIL:
+                case SIGNATURE:
+                    object.put("data", data.toString());
+                    break;
+                case GENDER:
+                    object.put("data", (boolean) data);
+                    break;
+            }
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.d(TAG, "[x] getUpdateUserInfoJson #155 " + e.getMessage());
         }
         return object.toString();
     }
@@ -161,17 +171,17 @@ public class GenerateJson {
         try {
             object.put("title", postInfo.getTitle());
             object.put("content", postInfo.getContent());
-            if (postInfo.getContentImagesUrlList() == null) {
-                object.put("images", new JSONArray());
-                return object.toString();
-            }
-
-            JSONArray imagesArray = new JSONArray();
-            for (String url : postInfo.getContentImagesUrlList()) {
-                imagesArray.put(url);
-            }
-
-            object.put("images", imagesArray);
+//            if (postInfo.getContentImagesUrlList() == null) {
+//                object.put("images", new JSONArray());
+//                return object.toString();
+//            }
+//
+//            JSONArray imagesArray = new JSONArray();
+//            for (String url : postInfo.getContentImagesUrlList()) {
+//                imagesArray.put(url);
+//            }
+//
+//            object.put("images", imagesArray);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -233,6 +243,26 @@ public class GenerateJson {
             object.put("size", size);
         } catch (JSONException e) {
             Log.d(TAG, "[X] getLoadMsgJson #233" + e.getMessage());
+        }
+        return object.toString();
+    }
+
+    public static String getFollowJson(long userId) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("userId", userId);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getFollowJson #245" + e.getMessage());
+        }
+        return object.toString();
+    }
+
+    public static String getDeleteFriendJson(long friendId) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("userId", friendId);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getDeleteFriendJson #245" + e.getMessage());
         }
         return object.toString();
     }

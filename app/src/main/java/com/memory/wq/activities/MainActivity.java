@@ -10,10 +10,13 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
 import com.memory.wq.R;
+import com.memory.wq.beans.MsgInfo;
+import com.memory.wq.beans.UserInfo;
 import com.memory.wq.databinding.ActivityMainBinding;
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.enumertions.Page;
@@ -22,9 +25,13 @@ import com.memory.wq.fragment.DiscoverFragment;
 import com.memory.wq.fragment.HistoryFragment;
 import com.memory.wq.fragment.MessageFragment;
 import com.memory.wq.interfaces.IWebSocketListener;
+import com.memory.wq.managers.AuthManager;
+import com.memory.wq.managers.SPManager;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
 import com.memory.wq.service.WebSocketMessage;
+import com.memory.wq.utils.MyToast;
+import com.memory.wq.utils.ResultCallback;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -47,6 +54,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements I
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        tryAutoLogin();
         initView();
 
         mBinding.llDiscover.performClick();
@@ -66,6 +74,29 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements I
 
     }
 
+    private void tryAutoLogin() {
+        String oldToken = SPManager.getUserInfo().getToken();
+        if (TextUtils.isEmpty(oldToken)) {
+            return;
+        }
+
+        Log.d(TAG, "tryAutoLogin: ");
+        new AuthManager().tryAutoLogin(oldToken, new ResultCallback<UserInfo>() {
+            @Override
+            public void onSuccess(UserInfo user) {
+                SPManager.saveUserInfo(MainActivity.this, user);
+            }
+
+            @Override
+            public void onError(String err) {
+                MyToast.showToast(MainActivity.this, "登录已过期，请重新登录");
+                finishAll();
+                startActivity(new Intent(MainActivity.this, LaunchActivity.class));
+            }
+        });
+
+    }
+
     @Override
     public EnumSet<EventType> getEvents() {
         return mEventTypes;
@@ -75,6 +106,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements I
     public <T> void onMessage(WebSocketMessage<T> message) {
         switch (message.getEventType()) {
             case EVENT_TYPE_REQUEST_FRIEND:
+                mBinding.tvMsgnum.setVisibility(View.VISIBLE);
+                break;
+            case EVENT_TYPE_MSG:
+                mBinding.tvMsgnum.setText(String.valueOf((MsgInfo)message.getData()));
                 mBinding.tvMsgnum.setVisibility(View.VISIBLE);
                 break;
         }

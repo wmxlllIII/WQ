@@ -20,7 +20,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.memory.wq.R;
 import com.memory.wq.vm.RecommendViewModel;
-import com.memory.wq.activities.PostInfoActivity;
+import com.memory.wq.activities.PostDetailActivity;
 import com.memory.wq.adapters.BannerAdapter;
 import com.memory.wq.adapters.HeaderAdapter;
 import com.memory.wq.adapters.RecommendAdapter;
@@ -29,7 +29,6 @@ import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.databinding.RecommendLayoutBinding;
 import com.memory.wq.managers.BannerManager;
 import com.memory.wq.managers.PostManager;
-import com.memory.wq.managers.SPManager;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.utils.PageResult;
 import com.memory.wq.utils.ResultCallback;
@@ -92,8 +91,8 @@ public class RecommmendFragment extends Fragment {
         mBinding.rvRecomment.setAdapter(concatAdapter);
 
         recommendAdapter.setOnItemClickListener((position, postInfo) -> {
-            Log.d(TAG, "===="+postInfo);
-            Intent intent = new Intent(getContext(), PostInfoActivity.class);
+            Log.d(TAG, "====" + postInfo);
+            Intent intent = new Intent(getContext(), PostDetailActivity.class);
             intent.putExtra(AppProperties.POSTINFO, postInfo);
             startActivity(intent);
         });
@@ -201,7 +200,7 @@ public class RecommmendFragment extends Fragment {
     }
 
     private void loadNextPageData() {
-        if (mRecommendVM.isLoading || !mRecommendVM.hasNextPage){
+        if (mRecommendVM.isLoading || !mRecommendVM.hasNextPage) {
 
             return;
         }
@@ -210,18 +209,19 @@ public class RecommmendFragment extends Fragment {
         QueryPostInfo queryPostInfo = new QueryPostInfo();
         queryPostInfo.setPage(mRecommendVM.currentPage);
         queryPostInfo.setSize(pageSize);
-        postManager.getPosts("", queryPostInfo, new ResultCallback<PageResult<PostInfo>>() {
+        postManager.getPosts(queryPostInfo, new ResultCallback<PageResult<PostInfo>>() {
             @Override
             public void onSuccess(PageResult<PostInfo> result) {
-                    int oldSize = mRecommendVM.postInfoList.size();
-                    List<PostInfo> newData = result.getResultList();
-                    if (newData != null && !newData.isEmpty()) {
-                        mRecommendVM.postInfoList.addAll(newData);
-                        recommendAdapter.notifyItemRangeInserted(oldSize, newData.size());
-                        mRecommendVM.currentPage++;
-                    }
-                    mRecommendVM.hasNextPage = result.isHasNext();
-                    mRecommendVM.isLoading = false;;
+                int oldSize = mRecommendVM.postInfoList.size();
+                List<PostInfo> newData = result.getResultList();
+                if (newData != null && !newData.isEmpty()) {
+                    mRecommendVM.postInfoList.addAll(newData);
+                    recommendAdapter.notifyItemRangeInserted(oldSize, newData.size());
+                    mRecommendVM.currentPage++;
+                }
+                mRecommendVM.hasNextPage = result.isHasNext();
+                mRecommendVM.isLoading = false;
+                ;
 
             }
 

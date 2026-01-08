@@ -1,5 +1,6 @@
 package com.memory.wq.activities;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -64,7 +65,7 @@ public class UploadPostActivity extends BaseActivity<ActivityEditRecommendBindin
                 if (hasPermission()) {
                     selectPostImages();
                 } else {
-//                    permissionManager.requestPermission(new String[]{Manifest.permission.READ_MEDIA_IMAGES}, PERMISSION_REQUEST_CODE);
+                    permissionManager.requestPermission(new String[]{Manifest.permission.READ_MEDIA_IMAGES}, PERMISSION_REQUEST_CODE);
                 }
             }
 
@@ -82,15 +83,15 @@ public class UploadPostActivity extends BaseActivity<ActivityEditRecommendBindin
 
     private boolean hasPermission() {
         //TODO 33SDK
-//        return permissionManager.isPermitPermission(Manifest.permission.READ_MEDIA_IMAGES);
-        return false;
+        return permissionManager.isPermitPermission(Manifest.permission.READ_MEDIA_IMAGES);
+//        return false;
     }
 
     private void initView() {
         mBinding.ivBack.setOnClickListener(view -> finish());
 
         mBinding.tvPublish.setOnClickListener(v -> {
-            mBinding.tvPublish.setEnabled(false);
+//            mBinding.tvPublish.setEnabled(false);
             publishPost();
         });
 
@@ -116,58 +117,85 @@ public class UploadPostActivity extends BaseActivity<ActivityEditRecommendBindin
     private void publishPost() {
         String content = mBinding.etContent.getText().toString().trim();
         String title = mBinding.etTitle.getText().toString().trim();
-        if (TextUtils.isEmpty(content)) {
+        if (TextUtils.isEmpty(content) || TextUtils.isEmpty(title)) {
             Log.d(TAG, "===[x] publishPost #127");
-            mBinding.tvPublish.setEnabled(true);
             return;
         }
 
-        mPostManager.getUpLoadPermission(token, new ResultCallback<StsTokenInfo>() {
+        PostInfo postInfo = new PostInfo();
+        postInfo.setContent(content);
+        postInfo.setTitle(title);
+        mPostManager.publishPost(token, postInfo, postImagesList, new ResultCallback<Boolean>() {
             @Override
-            public void onSuccess(StsTokenInfo stsTokenInfo) {
-                OssManager.getInstance().uploadFiles(UploadPostActivity.this, stsTokenInfo, postImagesList, new ResultCallback<List<String>>() {
-                    @Override
-                    public void onSuccess(List<String> fileUrls) {
-                        PostInfo postInfo = new PostInfo();
-                        postInfo.setContent(content);
-                        postInfo.setTitle(title);
-                        postInfo.setContentImagesUrlList(fileUrls);
-                        Log.d(TAG, "发布");
-                        mPostManager.publishPost(token, postInfo, new ResultCallback<Boolean>() {
-                            @Override
-                            public void onSuccess(Boolean result) {
-                                runOnUiThread(() -> {
-                                    MyToast.showToast(UploadPostActivity.this, "发布成功");
-                                    finish();
-                                    mBinding.tvPublish.setEnabled(true);
-                                });
-                            }
-
-                            @Override
-                            public void onError(String err) {
-                                runOnUiThread(() -> {
-                                    Log.d(TAG, "[x] publishPost #145" + err);
-                                    mBinding.tvPublish.setEnabled(true);
-                                });
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onError(String err) {
-
-                    }
-                });
+            public void onSuccess(Boolean result) {
+                MyToast.showToast(UploadPostActivity.this, "发布成功");
+                finish();
+//                mBinding.tvPublish.setEnabled(true);
             }
 
             @Override
             public void onError(String err) {
-
+                Log.d(TAG, "===[x] publishPost #145");
+//                mBinding.tvPublish.setEnabled(true);
             }
         });
-
-
     }
+
+//    private void publishPost() {
+//        String content = mBinding.etContent.getText().toString().trim();
+//        String title = mBinding.etTitle.getText().toString().trim();
+//        if (TextUtils.isEmpty(content)) {
+//            Log.d(TAG, "===[x] publishPost #127");
+//            mBinding.tvPublish.setEnabled(true);
+//            return;
+//        }
+//
+//        mPostManager.getUpLoadPermission(token, new ResultCallback<StsTokenInfo>() {
+//            @Override
+//            public void onSuccess(StsTokenInfo stsTokenInfo) {
+//                OssManager.getInstance().uploadFiles(UploadPostActivity.this, stsTokenInfo, postImagesList, new ResultCallback<List<String>>() {
+//                    @Override
+//                    public void onSuccess(List<String> fileUrls) {
+//                        PostInfo postInfo = new PostInfo();
+//                        postInfo.setContent(content);
+//                        postInfo.setTitle(title);
+//                        postInfo.setContentImagesUrlList(fileUrls);
+//                        Log.d(TAG, "发布");
+//                        mPostManager.publishPost(token, postInfo, new ResultCallback<Boolean>() {
+//                            @Override
+//                            public void onSuccess(Boolean result) {
+//                                runOnUiThread(() -> {
+//                                    MyToast.showToast(UploadPostActivity.this, "发布成功");
+//                                    finish();
+//                                    mBinding.tvPublish.setEnabled(true);
+//                                });
+//                            }
+//
+//                            @Override
+//                            public void onError(String err) {
+//                                runOnUiThread(() -> {
+//                                    Log.d(TAG, "[x] publishPost #145" + err);
+//                                    mBinding.tvPublish.setEnabled(true);
+//                                });
+//                            }
+//                        });
+//                    }
+//
+//                    @Override
+//                    public void onError(String err) {
+//
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onError(String err) {
+//
+//            }
+//        });
+//
+//
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

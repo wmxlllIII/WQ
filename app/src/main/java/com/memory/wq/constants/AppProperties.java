@@ -21,6 +21,7 @@ public class AppProperties {
     public static final String UPLOAD_URL = HTTP_SERVER_ADDRESS + "/auth/avatar";
     public static final String SEARCH_USER = HTTP_SERVER_ADDRESS + "/auth/searchUser";
     public static final String FRIEND_REQ = HTTP_SERVER_ADDRESS + "/auth/friend/apply";
+    public static final String FRIEND_DELETE = HTTP_SERVER_ADDRESS + "/auth/friend/delete";
     public static final String FRIEND_RES = HTTP_SERVER_ADDRESS + "/auth/friend/applyResult";
     public static final String ALL_FRIENDS = HTTP_SERVER_ADDRESS + "/auth/friend/getAllFriends";
 
@@ -29,7 +30,7 @@ public class AppProperties {
     public static final String LOGIN_URL = HTTP_SERVER_ADDRESS + "/auth/login";
     public static final String AUTOLOGIN_URL = HTTP_SERVER_ADDRESS + "/auth/autoLogin";
     public static final String SEND_MSG = HTTP_SERVER_ADDRESS + "/auth/msg/send";
-    public static final String UPDATE_USER = HTTP_SERVER_ADDRESS + "/auth/updateuserinfo";
+    public static final String UPDATE_USER = HTTP_SERVER_ADDRESS + "/auth/updateUserinfo";
 
     public static final String MOVIES = HTTP_SERVER_ADDRESS + "/auth/movie/movies";
     public static final String ROOMS = HTTP_SERVER_ADDRESS + "/auth/movie/rooms";
@@ -45,6 +46,8 @@ public class AppProperties {
 
     public static final String AGORA_TOKEN = HTTP_SERVER_ADDRESS + "/api/token";
     public static final String STS_TOKEN = HTTP_SERVER_ADDRESS + "/auth/getStsPermission";
+    public static final String FOLLOW_USER = HTTP_SERVER_ADDRESS + "/auth/followUser";
+    public static final String UNFOLLOW_USER = HTTP_SERVER_ADDRESS + "/auth/unfollowUser";
 
 
     public static final String ROLE_TYPE = "ROLE_TYPE";

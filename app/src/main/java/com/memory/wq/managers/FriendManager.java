@@ -60,7 +60,7 @@ public class FriendManager {
 
                     try {
                         JSONObject json = new JSONObject(response.body().string());
-                        Log.d(TAG, "[test] searchUser #63 "+json);
+                        Log.d(TAG, "[test] searchUser #63 " + json);
                         int code = json.getInt("code");
                         if (code == 1) {
                             FriendInfo friendInfo = JsonParser.searchFriendParser(json);
@@ -111,7 +111,7 @@ public class FriendManager {
                         int code = json.getInt("code");
                         if (code == 1) {
                             JSONArray data = json.getJSONArray("data");
-                            Log.d(TAG, "getFriends json "+json);
+                            Log.d(TAG, "getFriends json " + json);
                             List<FriendInfo> friendInfoList = JsonParser.friendInfoListParser(data);
                             saveFriend2DB(friendInfoList);
 
@@ -150,4 +150,68 @@ public class FriendManager {
         long id = SPManager.getUserInfo().getUuNumber();
         return op.queryAllFriend(id);
     }
+
+    public void followUser(long userId, ResultCallback<Boolean> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getFollowJson(userId);
+            HttpStreamOP.postJson(AppProperties.FOLLOW_USER, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] followUser #160 " + e.getMessage());
+                    mHandler.post(() -> callback.onError("网络错误"));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] followUser #166 " + response.code());
+                        mHandler.post(() -> callback.onError("网络错误"));
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            mHandler.post(() -> callback.onSuccess(true));
+                        }
+                    } catch (JSONException e) {
+                        Log.d(TAG, "");
+                    }
+
+                }
+            });
+        });
+    }
+    public void unfollowUser(long userId, ResultCallback<Boolean> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getFollowJson(userId);
+            HttpStreamOP.postJson(AppProperties.FOLLOW_USER, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] followUser #190 " + e.getMessage());
+                    mHandler.post(() -> callback.onError("网络错误"));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] followUser #197 " + response.code());
+                        mHandler.post(() -> callback.onError("网络错误"));
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            mHandler.post(() -> callback.onSuccess(true));
+                        }
+                    } catch (JSONException e) {
+                        Log.d(TAG, "");
+                    }
+
+                }
+            });
+        });
+    }
+
 }
