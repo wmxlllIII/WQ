@@ -30,40 +30,39 @@
                 android:layout_height="wrap_content"
                 android:text="我的头像"
                 android:textColor="@color/white_80"
-                android:textSize="20dp"
+                android:textSize="@dimen/common_medium_font_size"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        <ImageView
-            android:id="@+id/iv_avatar_detail"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:adjustViewBounds="true"
-            android:maxWidth="300dp"
-            android:maxHeight="300dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@id/iv_avatar_detail">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_avatar_detail"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:adjustViewBounds="true"
+                android:maxWidth="300dp"
+                android:maxHeight="300dp"
+                android:scaleType="centerCrop"
+                android:layout_gravity="center_horizontal"/>
 
             <TextView
                 android:id="@+id/tv_alter_avatar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_margin="10dp"
+                android:layout_marginTop="20dp"
                 android:background="#272727"
                 android:paddingHorizontal="130dp"
                 android:paddingVertical="10dp"

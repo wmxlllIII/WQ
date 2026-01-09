@@ -48,7 +48,6 @@ public class AuthManager {
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-
                     if (!response.isSuccessful()) {
                         Log.d(TAG, "[x] login #48");
                         mHandler.post(() -> callback.onError("登录失败，请稍后再试"));
@@ -68,11 +67,11 @@ public class AuthManager {
 
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    callback.onError(e.getMessage());
+                    Log.d(TAG, "[x] login #71");
+                    mHandler.post(() -> callback.onError(e.getMessage()));
                 }
             });
         });
-
     }
 
     public void tryAutoLogin(String token, ResultCallback<UserInfo> callback) {

@@ -72,8 +72,8 @@ public class DiscoverFragment extends Fragment {
                     //TODO
                     SharedPreferences sp = getContext().getSharedPreferences(AppProperties.SP_NAME, Context.MODE_PRIVATE);
                     sp.edit().clear().commit();
-                    BaseActivity.finishAll();
                     Intent intent = new Intent(getContext(), LaunchActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     break;
 
@@ -89,12 +89,16 @@ public class DiscoverFragment extends Fragment {
 
         Glide.with(getContext())
                 .load(AccountManager.getUserInfo().getAvatarUrl())
+                .placeholder(R.mipmap.icon_default_avatar)
+                .error(R.mipmap.icon_default_avatar)
                 .circleCrop()
                 .into(binding.ivOpenDrawer);
 
         Glide.with(getContext())
                 .load(AccountManager.getUserInfo().getAvatarUrl())
                 .transform(new RoundedCorners(15))
+                .placeholder(R.mipmap.icon_default_avatar)
+                .error(R.mipmap.icon_default_avatar)
                 .into(iv_avatar);
 
         tv_nickname.setText(AccountManager.getUserInfo().getUsername());
@@ -192,4 +196,5 @@ public class DiscoverFragment extends Fragment {
         binding.tvRecommend.setTextColor(getResources().getColor(R.color.white_80));
         binding.tvConcern.setTextColor(getResources().getColor(R.color.white_80));
     }
+
 }

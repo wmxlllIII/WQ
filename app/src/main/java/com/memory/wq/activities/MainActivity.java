@@ -58,7 +58,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements I
         initView();
 
         mBinding.llDiscover.performClick();
-        startMyService();
+
     }
 
     @Override
@@ -85,13 +85,15 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements I
             @Override
             public void onSuccess(UserInfo user) {
                 SPManager.saveUserInfo(MainActivity.this, user);
+                startMyService();
             }
 
             @Override
             public void onError(String err) {
                 MyToast.showToast(MainActivity.this, "登录已过期，请重新登录");
-                finishAll();
-                startActivity(new Intent(MainActivity.this, LaunchActivity.class));
+                Intent intent = new Intent(MainActivity.this, LaunchActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             }
         });
 
@@ -109,7 +111,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements I
                 mBinding.tvMsgnum.setVisibility(View.VISIBLE);
                 break;
             case EVENT_TYPE_MSG:
-                mBinding.tvMsgnum.setText(String.valueOf((MsgInfo)message.getData()));
+                mBinding.tvMsgnum.setText(String.valueOf((MsgInfo) message.getData()));
                 mBinding.tvMsgnum.setVisibility(View.VISIBLE);
                 break;
         }
@@ -221,7 +223,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements I
 
     @Override
     protected void onDestroy() {
+        if (mWebService != null) {
+            mWebService.unregisterListener(this);
+        }
         super.onDestroy();
-        mWebService.unregisterListener(this);
     }
 }

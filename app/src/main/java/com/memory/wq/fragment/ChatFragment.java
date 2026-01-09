@@ -136,7 +136,7 @@ public class ChatFragment extends Fragment {
         }
 
         mChatVM.sendMsg(msg, success -> {
-            Log.d(TAG, "sendMsg: ===msg" + msg + "===succ" + success);
+            Log.d(TAG, "sendMsg:" + msg + "===isSucc" + success);
             if (success) {
                 mBinding.etInputText.setText("");
             }

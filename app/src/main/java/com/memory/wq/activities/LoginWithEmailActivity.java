@@ -2,6 +2,7 @@ package com.memory.wq.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.memory.wq.R;
 import com.memory.wq.beans.UserInfo;
@@ -17,7 +18,7 @@ public class LoginWithEmailActivity extends BaseActivity<ActivityLoginWithEmailB
 
     private static final String TAG = LoginWithEmailActivity.class.getName();
     private AuthManager mAuthManager;
-
+    private boolean isPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,15 +37,18 @@ public class LoginWithEmailActivity extends BaseActivity<ActivityLoginWithEmailB
     }
 
     private void initView() {
-        mBinding.tvSignin.setOnClickListener(view -> {
+        mBinding.tvRegister.setOnClickListener(view -> {
             startActivity(new Intent(this, RegisterActivity.class));
         });
 
         mBinding.ivBack.setOnClickListener(view -> {
             finish();
         });
-        mBinding.btnLogin.setOnClickListener(view -> {
+        mBinding.tvLogin.setOnClickListener(view -> {
             login();
+        });
+        mBinding.ivPasswordVisible.setOnClickListener(v -> {
+            togglePasswordVisibility();
         });
     }
 
@@ -64,14 +68,14 @@ public class LoginWithEmailActivity extends BaseActivity<ActivityLoginWithEmailB
         }
 
         mAuthManager.login(email, pwd, new ResultCallback<UserInfo>() {
+
             @Override
             public void onSuccess(UserInfo userInfo) {
                 SPManager.saveUserInfo(LoginWithEmailActivity.this, userInfo);
                 //TODO
                 UserSqlOP sqlOP = new UserSqlOP(LoginWithEmailActivity.this);
                 sqlOP.insertUser(userInfo);
-
-                System.out.println("================回调token: " + userInfo.getToken() + userInfo.getEmail());
+                Log.d(TAG, "[✓] login #78 " + userInfo);
 
                 AccountManager.saveLoginState(LoginWithEmailActivity.this, AccountManager.UserType.USER_TYPE_USER);
                 MyToast.showToast(LoginWithEmailActivity.this, "登录成功");
@@ -79,7 +83,6 @@ public class LoginWithEmailActivity extends BaseActivity<ActivityLoginWithEmailB
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
-
             }
 
             @Override
@@ -90,6 +93,24 @@ public class LoginWithEmailActivity extends BaseActivity<ActivityLoginWithEmailB
 
             }
         });
-
     }
+
+    private void togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            mBinding.etLoginPwd.setInputType(android.text.InputType.TYPE_CLASS_TEXT |
+                    android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            mBinding.ivPasswordVisible.setImageResource(R.mipmap.ic_eye_closed);
+            isPasswordVisible = false;
+        } else {
+            // 显示密码 (明文)
+            mBinding.etLoginPwd.setInputType(android.text.InputType.TYPE_CLASS_TEXT |
+                    android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            mBinding.ivPasswordVisible.setImageResource(R.mipmap.ic_eye_open);
+            isPasswordVisible = true;
+        }
+
+        // 将光标移动到文本末尾
+        mBinding.etLoginPwd.setSelection(mBinding.etLoginPwd.getText().length());
+    }
+
 }
