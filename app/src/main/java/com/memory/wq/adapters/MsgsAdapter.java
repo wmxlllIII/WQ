@@ -50,13 +50,15 @@ public class MsgsAdapter extends BaseAdapter {
         FriendInfo friendInfo = friendInfoList.get(position);
         Glide.with(parent.getContext())
                 .load(friendInfo.getAvatarUrl())
+                .placeholder(R.mipmap.icon_default_avatar)
+                .error(R.mipmap.icon_default_avatar)
                 .into(viewHolder.iv_avatar);
 
         viewHolder.tv_nickname.setText(friendInfo.getNickname());
         return convertView;
     }
 
-    static class ViewHolder {
+    private class ViewHolder {
         ImageView iv_avatar;
         TextView tv_nickname;
 

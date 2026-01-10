@@ -19,6 +19,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.MultiTransformation;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.memory.wq.R;
 import com.memory.wq.databinding.AvatarDetailLayoutBinding;
 import com.memory.wq.enumertions.SelectImageType;
@@ -65,6 +68,14 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
         // new BottomSheetDialog()
         Glide.with(this)
                 .load(AccountManager.getUserInfo().getAvatarUrl())
+                .placeholder(R.mipmap.icon_default_avatar)
+                .error(R.mipmap.icon_default_avatar)
+                .transform(
+                        new MultiTransformation<>(
+                                new CenterCrop(),
+                                new RoundedCorners(12)
+                        )
+                )
                 .into(mBinding.ivAvatarDetail);
 
         mBinding.ivAvatarDetail.setOnClickListener(view -> {

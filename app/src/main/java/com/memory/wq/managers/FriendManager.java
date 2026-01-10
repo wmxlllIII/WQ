@@ -175,7 +175,7 @@ public class FriendManager {
                             mHandler.post(() -> callback.onSuccess(true));
                         }
                     } catch (JSONException e) {
-                        Log.d(TAG, "");
+                        Log.d(TAG, "[x] followUser #178" + e.getMessage());
                     }
 
                 }

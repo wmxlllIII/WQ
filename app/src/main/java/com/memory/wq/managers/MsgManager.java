@@ -39,7 +39,7 @@ public class MsgManager {
     private final FriendSqlOP mFriendSqlOP = new FriendSqlOP();
 
     public void getRelation(ResultCallback<List<FriendRelaInfo>> callback) {
-        List<FriendRelaInfo> friendRelaInfoList =mFriendSqlOP.queryAllRelations();
+        List<FriendRelaInfo> friendRelaInfoList = mFriendSqlOP.queryAllRelations();
         mHandler.post(() -> callback.onSuccess(friendRelaInfoList));
     }
 
@@ -76,7 +76,7 @@ public class MsgManager {
 
     public void updateRela(long sourceUuNumber, boolean isAgree, ResultCallback<Boolean> callback) {
         String json = GenerateJson.getUpdateRelaJson(sourceUuNumber, isAgree);
-        Log.d(TAG, "updateRela: is"+isAgree);
+        Log.d(TAG, "updateRela: is" + isAgree);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.FRIEND_RES, json, new Callback() {
                 @Override
@@ -88,7 +88,7 @@ public class MsgManager {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        Log.d(TAG, "[x] updateRela #165 " + response.code());
+                        Log.d(TAG, "[x] updateRela #91 " + response.code());
                         mHandler.post(() -> callback.onError("更新好友信息失败"));
                         return;
                     }
@@ -96,7 +96,7 @@ public class MsgManager {
                         JSONObject json = new JSONObject(response.body().string());
                         int code = json.getInt("code");
 
-                        Log.d(TAG, "[✓] updateRela #96" + code);
+                        Log.d(TAG, "[✓] updateRela #99" + code);
                         Log.d(TAG, "[✓] updateRela #97" + json);
                         if (code == 1) {
                             JSONObject data = json.getJSONObject("data");
@@ -114,12 +114,13 @@ public class MsgManager {
                             mHandler.post(() -> callback.onSuccess(true));
 
                         } else {
-                            Log.d(TAG, "[x] updateRela #181");
+                            Log.d(TAG, "[x] updateRela #117");
                             mHandler.post(() -> callback.onError("更新好友信息失败"));
                         }
 
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, "[x] updateRela #122" + e.getMessage());
+                        mHandler.post(() -> callback.onError("更新好友信息失败"));
                     }
                 }
             });
@@ -127,7 +128,7 @@ public class MsgManager {
     }
 
     public void sendMsg(long targetUuNumber, String content, ResultCallback<List<MsgInfo>> callback) {
-        String json = GenerateJson.getSendMsgJson(targetUuNumber, content,-1);
+        String json = GenerateJson.getSendMsgJson(targetUuNumber, content, -1);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.SEND_MSG, json, new Callback() {
                 @Override
@@ -146,7 +147,7 @@ public class MsgManager {
 
                     try {
                         JSONObject json = new JSONObject(response.body().string());
-                        Log.d(TAG, "[✓] sendMsg json"+json);
+                        Log.d(TAG, "[✓] sendMsg json" + json);
                         if (json.getInt("code") == 1) {
                             List<MsgInfo> msgList = JsonParser.msgParser(json.getJSONArray("data"));
                             mMsgSqlOP.insertMessages(msgList);

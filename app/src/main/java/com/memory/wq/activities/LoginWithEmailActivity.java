@@ -53,21 +53,19 @@ public class LoginWithEmailActivity extends BaseActivity<ActivityLoginWithEmailB
     }
 
     private void login() {
-        String email = mBinding.etLoginAccount.getText().toString().trim();
+        String account = mBinding.etLoginAccount.getText().toString().trim();
         String pwd = mBinding.etLoginPwd.getText().toString().trim();
-
-        boolean isEmail = mAuthManager.isEmail(email);
-        boolean isPwd = mAuthManager.isPwd(pwd);
-        if (!isEmail) {
+        if (!mAuthManager.isValidAccount(account)) {
             MyToast.showToast(this, "邮箱格式不正确");
             return;
         }
-        if (!isPwd) {
+
+        if (!mAuthManager.isValidPwd(pwd)) {
             MyToast.showToast(this, "请输入密码");
             return;
         }
 
-        mAuthManager.login(email, pwd, new ResultCallback<UserInfo>() {
+        mAuthManager.login(account, pwd, new ResultCallback<UserInfo>() {
 
             @Override
             public void onSuccess(UserInfo userInfo) {
@@ -87,10 +85,7 @@ public class LoginWithEmailActivity extends BaseActivity<ActivityLoginWithEmailB
 
             @Override
             public void onError(String error) {
-                runOnUiThread(() -> {
-                    MyToast.showToast(LoginWithEmailActivity.this, "登录失败:" + error);
-                });
-
+                MyToast.showToast(LoginWithEmailActivity.this, "登录失败:" + error);
             }
         });
     }
@@ -102,14 +97,12 @@ public class LoginWithEmailActivity extends BaseActivity<ActivityLoginWithEmailB
             mBinding.ivPasswordVisible.setImageResource(R.mipmap.ic_eye_closed);
             isPasswordVisible = false;
         } else {
-            // 显示密码 (明文)
             mBinding.etLoginPwd.setInputType(android.text.InputType.TYPE_CLASS_TEXT |
                     android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
             mBinding.ivPasswordVisible.setImageResource(R.mipmap.ic_eye_open);
             isPasswordVisible = true;
         }
 
-        // 将光标移动到文本末尾
         mBinding.etLoginPwd.setSelection(mBinding.etLoginPwd.getText().length());
     }
 

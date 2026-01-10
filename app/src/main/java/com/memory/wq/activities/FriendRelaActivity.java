@@ -112,7 +112,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
             startActivity(new Intent(this, SearchUserActivity.class));
         });
 
-        mBinding.tvScan.setOnClickListener(view -> scanQRCode());
+        mBinding.ivScan.setOnClickListener(view -> scanQRCode());
 
         mBinding.ivBack.setOnClickListener(view -> finish());
     }
@@ -205,7 +205,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
         mFriendManager.searchUser(type, targetAccount, new ResultCallback<FriendInfo>() {
             @Override
             public void onSuccess(FriendInfo result) {
-                Intent intent = new Intent(FriendRelaActivity.this, PersonalActivity.class);
+                Intent intent = new Intent(FriendRelaActivity.this, PersonInfoActivity.class);
                 intent.putExtra(AppProperties.PERSON_ID, result.getUuNumber());
                 startActivity(intent);
             }
@@ -234,7 +234,6 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
             mMsgManager.updateRela(targetId, true, new ResultCallback<Boolean>() {
                 @Override
                 public void onSuccess(Boolean result) {
-                    //todo 为什么没更新ui
                     MyToast.showToast(FriendRelaActivity.this, result ? "已同意" : "已拒绝");
                 }
 

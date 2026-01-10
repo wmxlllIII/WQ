@@ -17,7 +17,6 @@ import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.databinding.ActivityPostInfoBinding;
 import com.memory.wq.managers.CommentManager;
-import com.memory.wq.managers.SPManager;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.utils.MyToast;
@@ -32,7 +31,6 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
     private PostInfo mPostInfo;
     private final List<PostCommentInfo> mCommentInfoList = new ArrayList<>();
     private CommentManager mCommentManager;
-    private String token;
     private PostCommentInfo mComment;
 
     @Override
@@ -48,7 +46,6 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
     }
 
     private void initData() {
-        token = SPManager.getUserInfo().getToken();
         Intent intent = getIntent();
         mPostInfo = (PostInfo) intent.getParcelableExtra(AppProperties.POSTINFO);
         setData();
@@ -57,7 +54,7 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
         QueryPostInfo queryPostInfo = new QueryPostInfo();
         queryPostInfo.setPage(1);
         queryPostInfo.setSize(10);
-        mCommentManager.getCommentByPostId(token, mPostInfo.getPostId(), queryPostInfo, new ResultCallback<List<PostCommentInfo>>() {
+        mCommentManager.getCommentByPostId(mPostInfo.getPostId(), queryPostInfo, new ResultCallback<List<PostCommentInfo>>() {
             @Override
             public void onSuccess(List<PostCommentInfo> result) {
                 if (result != null && result.size() > 0) {
@@ -152,6 +149,12 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
             finish();
         });
 
+        mBinding.ivAvatar.setOnClickListener(view -> {
+            Intent intent = new Intent(PostDetailActivity.this, PersonInfoActivity.class);
+            intent.putExtra(AppProperties.PERSON_ID, mPostInfo.getPoster());
+            startActivity(intent);
+        });
+
     }
 
     private void sendComment(String content) {
@@ -173,7 +176,7 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
     }
 
     private void addComment(PostCommentInfo postCommentInfo) {
-        mCommentManager.addComment(token, postCommentInfo, new ResultCallback<Boolean>() {
+        mCommentManager.addComment(postCommentInfo, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
                 mBinding.etComment.setText("");

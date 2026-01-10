@@ -53,7 +53,7 @@
             android:exported="true"
             android:launchMode="singleTask"/>
         <activity
-            android:name=".activities.PersonalActivity"
+            android:name=".activities.PersonInfoActivity"
             android:exported="true"
             android:launchMode="singleTask"/>
         <activity
@@ -79,7 +79,7 @@
             android:exported="true"
             android:launchMode="singleTask"/>
         <activity
-            android:name=".activities.MyQrCodeActivity"
+            android:name=".activities.QrCodeActivity"
             android:exported="true"
             android:launchMode="singleTask"/>
         <activity

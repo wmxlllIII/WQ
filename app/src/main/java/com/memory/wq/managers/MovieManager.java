@@ -33,28 +33,32 @@ import okhttp3.Response;
 
 public class MovieManager {
     public static final String TAG = MovieManager.class.getName();
-    private final Handler mhandler = new Handler(Looper.getMainLooper());
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     public void getMovies(String token, ResultCallback<List<MovieInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.MOVIES, "{}", new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
+                    Log.d(TAG, "[x] getMovies #43");
+                    mHandler.post(() -> callback.onError("getMovies出错了"));
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-
+                        Log.d(TAG, "[x] getMovies #49");
+                        mHandler.post(() -> callback.onError("getMovies出错了"));
+                        return;
                     }
+
                     try {
                         JSONObject json = new JSONObject(response.body().string());
                         int code = json.getInt("code");
                         if (code == 1) {
                             JSONArray movieList = json.getJSONArray("data");
                             List<MovieInfo> movieInfoList = JsonParser.movieParser(movieList);
-                            callback.onSuccess(movieInfoList);
+                            mHandler.post(() -> callback.onSuccess(movieInfoList));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -77,7 +81,7 @@ public class MovieManager {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        mhandler.post(() -> callback.onError("getRooms出错了"));
+                        mHandler.post(() -> callback.onError("getRooms出错了"));
                     }
                     try {
                         JSONObject json = new JSONObject(response.body().string());
@@ -85,7 +89,7 @@ public class MovieManager {
                         if (code == 1) {
                             JSONArray roomList = json.getJSONArray("data");
                             List<RoomInfo> roomInfoList = JsonParser.roomParer(roomList);
-                            mhandler.post(() -> callback.onSuccess(roomInfoList));
+                            mHandler.post(() -> callback.onSuccess(roomInfoList));
 
                         }
                     } catch (JSONException e) {
@@ -138,13 +142,13 @@ public class MovieManager {
             HttpStreamOP.postJson(AppProperties.SHARE_ROOM, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    mhandler.post(() -> callback.onError(null));
+                    mHandler.post(() -> callback.onError(null));
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        mhandler.post(() -> callback.onError(null));
+                        mHandler.post(() -> callback.onError(null));
                         return;
                     }
                     try {
@@ -152,7 +156,7 @@ public class MovieManager {
                         int code = json.getInt("code");
                         Log.d(TAG, "onResponse: ===分享房间返回码" + code);
                         if (code == 1) {
-                            mhandler.post(() -> callback.onSuccess(true));
+                            mHandler.post(() -> callback.onSuccess(true));
                             //TODO 保存到数据库
                             MsgSqlOP msgSqlOP = new MsgSqlOP();
                             List<MsgInfo> msgInfoList = new ArrayList<>();

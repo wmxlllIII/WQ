@@ -29,7 +29,7 @@ public class CommentManager {
     public static final String TAG = "CommentManager";
     private final Handler handler = new Handler(Looper.getMainLooper());
 
-    public void getCommentByPostId(String token, int postId, QueryPostInfo queryPostInfo, ResultCallback<List<PostCommentInfo>> callback) {
+    public void getCommentByPostId(int postId, QueryPostInfo queryPostInfo, ResultCallback<List<PostCommentInfo>> callback) {
         String json = GenerateJson.getCommentJson(postId, queryPostInfo);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.COMMENT_GET, json, new Callback() {
@@ -69,7 +69,7 @@ public class CommentManager {
         });
     }
 
-    public void addComment(String token, PostCommentInfo postCommentInfo, ResultCallback<Boolean> callback) {
+    public void addComment(PostCommentInfo postCommentInfo, ResultCallback<Boolean> callback) {
         String json = GenerateJson.getAddCommentJson(postCommentInfo);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.COMMENT_ADD, json, new Callback() {

@@ -3,78 +3,89 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:orientation="vertical"
         android:background="#202840"
-        android:padding="5dp">
+        android:fitsSystemWindows="true">
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_title_zone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:padding="5dp">
+            android:layout_margin="@dimen/common_title_margin"
+            android:paddingHorizontal="@dimen/common_title_pad_hori"
+            android:paddingVertical="@dimen/common_title_vert"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/iv_back"
-                android:layout_width="19dp"
-                android:layout_height="18dp"
-                android:layout_centerVertical="true"
-                android:src="@mipmap/icon_back_light" />
+                android:layout_width="@dimen/common_back_size"
+                android:layout_height="@dimen/common_back_size"
+                android:src="@mipmap/icon_back_light"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
                 android:text="新的朋友"
                 android:textColor="@color/white"
-                android:textSize="23dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text="添加朋友"
-                android:textColor="@color/white"
-                android:textSize="20dp" />
-        </RelativeLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_search"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
+                android:textSize="@dimen/common_medium_font_size"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@mipmap/icon_search" />
+                android:id="@+id/iv_scan"
+                android:layout_width="@dimen/common_senior_font_size"
+                android:layout_height="@dimen/common_senior_font_size"
+                android:src="@drawable/ic_scan"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:layout_width="wrap_content"
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_content_zone"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/common_title_margin"
+            android:paddingHorizontal="@dimen/common_title_pad_hori"
+            app:layout_constraintTop_toBottomOf="@id/cl_title_zone"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:id="@+id/ll_search"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="账号/E-mail"
-                android:textColor="@color/white_80"
-                android:textSize="18dp" />
-        </LinearLayout>
+                android:gravity="center_horizontal"
+                android:paddingVertical="@dimen/common_title_vert"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tv_scan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:padding="10dp"
-            android:text="扫一扫"
-            android:textSize="18dp"
-            android:textColor="@color/white_80"/>
+                <ImageView
+                    android:layout_width="@dimen/common_senior_font_size"
+                    android:layout_height="@dimen/common_senior_font_size"
+                    android:src="@mipmap/icon_search" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_friendReq"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="账号/E-mail"
+                    android:textColor="@color/white_80"
+                    android:textSize="@dimen/common_junior_font_size" />
+            </LinearLayout>
 
-    </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_friendReq"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@id/ll_search"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

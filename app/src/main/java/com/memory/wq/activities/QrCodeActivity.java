@@ -2,12 +2,12 @@ package com.memory.wq.activities;
 
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.memory.wq.R;
@@ -21,7 +21,7 @@ import com.memory.wq.managers.QRCodeManager;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
-public class MyQrCodeActivity extends BaseActivity<ActivityMyQrCodeBinding> {
+public class QrCodeActivity extends BaseActivity<ActivityMyQrCodeBinding> {
     private static final String TAG = "WQ_MyQrCodeActivity";
     private FriendManager mFriendManager;
     private final QRCodeManager mQrCodeManager = new QRCodeManager();
@@ -51,9 +51,17 @@ public class MyQrCodeActivity extends BaseActivity<ActivityMyQrCodeBinding> {
 
     private void initView() {
         mBinding.ivBack.setOnClickListener(v -> finish());
+
         mBinding.tvSave.setOnClickListener(v -> {
             //todo 保存二维码
         });
+
+        Glide.with(this)
+                .load(AccountManager.getUserInfo().getAvatarUrl())
+                .placeholder(R.mipmap.icon_default_avatar)
+                .error(R.mipmap.icon_default_avatar)
+                .circleCrop()
+                .into(mBinding.ivAvatar);
     }
 
 
@@ -80,7 +88,7 @@ public class MyQrCodeActivity extends BaseActivity<ActivityMyQrCodeBinding> {
         mFriendManager.searchUser(type, targetAccount, new ResultCallback<FriendInfo>() {
             @Override
             public void onSuccess(FriendInfo result) {
-                Intent intent = new Intent(MyQrCodeActivity.this, PersonalActivity.class);
+                Intent intent = new Intent(QrCodeActivity.this, PersonInfoActivity.class);
                 intent.putExtra(AppProperties.PERSON_ID, result.getUuNumber());
                 startActivity(intent);
             }

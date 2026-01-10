@@ -49,7 +49,7 @@ public class RegisterActivity extends BaseActivity<RegisterAccountLayoutBinding>
                 return;
             }
 
-            if (mAuthManager.isEmail(email)) {
+            if (mAuthManager.isValidAccount(email)) {
                 int checkPwd = mAuthManager.checkPwd(pwd1, pwd2);
                 switch (checkPwd) {
                     case AuthManager.EMPTY_PWD:
@@ -68,7 +68,7 @@ public class RegisterActivity extends BaseActivity<RegisterAccountLayoutBinding>
             }
         });
 
-        mBinding.btnSubmitcode.setOnClickListener(view -> {
+        mBinding.tvRegister.setOnClickListener(view -> {
             String email = mBinding.etRegisterEmail.getText().toString().trim();
             String pwd = mBinding.etRegisterPwd1.getText().toString().trim();
             signIn(email, pwd);

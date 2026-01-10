@@ -34,7 +34,7 @@ public class PostManager {
 
     public void publishPost(String token, PostInfo postInfo, List<File> imageList, ResultCallback<Boolean> callback) {
         String json = GenerateJson.getPostContentJson(postInfo);
-        Log.d(TAG, "[test] publishPost #37"+json);
+        Log.d(TAG, "[test] publishPost #37" + json);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.publishPost(AppProperties.POST_PUBLISH, token, postInfo, imageList, new Callback() {
                 @Override
@@ -119,7 +119,7 @@ public class PostManager {
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     //TODO 解析帖子
                     if (!response.isSuccessful()) {
-                        Log.d(TAG, "===[x] getPosts #89");
+                        Log.d(TAG, "===[x] getPosts #89" + response.code() + response.message());
                         return;
                     }
 
@@ -167,6 +167,38 @@ public class PostManager {
                 }
             });
         });
+    }
+
+    public void getFollowerPost(QueryPostInfo queryPostInfo, ResultCallback<PageResult<PostInfo>> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getMyPostJson(queryPostInfo);
+            HttpStreamOP.postJson(AppProperties.POST_FOLLOWER_GET, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getFollowerPost #184");
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        Log.d(TAG, "[test] getFollowerPost #190 " + json);
+                        PageResult<PostInfo> postInfoPageResult = JsonParser.postParser(json);
+                        mHandler.post(() -> {
+                            callback.onSuccess(postInfoPageResult);
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        });
+
     }
 
     public void getUpLoadPermission(String token, ResultCallback<StsTokenInfo> callback) {

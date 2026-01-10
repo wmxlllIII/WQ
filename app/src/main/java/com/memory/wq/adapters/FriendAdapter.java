@@ -39,7 +39,6 @@ public class FriendAdapter extends ListAdapter<FriendInfo, RecyclerView.ViewHold
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         FriendInfo friendInfo = getItem(position);
 
-//        holder.iv_friend_avatar.setImageUrl(friendInfo.getAvatarUrl());
         FriendViewHolder friendVH = (FriendViewHolder) holder;
         Glide.with(holder.itemView.getContext())
                 .load(friendInfo.getAvatarUrl())
@@ -48,12 +47,9 @@ public class FriendAdapter extends ListAdapter<FriendInfo, RecyclerView.ViewHold
         friendVH.tv_friend_nickname.setText(friendInfo.getNickname());
         friendVH.iv_online_state.setVisibility(friendInfo.isOnline() ? View.VISIBLE : View.GONE);
 
-        friendVH.iv_friend_avatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onItemClick(friendInfo.getUuNumber());
-            }
-        });
+        friendVH.iv_friend_avatar.setOnClickListener(v ->
+                mListener.onItemClick(friendInfo.getUuNumber())
+        );
     }
 
     @Override

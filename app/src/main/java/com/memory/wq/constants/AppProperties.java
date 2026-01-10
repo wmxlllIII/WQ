@@ -25,7 +25,7 @@ public class AppProperties {
     public static final String FRIEND_RES = HTTP_SERVER_ADDRESS + "/auth/friend/applyResult";
     public static final String ALL_FRIENDS = HTTP_SERVER_ADDRESS + "/auth/friend/getAllFriends";
 
-    public static final String REQUEST_URL = HTTP_SERVER_ADDRESS + "/auth/sendcode";
+    public static final String REQUEST_URL = HTTP_SERVER_ADDRESS + "/auth/sendCode";
     public static final String REGISTER_URL = HTTP_SERVER_ADDRESS + "/auth/register";
     public static final String LOGIN_URL = HTTP_SERVER_ADDRESS + "/auth/login";
     public static final String AUTOLOGIN_URL = HTTP_SERVER_ADDRESS + "/auth/autoLogin";
@@ -34,12 +34,13 @@ public class AppProperties {
 
     public static final String MOVIES = HTTP_SERVER_ADDRESS + "/auth/movie/movies";
     public static final String ROOMS = HTTP_SERVER_ADDRESS + "/auth/movie/rooms";
-    public static final String SAVE_ROOM = HTTP_SERVER_ADDRESS + "/auth/movie/saveroom";
-    public static final String REMOVE_ROOM = HTTP_SERVER_ADDRESS + "/auth/movie/removeroom";
-    public static final String SHARE_ROOM = HTTP_SERVER_ADDRESS + "/auth/message/shareroom";
+    public static final String SAVE_ROOM = HTTP_SERVER_ADDRESS + "/auth/movie/saveRoom";
+    public static final String REMOVE_ROOM = HTTP_SERVER_ADDRESS + "/auth/movie/removeRoom";
+    public static final String SHARE_ROOM = HTTP_SERVER_ADDRESS + "/auth/message/shareRoom";
     public static final String POST_PUBLISH = HTTP_SERVER_ADDRESS + "/auth/post";
-    public static final String POST_GET = HTTP_SERVER_ADDRESS + "/auth/getpost";
-    public static final String POST_MY_GET = HTTP_SERVER_ADDRESS + "/auth/getmypost";
+    public static final String POST_GET = HTTP_SERVER_ADDRESS + "/auth/getPost";
+    public static final String POST_MY_GET = HTTP_SERVER_ADDRESS + "/auth/getMyPost";
+    public static final String POST_FOLLOWER_GET = HTTP_SERVER_ADDRESS + "/auth/getFollowerPost";
     public static final String COMMENT_GET = HTTP_SERVER_ADDRESS + "/auth/getComment";
     public static final String COMMENT_ADD = HTTP_SERVER_ADDRESS + "/auth/addComment";
     public static final String GET_MSG = HTTP_SERVER_ADDRESS + "/auth/getMsg";

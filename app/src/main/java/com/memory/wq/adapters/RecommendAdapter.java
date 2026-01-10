@@ -9,28 +9,30 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.MultiTransformation;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.memory.wq.R;
+import com.memory.wq.adapters.diffcallbacks.PostDiffCallback;
 import com.memory.wq.beans.PostInfo;
-import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.ItemRecommendBinding;
+import com.memory.wq.interfaces.OnPostClickListener;
 
 import java.util.List;
 
-public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class RecommendAdapter extends ListAdapter<PostInfo, RecyclerView.ViewHolder> {
 
     public static final String TAG = "WQ_RecommendAdapter";
-
-    private List<PostInfo> recommentList;
-
-    private OnItemClickListener itemClickListener;
-    private OnLikeClickListener likeClickListener;
+    private OnPostClickListener postClickListener;
 
 
-    public RecommendAdapter(List<PostInfo> recommentList) {
-        this.recommentList = recommentList;
+    public RecommendAdapter(OnPostClickListener postClickListener) {
+        super(new PostDiffCallback());
+        this.postClickListener = postClickListener;
     }
 
     @NonNull
@@ -42,19 +44,21 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        PostInfo postInfo = recommentList.get(position);
-        ItemViewHolder itemHolder = (ItemViewHolder) holder;
-        Log.d(TAG, "[test] onBindViewHolder #46"+postInfo);
-        setItemHolder(itemHolder, postInfo);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (itemClickListener != null && position != RecyclerView.NO_POSITION) {
-                    itemClickListener.onItemClick(position, recommentList.get(position));
-                }
+        PostInfo postInfo = getItem(position);
+
+        Log.d(TAG, "[test] onBindViewHolder #46 " + postInfo);
+        setItemHolder((ItemViewHolder) holder, postInfo);
+
+        holder.itemView.setOnClickListener(v -> {
+            int adapterPosition = holder.getBindingAdapterPosition();
+            if (postClickListener != null
+                    && adapterPosition != RecyclerView.NO_POSITION) {
+                postClickListener.onPostClick(
+                        adapterPosition,
+                        getItem(adapterPosition)
+                );
             }
         });
-
     }
 
     private void setItemHolder(ItemViewHolder holder, PostInfo postInfo) {
@@ -65,20 +69,22 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     .load(postInfo.getCommentCoverUrl())
                     .placeholder(R.mipmap.loading_default)
                     .error(R.mipmap.loading_failure)
+                    .transform(
+                            new MultiTransformation<>(
+                                    new CenterCrop(),
+                                    new RoundedCorners(15)
+                            )
+                    )
                     .into(holder.iv_cover);
 //            Log.d(TAG, "setItemHolder: ===setItemHolder #70 " + AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl());
         }
 
-        //TODO 更改成用户头像
-        if (TextUtils.isEmpty(postInfo.getCommentCoverUrl())) {
+        Glide.with(holder.iv_avatar.getContext())
+                .load(postInfo.getPosterAvatar())
+                .placeholder(R.mipmap.loading_default)
+                .error(R.mipmap.loading_failure)
+                .into(holder.iv_avatar);
 
-        } else {
-            Glide.with(holder.iv_avatar.getContext())
-                    .load(postInfo.getPosterAvatar())
-                    .placeholder(R.mipmap.loading_default)
-                    .error(R.mipmap.loading_failure)
-                    .into(holder.iv_avatar);
-        }
 
         holder.iv_like.setImageResource(R.mipmap.icon_like_empty);
         holder.tv_likescount.setText(String.valueOf(postInfo.getLikeCount()));
@@ -87,11 +93,11 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-        return recommentList.size();
+        return getCurrentList().size();
     }
 
 
-    static class ItemViewHolder extends RecyclerView.ViewHolder {
+    private class ItemViewHolder extends RecyclerView.ViewHolder {
         ImageView iv_cover;
         ImageView iv_avatar;
         ImageView iv_like;
@@ -106,22 +112,6 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             tv_likescount = (TextView) itemView.findViewById(R.id.tv_likescount);
             tv_title = (TextView) itemView.findViewById(R.id.tv_title);
         }
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.itemClickListener = onItemClickListener;
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(int position, PostInfo postInfo);
-    }
-
-    public void setOnLikeClickListener(OnLikeClickListener onLikeClickListener) {
-        this.likeClickListener = onLikeClickListener;
-    }
-
-    public interface OnLikeClickListener {
-        void OnLikeClick(int position, PostInfo postInfo, ImageView likeView);
     }
 
 }

@@ -86,7 +86,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
-                    android:text="@string/tv_signin"
+                    android:text="@string/register"
                     android:textColor="@color/white"
                     android:textSize="@dimen/common_junior_font_size"
                     android:layout_toStartOf="@id/tv_forget_pwd"/>
@@ -109,7 +109,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="25dp"
                 android:layout_marginTop="10dp"
-                android:background="#E7EDF1"
+                android:background="@drawable/bg_go_login"
+                android:textColor="@color/on_login_container"
                 android:padding="10dp"
                 android:gravity="center"
                 app:layout_constraintTop_toBottomOf="@id/rl_fun_zone"

@@ -2,7 +2,6 @@ package com.memory.wq.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -13,15 +12,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.memory.wq.activities.AudioActivity;
-import com.memory.wq.activities.PersonalActivity;
+import com.memory.wq.activities.PersonInfoActivity;
 import com.memory.wq.adapters.MsgAdapter;
-import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.UiChatInfo;
 import com.memory.wq.beans.UiMessageState;
@@ -30,15 +27,9 @@ import com.memory.wq.databinding.FragmentChatBinding;
 import com.memory.wq.enumertions.ChatPage;
 import com.memory.wq.enumertions.RoleType;
 import com.memory.wq.interfaces.OnMsgItemClickListener;
-import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.MovieManager;
-import com.memory.wq.managers.MsgManager;
 import com.memory.wq.utils.MyToast;
-import com.memory.wq.utils.ResultCallback;
-import com.memory.wq.utils.ShareConfirmDialog;
 import com.memory.wq.vm.ChatViewModel;
-
-import java.util.List;
 
 public class ChatFragment extends Fragment {
     private static final String TAG = "WQ_ChatFragment";
@@ -191,7 +182,7 @@ public class ChatFragment extends Fragment {
 
         @Override
         public void onAvatarClick(long userId) {
-            Intent intent = new Intent(getContext(), PersonalActivity.class);
+            Intent intent = new Intent(getContext(), PersonInfoActivity.class);
             intent.putExtra(AppProperties.PERSON_ID, userId);
             startActivity(intent);
         }

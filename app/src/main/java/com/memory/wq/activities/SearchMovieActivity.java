@@ -1,5 +1,6 @@
 package com.memory.wq.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,7 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.memory.wq.R;
 import com.memory.wq.adapters.MoviesAdapter;
 import com.memory.wq.beans.MovieInfo;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.ActivityChooseMovieBinding;
+import com.memory.wq.enumertions.RoleType;
+import com.memory.wq.interfaces.OnMovieClickListener;
 import com.memory.wq.managers.MovieManager;
 import com.memory.wq.managers.SPManager;
 import com.memory.wq.utils.ResultCallback;
@@ -38,11 +42,8 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
         movieManager.getMovies(token, new ResultCallback<List<MovieInfo>>() {
             @Override
             public void onSuccess(List<MovieInfo> result) {
-
-                runOnUiThread(() -> {
-                    adapter = new MoviesAdapter(SearchMovieActivity.this, result);
-                    mBinding.rvMovies.setAdapter(adapter);
-                });
+                adapter = new MoviesAdapter(result,new OnMovieClickImpl());
+                mBinding.rvMovies.setAdapter(adapter);
             }
 
             @Override
@@ -50,8 +51,20 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
 
             }
         });
+    }
+    private class OnMovieClickImpl implements OnMovieClickListener {
+        @Override
+        public void onCoverClick(MovieInfo movie) {
+            Intent intent = new Intent(SearchMovieActivity.this, AudioActivity.class);
+            intent.putExtra(AppProperties.ROLE_TYPE, RoleType.ROLE_TYPE_BROADCASTER);
+            intent.putExtra(AppProperties.MOVIE_PATH, movie);
+            startActivity(intent);
+        }
 
+        @Override
+        public void onNameClick(int movieId) {
 
+        }
     }
 
 }

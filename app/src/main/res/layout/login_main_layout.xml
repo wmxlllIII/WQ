@@ -1,44 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@mipmap/bg_launch"
-        >
+        android:paddingTop="@dimen/common_padding_top">
 
-        <TextView
-            android:id="@+id/tv_visitor"
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_margin="10dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="15dp"
             android:background="@drawable/bg_transparent_stroke"
-            android:text="@string/login_main_layout_login_with_visitor"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_visitor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:text="@string/login_main_layout_login_with_visitor"
+                android:textColor="@color/white"
+                android:textSize="@dimen/common_junior_font_size" />
+        </RelativeLayout>
 
 
-        <Button
+        <TextView
             android:id="@+id/btn_login_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="100dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_bias="0.85"
+            android:background="@drawable/bg_go_login"
             android:paddingHorizontal="50dp"
             android:paddingVertical="10dp"
             android:text="@string/login_main_layout_login_with_email"
-            android:textColor="@color/black"
-            android:textSize="15sp" />
+            android:textColor="@color/on_login_container"
+            android:textSize="@dimen/common_junior_font_size" />
 
         <TextView
             android:id="@+id/tv_another"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_above="@id/cb_protocol"
-            android:layout_marginBottom="10dp"
+            app:layout_constraintTop_toBottomOf="@id/btn_login_email"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/cb_protocol"
             android:text="@string/another_login_method"
             android:textColor="@color/white_80" />
 
@@ -47,13 +62,15 @@
             android:id="@+id/cb_protocol"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="25dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_bias="0.95"
             android:buttonTint="@color/white_80"
             android:text="我已阅读并同意⟪服务条款⟫和⟪隐私协议⟫"
             android:textColor="@color/white_80" />
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

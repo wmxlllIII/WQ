@@ -1,7 +1,6 @@
 package com.memory.wq.managers;
 
 
-import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -17,7 +16,6 @@ import com.memory.wq.constants.AppProperties;
 import com.memory.wq.enumertions.UpdateInfoType;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.provider.WqApplication;
-import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.GenerateJson;
 import com.memory.wq.utils.JsonParser;
@@ -109,11 +107,11 @@ public class AuthManager {
         });
     }
 
-    public boolean isEmail(String email) {
+    public boolean isValidAccount(String email) {
         return !TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-    public boolean isPwd(String pwd) {
+    public boolean isValidPwd(String pwd) {
         return !TextUtils.isEmpty(pwd);
     }
 

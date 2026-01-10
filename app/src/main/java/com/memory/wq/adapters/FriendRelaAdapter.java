@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.interfaces.OnFriItemClickListener;
@@ -46,14 +47,13 @@ public class FriendRelaAdapter extends ListAdapter<FriendRelaInfo, RecyclerView.
 
     private void updateui(FriendRelaViewHolder holder, int position) {
         FriendRelaInfo friendRela = getItem(position);
-        Log.d(TAG, "=============信息： " + friendRela);
+        Log.d(TAG, "[test] updateui #50 " + friendRela);
         boolean isReceiver = friendRela.getTargetId() == AccountManager.getUserInfo().getUuNumber();
 
-
-//        Glide.with(holder.itemView.getContext())
-//                .load(isReceiver ? friendRela.getSourceAvatarUrl() : friendRela.getTargetAvatarUrl())
-//                .into(holder.iv_avatar);
-//        holder.tv_nickname.setText(isReceiver ? friendRela.getSourceNickname() : friendRela.getTargetNickname());
+        Glide.with(holder.itemView.getContext())
+                .load("http://139.199.70.159:8080/avatar/5a0bd11b-83ef-4e96-9e75-c75c133175f6.jpg")
+                .into(holder.iv_avatar);
+        holder.tv_nickname.setText("Memory");
         holder.tv_verify_message.setText(friendRela.getValidMsg());
 
 

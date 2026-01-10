@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.constants.AppProperties;
@@ -29,7 +30,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
+public class PersonInfoActivity extends BaseActivity<ActivityPersonalBinding> {
 
     private static final String TAG = "WQ_PersonalActivity";
     private final FriendManager mFriendManager = new FriendManager();
@@ -51,6 +52,7 @@ public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
 
     private void initView() {
         mBinding.pivId.setTitle("WQID");
+        mBinding.pivName.setTitle("昵称");
         mBinding.ivBack.setOnClickListener(view -> finish());
 
         mBinding.ivAdd.setOnClickListener(view -> showAddDialog());
@@ -61,7 +63,7 @@ public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
             startActivity(intent);
         });
 
-        mBinding.ivFollow.setOnClickListener(view -> {
+        mBinding.tvFollow.setOnClickListener(view -> {
             if (mFriendInfo.isFollow()) {
                 unfollowUser();
             } else {
@@ -75,8 +77,15 @@ public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
             @Override
             public void onSuccess(FriendInfo friend) {
                 mFriendInfo = friend;
-                mBinding.tvNickname.setText(friend.getNickname());
+                Glide.with(mBinding.getRoot().getContext())
+                        .load(friend.getAvatarUrl())
+                        .placeholder(R.mipmap.icon_default_avatar)
+                        .error(R.mipmap.icon_default_avatar)
+                        .circleCrop()
+                        .into(mBinding.ivAvatar);
+
                 mBinding.pivId.setValue(String.valueOf(mFriendId));
+                mBinding.pivName.setValue(friend.getNickname());
                 mBinding.tvFollow.setText(friend.isFollow() ? "取消关注" : "关注");
             }
 
@@ -121,10 +130,10 @@ public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
                             if (state.equals("已申请")) {
                                 Log.d(TAG, "[✓] sendReq #123");
                                 runOnUiThread(() -> {
-                                    MyToast.showToast(PersonalActivity.this, "发送成功");
+                                    MyToast.showToast(PersonInfoActivity.this, "发送成功");
                                 });
                             } else if (state.equals("已申请")) {
-                                MyToast.showToast(PersonalActivity.this, "发送成功");
+                                MyToast.showToast(PersonInfoActivity.this, "发送成功");
                                 runOnUiThread(() -> {
 
                                 });
@@ -144,12 +153,12 @@ public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
         mFriendManager.followUser(mFriendId, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                MyToast.showToast(PersonalActivity.this, "关注成功");
+                MyToast.showToast(PersonInfoActivity.this, "关注成功");
             }
 
             @Override
             public void onError(String err) {
-                MyToast.showToast(PersonalActivity.this, "关注失败");
+                MyToast.showToast(PersonInfoActivity.this, "关注失败");
             }
         });
     }
@@ -158,12 +167,12 @@ public class PersonalActivity extends BaseActivity<ActivityPersonalBinding> {
         mFriendManager.unfollowUser(mFriendId, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                MyToast.showToast(PersonalActivity.this, "取关成功");
+                MyToast.showToast(PersonInfoActivity.this, "取关成功");
             }
 
             @Override
             public void onError(String err) {
-                MyToast.showToast(PersonalActivity.this, "取关失败");
+                MyToast.showToast(PersonInfoActivity.this, "取关失败");
             }
         });
     }

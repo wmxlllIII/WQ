@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.memory.wq.R;
 import com.memory.wq.databinding.ActivityInfoBinding;
 import com.memory.wq.dialog.AddFriendDialog;
@@ -50,7 +51,7 @@ public class ProfileActivity extends BaseActivity<ActivityInfoBinding> {
         mBinding.ivBack.setOnClickListener(view -> finish());
 
         mBinding.clQrcode.setOnClickListener(view -> {
-            startActivity(new Intent(this, MyQrCodeActivity.class));
+            startActivity(new Intent(this, QrCodeActivity.class));
         });
         mBinding.ivAvatar.setOnClickListener(view -> {
             startActivity(new Intent(this, AvatarActivity.class));
@@ -58,6 +59,9 @@ public class ProfileActivity extends BaseActivity<ActivityInfoBinding> {
 
         Glide.with(this)
                 .load(AccountManager.getUserInfo().getAvatarUrl())
+                .placeholder(R.mipmap.icon_default_avatar)
+                .error(R.mipmap.icon_default_avatar)
+                .transform(new RoundedCorners(15))
                 .into(mBinding.ivAvatar);
 
         mBinding.clNickname.setOnClickListener(view -> {

@@ -16,7 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.memory.wq.activities.PersonalActivity;
+import com.memory.wq.activities.PersonInfoActivity;
 import com.memory.wq.adapters.MemberAdapter;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.FragmentChatDetailBinding;
@@ -89,7 +89,7 @@ public class ChatDetailFragment extends Fragment {
     private class OnMemberClickListenerImpl implements OnMemberClickListener {
         @Override
         public void onMemberClick(long memberId) {
-            Intent intent = new Intent(getContext(), PersonalActivity.class);
+            Intent intent = new Intent(getContext(), PersonInfoActivity.class);
             intent.putExtra(AppProperties.PERSON_ID, memberId);
             startActivity(intent);
         }

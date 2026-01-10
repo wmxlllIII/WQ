@@ -22,7 +22,7 @@ import com.memory.wq.activities.FriendRelaActivity;
 import com.memory.wq.activities.LaunchActivity;
 import com.memory.wq.activities.MainActivity;
 import com.memory.wq.activities.ChatActivity;
-import com.memory.wq.activities.MyQrCodeActivity;
+import com.memory.wq.activities.QrCodeActivity;
 import com.memory.wq.adapters.FriendAdapter;
 import com.memory.wq.adapters.MsgsAdapter;
 import com.memory.wq.beans.FriendInfo;
@@ -110,9 +110,12 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
     }
 
     private void initView() {
-        mBinding.ivAdd.setOnClickListener(v -> startActivity(new Intent(mActivity, MyQrCodeActivity.class)));
+        mBinding.ivAdd.setOnClickListener(v -> startActivity(new Intent(mActivity, QrCodeActivity.class)));
 
-        mBinding.ivSearch.setOnClickListener(v -> startActivity(new Intent(mActivity, FriendRelaActivity.class)));
+        mBinding.ivSearch.setOnClickListener(v -> {
+            mBinding.ivSearchRemind.setVisibility(View.GONE);
+            startActivity(new Intent(mActivity, FriendRelaActivity.class));
+        });
 
         mBinding.lvMsg.setOnItemClickListener((parent, view1, position, id) -> {
             FriendInfo friendInfo = (FriendInfo) parent.getItemAtPosition(position);

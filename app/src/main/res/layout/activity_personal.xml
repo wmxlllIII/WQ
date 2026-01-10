@@ -8,30 +8,15 @@
         android:layout_height="match_parent"
         android:background="@color/wq_primary_background">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_title_zone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/iv_back"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@mipmap/icon_back_light"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/iv_more"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@mipmap/icon_detail"
-                app:layout_constraintBottom_toBottomOf="@id/iv_back"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/iv_back" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="@dimen/common_back_size"
+            android:layout_height="@dimen/common_back_size"
+            android:paddingVertical="@dimen/common_title_vert"
+            android:paddingStart="@dimen/common_title_pad_hori"
+            android:src="@mipmap/icon_back_light"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/iv_cover"
@@ -43,75 +28,48 @@
             app:layout_constraintDimensionRatio="16:9"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/iv_avatar"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="-40dp"
-            android:src="#0ffff0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_cover" />
-
-        <LinearLayout
-            android:id="@+id/ll_nickname_zone"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_avatar_zone"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
-            app:layout_constraintStart_toEndOf="@id/iv_avatar"
+            android:layout_marginTop="-40dp"
+            android:paddingHorizontal="40dp"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_cover">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="昵称: "
-                android:textColor="#666666"
-                android:textSize="15dp" />
+            <ImageView
+                android:id="@+id/iv_avatar"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="#0ffff0" />
 
             <TextView
-                android:id="@+id/tv_nickname"
-                android:layout_width="match_parent"
+                android:id="@+id/tv_follow"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="逆转时间的公式就是珍惜当下"
-                android:textColor="#666666"
-                android:textSize="15dp" />
-        </LinearLayout>
+                android:text="取消关注"
+                android:textColor="#F5F5F5"
+                android:textSize="16dp"
+                android:paddingHorizontal="30dp"
+                android:paddingVertical="5dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/bg_follow"
+                app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
+                app:layout_constraintStart_toEndOf="@id/iv_avatar"
+                app:layout_constraintTop_toBottomOf="@id/iv_cover"/>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <LinearLayout
             android:id="@+id/ll_content_zone"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@id/ll_fun_zone"
-            app:layout_constraintTop_toBottomOf="@id/iv_avatar">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="10dp">
-
-                <ImageView
-                    android:id="@+id/iv_follow"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@mipmap/icon_add" />
-
-                <TextView
-                    android:id="@+id/tv_follow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="取消关注"
-                    android:textColor="@color/white_80"
-                    android:textSize="16dp" />
-            </LinearLayout>
-
+            app:layout_constraintTop_toBottomOf="@id/cl_avatar_zone">
 
             <com.memory.wq.views.ProfileItemView
                 android:id="@+id/piv_id"
@@ -119,7 +77,7 @@
                 android:layout_height="wrap_content" />
 
             <com.memory.wq.views.ProfileItemView
-                android:id="@+id/piv_email"
+                android:id="@+id/piv_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
@@ -129,7 +87,8 @@
             android:id="@+id/ll_fun_zone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
+            app:layout_constraintVertical_bias="0.9"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -144,7 +103,7 @@
                 android:id="@+id/iv_chat"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="60dp"
                 android:src="@mipmap/icon_message" />
         </LinearLayout>
 
