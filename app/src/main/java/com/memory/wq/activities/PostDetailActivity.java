@@ -96,7 +96,7 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
         }
 
         Glide.with(this)
-                .load(AppProperties.HTTP_SERVER_ADDRESS + mPostInfo.getPosterAvatar())
+                .load(mPostInfo.getPosterAvatar())
                 .placeholder(R.mipmap.loading_default)
                 .error(R.mipmap.loading_failure)
                 .into(mBinding.ivAvatar);

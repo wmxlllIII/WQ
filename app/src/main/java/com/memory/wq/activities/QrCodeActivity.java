@@ -2,8 +2,14 @@ package com.memory.wq.activities;
 
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -14,10 +20,12 @@ import com.memory.wq.R;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.ActivityMyQrCodeBinding;
+import com.memory.wq.databinding.BaseQrCodeBinding;
 import com.memory.wq.enumertions.SearchUserType;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.QRCodeManager;
+import com.memory.wq.utils.FileUtil;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
@@ -53,7 +61,18 @@ public class QrCodeActivity extends BaseActivity<ActivityMyQrCodeBinding> {
         mBinding.ivBack.setOnClickListener(v -> finish());
 
         mBinding.tvSave.setOnClickListener(v -> {
-            //todo 保存二维码
+            Bitmap bitmap = createSaveBitmap();
+            boolean success = FileUtil.saveBitmapToGallery(
+                    this,
+                    bitmap,
+                    "WQ_QR_" + System.currentTimeMillis() + ".png"
+            );
+
+            if (success) {
+                MyToast.showToast(this, "二维码已保存到相册");
+            } else {
+                MyToast.showToast(this, "保存失败");
+            }
         });
 
         Glide.with(this)
@@ -99,4 +118,63 @@ public class QrCodeActivity extends BaseActivity<ActivityMyQrCodeBinding> {
             }
         });
     }
+
+    private Bitmap createBitmapFromView(View view) {
+        int width = view.getMeasuredWidth();
+        int height = view.getMeasuredHeight();
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+
+        Drawable bg = view.getBackground();
+        if (bg != null) {
+            bg.draw(canvas);
+        } else {
+            canvas.drawColor(Color.TRANSPARENT);
+        }
+
+        view.draw(canvas);
+        return bitmap;
+    }
+
+    private Bitmap createSaveBitmap() {
+        BaseQrCodeBinding saveBinding = BaseQrCodeBinding.inflate(LayoutInflater.from(this), null, false);
+
+        Glide.with(this)
+                .load(AccountManager.getUserInfo().getAvatarUrl())
+                .placeholder(R.mipmap.icon_default_avatar)
+                .error(R.mipmap.icon_default_avatar)
+                .circleCrop()
+                .into(saveBinding.ivAvatar);
+
+        Bitmap qrBitmap = mQrCodeManager.getUserQRCode(
+                this,
+                String.valueOf(AccountManager.getUserInfo().getUuNumber()),
+                300,
+                300
+        );
+        saveBinding.ivQrcode.setImageBitmap(qrBitmap);
+        saveBinding.tvUunum.setText(String.valueOf(AccountManager.getUserInfo().getUuNumber()));
+
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(
+                Resources.getSystem().getDisplayMetrics().widthPixels,
+                View.MeasureSpec.EXACTLY
+        );
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(
+                Resources.getSystem().getDisplayMetrics().heightPixels,
+                View.MeasureSpec.EXACTLY
+        );
+
+        saveBinding.getRoot().measure(widthSpec, heightSpec);
+        saveBinding.getRoot().layout(
+                0,
+                0,
+                saveBinding.getRoot().getMeasuredWidth(),
+                saveBinding.getRoot().getMeasuredHeight()
+        );
+
+        return createBitmapFromView(saveBinding.getRoot());
+    }
+
+
 }

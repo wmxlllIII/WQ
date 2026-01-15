@@ -186,7 +186,6 @@ public class PostViewModel extends ViewModel {
         banners.add(R.mipmap.ic_bannertest1);
         banners.add(R.mipmap.ic_bannertest2);
         banners.add(R.mipmap.ic_bannertest3);
-
         _bannerList.setValue(banners);
     }
 

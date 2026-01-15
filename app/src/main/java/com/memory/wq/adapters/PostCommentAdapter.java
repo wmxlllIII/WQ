@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.constants.AppProperties;
+import com.memory.wq.managers.AccountManager;
 import com.memory.wq.utils.TimeUtils;
 
 import java.util.List;
@@ -46,7 +47,8 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
 
         // 设置父评论数据
         Glide.with(context)
-                .load(AppProperties.HTTP_SERVER_ADDRESS)
+//                .load(AppProperties.HTTP_SERVER_ADDRESS)
+                .load(AccountManager.getUserInfo().getAvatarUrl())
                 .placeholder(R.mipmap.loading_default)
                 .error(R.mipmap.loading_failure)
                 .into(holder.iv_avatar);
@@ -82,8 +84,6 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
             holder.tv_toggle_replies.setVisibility(View.GONE);
             holder.rv_replies.setVisibility(View.GONE);
         }
-
-
     }
 
 

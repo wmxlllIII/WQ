@@ -8,41 +8,46 @@
         android:background="@color/wq_primary_background"
         android:fitsSystemWindows="true">
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_title_zone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:paddingHorizontal="@dimen/common_title_pad_hori"
+            android:paddingVertical="@dimen/common_title_vert"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/iv_back"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_centerVertical="true"
-                android:src="@mipmap/icon_back_light" />
+                android:layout_width="@dimen/common_back_size"
+                android:layout_height="@dimen/common_back_size"
+                android:src="@mipmap/icon_back_light"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
                 android:text="我的二维码"
-                android:textSize="20dp"
-                android:textColor="@color/white_80"/>
+                android:textColor="@color/white_80"
+                android:textSize="@dimen/common_medium_font_size"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
                 android:text="保存"
-                android:textSize="16dp"
-                android:textColor="@color/white_80"/>
+                android:textColor="@color/white_80"
+                android:textSize="@dimen/common_medium_font_size"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
             android:id="@+id/iv_avatar"
@@ -78,8 +83,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/iv_qrcode"
                 android:text="使用WQ APP扫描，加我为好友"
-                android:textSize="16dp"
                 android:textColor="@color/white_80"
+                android:textSize="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
