@@ -517,15 +517,12 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
         }
     }
 
-
     private void switchOrientation() {
         if (isFullScreen) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-
-
     }
 
     private void addComment(String userId, String comment, long timestamp) {
