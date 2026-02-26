@@ -19,6 +19,7 @@ public class PostInfo implements Parcelable {
     private String content;
     private List<String> contentImagesUrlList;
     private int likeCount;
+    private boolean isLiked;
     private long timestamp;
 
     public PostInfo() {
@@ -34,6 +35,7 @@ public class PostInfo implements Parcelable {
         contentImagesUrlList = in.createStringArrayList();
         likeCount = in.readInt();
         timestamp = in.readLong();
+        isLiked = in.readBoolean();
     }
 
     public static final Creator<PostInfo> CREATOR = new Creator<PostInfo>() {
@@ -120,6 +122,14 @@ public class PostInfo implements Parcelable {
         this.timestamp = timestamp;
     }
 
+    public boolean isLiked() {
+        return isLiked;
+    }
+
+    public void setLiked(boolean liked) {
+        isLiked = liked;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -137,6 +147,7 @@ public class PostInfo implements Parcelable {
         dest.writeStringList(contentImagesUrlList);
         dest.writeInt(likeCount);
         dest.writeLong(timestamp);
+        dest.writeBoolean(isLiked);
     }
 
     @Override
@@ -150,6 +161,7 @@ public class PostInfo implements Parcelable {
                 ", content='" + content + '\'' +
                 ", contentImagesUrlList=" + contentImagesUrlList +
                 ", likeCount=" + likeCount +
+                ", isLiked=" + isLiked +
                 ", timestamp=" + timestamp +
                 '}';
     }

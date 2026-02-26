@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 
 import com.memory.wq.R;
 import com.memory.wq.beans.UserInfo;
@@ -55,18 +56,13 @@ public class LoginWithEmailActivity extends BaseActivity<ActivityLoginWithEmailB
 
         mBinding.etLoginAccount.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override
             public void afterTextChanged(Editable s) {
-
+                boolean isValidAccount = mAuthManager.isValidAccount(s.toString().trim());
+                mBinding.tvError.setVisibility(isValidAccount ? View.GONE : View.VISIBLE);
             }
         });
 

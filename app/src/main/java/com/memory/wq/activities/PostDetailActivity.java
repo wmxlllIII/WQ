@@ -74,7 +74,7 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
     }
 
     private void setCommentData() {
-        PostCommentAdapter adapter = new PostCommentAdapter(this, mCommentInfoList);
+        PostCommentAdapter adapter = new PostCommentAdapter(mCommentInfoList);
         mBinding.rvComments.setLayoutManager(new LinearLayoutManager(this));
         mBinding.rvComments.setAdapter(adapter);
 
@@ -155,6 +155,21 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
             startActivity(intent);
         });
 
+        mBinding.ivLike.setImageResource(mPostInfo.isLiked() ? R.mipmap.icon_like_full : R.mipmap.icon_like_empty);
+        mBinding.tvLikeCount.setText(String.valueOf(mPostInfo.getLikeCount()));
+        mBinding.llLike.setOnClickListener(view -> {
+            mCommentManager.likeCommentIfNeed(mPostInfo, new ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean result) {
+
+                }
+
+                @Override
+                public void onError(String err) {
+
+                }
+            });
+        });
     }
 
     private void sendComment(String content) {

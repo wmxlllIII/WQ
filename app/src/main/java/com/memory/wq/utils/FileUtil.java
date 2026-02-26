@@ -77,7 +77,6 @@ public class FileUtil {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
             os.flush();
 
-            // 写入完成，解除 pending
             values.clear();
             values.put(MediaStore.Images.Media.IS_PENDING, 0);
             resolver.update(uri, values, null, null);

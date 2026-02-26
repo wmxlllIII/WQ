@@ -23,14 +23,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.CommentVH> {
 
-    private static final String TAG = PostCommentAdapter.class.getName();
-    private Context context;
+    private static final String TAG = "WQ_PostCommentAdapter";
     private List<PostCommentInfo> commentInfoList;
     private OnCommentActionListener listener;
 
-    public PostCommentAdapter(Context context, List<PostCommentInfo> commentInfoList) {
+    public PostCommentAdapter(List<PostCommentInfo> commentInfoList) {
         this.commentInfoList = commentInfoList;
-        this.context = context;
     }
 
     @NonNull
@@ -46,7 +44,7 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
         PostCommentInfo commentInfo = commentInfoList.get(position);
 
         // 设置父评论数据
-        Glide.with(context)
+        Glide.with(holder.itemView.getContext())
 //                .load(AppProperties.HTTP_SERVER_ADDRESS)
                 .load(AccountManager.getUserInfo().getAvatarUrl())
                 .placeholder(R.mipmap.loading_default)
@@ -60,7 +58,7 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
         holder.tv_reply.setOnClickListener(view -> {
             if (listener != null) listener.onReplyToComment(commentInfo);
         });
-        holder.itemView.setOnClickListener(view->{
+        holder.itemView.setOnClickListener(view -> {
             if (listener != null) listener.onReplyToComment(commentInfo);
         });
 
@@ -71,9 +69,9 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
 
             holder.rv_replies.setVisibility(commentInfo.isExpanded() ? View.VISIBLE : View.GONE);
             if (commentInfo.isExpanded()) {
-                ReplyAdapter adapter = new ReplyAdapter(context, commentInfo.getChildCommentList(),listener);
+                ReplyAdapter adapter = new ReplyAdapter(holder.itemView.getContext(), commentInfo.getChildCommentList(), listener);
 
-                holder.rv_replies.setLayoutManager(new LinearLayoutManager(context));
+                holder.rv_replies.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
                 holder.rv_replies.setAdapter(adapter);
             }
             holder.tv_toggle_replies.setOnClickListener(v -> {

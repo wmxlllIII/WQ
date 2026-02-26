@@ -17,17 +17,15 @@ public class TimeUtils {
     public static String convertTime(long timestamp) {
         long now = System.currentTimeMillis() / 1000;
         long gap = now - timestamp;
-        String timeGap;
         if (gap > 24 * 60 * 60) {
-            timeGap = gap / (24 * 60 * 60) + "天前";
+            return gap / (24 * 60 * 60) + "天前";
         } else if (gap > 60 * 60) {
-            timeGap = gap / (60 * 60) + "小时前";
+            return gap / (60 * 60) + "小时前";
         } else if (gap > 60) {
-            timeGap = gap / 60 + "分钟前";
+            return gap / 60 + "分钟前";
         } else {
-            timeGap = "刚刚";
+            return "刚刚";
         }
-        return timeGap;
     }
 
 }

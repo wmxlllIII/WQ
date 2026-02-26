@@ -103,7 +103,7 @@ public class UploadPostActivity extends BaseActivity<ActivityEditRecommendBindin
         int remainCount = 9 - postImagesList.size();
         if (remainCount <= 0) {
             MyToast.showToast(this, "最多选择9张图片");
-            Log.d(TAG, "===[x] selectPostImages #96");
+            Log.d(TAG, "[x] selectPostImages #96");
             return;
         }
 
@@ -118,7 +118,7 @@ public class UploadPostActivity extends BaseActivity<ActivityEditRecommendBindin
         String content = mBinding.etContent.getText().toString().trim();
         String title = mBinding.etTitle.getText().toString().trim();
         if (TextUtils.isEmpty(content) || TextUtils.isEmpty(title)) {
-            Log.d(TAG, "===[x] publishPost #127");
+            Log.d(TAG, "[x] publishPost #127");
             return;
         }
 
@@ -130,13 +130,11 @@ public class UploadPostActivity extends BaseActivity<ActivityEditRecommendBindin
             public void onSuccess(Boolean result) {
                 MyToast.showToast(UploadPostActivity.this, "发布成功");
                 finish();
-//                mBinding.tvPublish.setEnabled(true);
             }
 
             @Override
             public void onError(String err) {
-                Log.d(TAG, "===[x] publishPost #145");
-//                mBinding.tvPublish.setEnabled(true);
+                Log.d(TAG, "[x] publishPost #145");
             }
         });
     }

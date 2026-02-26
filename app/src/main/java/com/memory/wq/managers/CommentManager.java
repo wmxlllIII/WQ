@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.memory.wq.beans.PostCommentInfo;
+import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.HttpStreamOP;
@@ -82,7 +83,7 @@ public class CommentManager {
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
                         Log.d(TAG, "[x] addComment #76");
-                        handler.post(()->{
+                        handler.post(() -> {
                             callback.onError("");
                         });
                         return;
@@ -91,13 +92,30 @@ public class CommentManager {
                         JSONObject json = new JSONObject(response.body().string());
                         int code = json.getInt("code");
                         if (code == 1) {
-                            handler.post(()->{
+                            handler.post(() -> {
                                 callback.onSuccess(true);
                             });
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                }
+            });
+        });
+    }
+
+    public void likeCommentIfNeed(PostInfo postInfo, ResultCallback<Boolean> callback) {
+        String json = GenerateJson.getLikeCommentJson(postInfo);
+        ThreadPoolManager.getInstance().execute(() -> {
+            HttpStreamOP.postJson(AppProperties.COMMENT_LIKE, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
                 }
             });
         });

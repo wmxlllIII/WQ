@@ -49,6 +49,7 @@ public class AppProperties {
     public static final String STS_TOKEN = HTTP_SERVER_ADDRESS + "/auth/getStsPermission";
     public static final String FOLLOW_USER = HTTP_SERVER_ADDRESS + "/auth/followUser";
     public static final String UNFOLLOW_USER = HTTP_SERVER_ADDRESS + "/auth/unfollowUser";
+    public static final String COMMENT_LIKE = HTTP_SERVER_ADDRESS + "/auth/like";
 
 
     public static final String ROLE_TYPE = "ROLE_TYPE";

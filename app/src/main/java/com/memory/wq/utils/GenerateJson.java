@@ -266,4 +266,15 @@ public class GenerateJson {
         }
         return object.toString();
     }
+
+    public static String getLikeCommentJson(PostInfo postInfo) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("postId", postInfo.getPostId());
+            object.put("needLike", !postInfo.isLiked());
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getLikeCommentJson #245" + e.getMessage());
+        }
+        return object.toString();
+    }
 }

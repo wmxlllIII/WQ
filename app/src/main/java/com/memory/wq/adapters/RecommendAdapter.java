@@ -22,8 +22,6 @@ import com.memory.wq.beans.PostInfo;
 import com.memory.wq.databinding.ItemRecommendBinding;
 import com.memory.wq.interfaces.OnPostClickListener;
 
-import java.util.List;
-
 public class RecommendAdapter extends ListAdapter<PostInfo, RecyclerView.ViewHolder> {
 
     public static final String TAG = "WQ_RecommendAdapter";
@@ -86,8 +84,8 @@ public class RecommendAdapter extends ListAdapter<PostInfo, RecyclerView.ViewHol
                 .into(holder.iv_avatar);
 
 
-        holder.iv_like.setImageResource(R.mipmap.icon_like_empty);
-        holder.tv_likescount.setText(String.valueOf(postInfo.getLikeCount()));
+        holder.iv_like.setImageResource(postInfo.isLiked() ? R.mipmap.icon_like_full : R.mipmap.icon_like_empty);
+        holder.tv_likecount.setText(String.valueOf(postInfo.getLikeCount()));
         holder.tv_title.setText(postInfo.getTitle());
     }
 
@@ -101,7 +99,7 @@ public class RecommendAdapter extends ListAdapter<PostInfo, RecyclerView.ViewHol
         ImageView iv_cover;
         ImageView iv_avatar;
         ImageView iv_like;
-        TextView tv_likescount;
+        TextView tv_likecount;
         TextView tv_title;
 
         public ItemViewHolder(View itemView) {
@@ -109,7 +107,7 @@ public class RecommendAdapter extends ListAdapter<PostInfo, RecyclerView.ViewHol
             iv_cover = (ImageView) itemView.findViewById(R.id.iv_cover);
             iv_avatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
             iv_like = (ImageView) itemView.findViewById(R.id.iv_like);
-            tv_likescount = (TextView) itemView.findViewById(R.id.tv_likescount);
+            tv_likecount = (TextView) itemView.findViewById(R.id.tv_likecount);
             tv_title = (TextView) itemView.findViewById(R.id.tv_title);
         }
     }

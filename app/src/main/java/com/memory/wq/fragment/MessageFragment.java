@@ -77,7 +77,6 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
         if (!AccountManager.isVisitorUser()) {
             return false;
         }
-
         mBinding.llAlreadyLogin.setVisibility(View.GONE);
         mBinding.layoutNoLogin.getRoot().setVisibility(View.VISIBLE);
         new AlertDialog.Builder(mActivity)

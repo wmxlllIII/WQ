@@ -27,7 +27,6 @@ public class PostViewModel extends ViewModel {
     private boolean follower_hasNextPage = true;
     private boolean follower_isLoading = false;
 
-    // 数据 LiveData
     private final MutableLiveData<List<PostInfo>> _recPostList = new MutableLiveData<>(new ArrayList<>());
     public LiveData<List<PostInfo>> recPostList = _recPostList;
 
@@ -76,7 +75,6 @@ public class PostViewModel extends ViewModel {
     }
 
     public void refreshRecPosts() {
-        // 重置分页状态
         currentPage = 1;
         hasNextPage = true;
         isLoading = false;
