@@ -35,7 +35,7 @@ public class MovieManager {
     public static final String TAG = MovieManager.class.getName();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    public void getMovies(String token, ResultCallback<List<MovieInfo>> callback) {
+    public void getMovies(ResultCallback<List<MovieInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.MOVIES, "{}", new Callback() {
                 @Override

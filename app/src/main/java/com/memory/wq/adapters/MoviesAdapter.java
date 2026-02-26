@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -14,18 +15,19 @@ import com.bumptech.glide.load.MultiTransformation;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.memory.wq.R;
+import com.memory.wq.adapters.diffcallbacks.MovieDiffCalback;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.databinding.ItemMovieLayoutBinding;
 import com.memory.wq.interfaces.OnMovieClickListener;
 
 import java.util.List;
 
-public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
+public class MoviesAdapter extends ListAdapter<MovieInfo,RecyclerView.ViewHolder> {
     private List<MovieInfo> movieList;
     private OnMovieClickListener onMovieClickListener;
 
-    public MoviesAdapter(List<MovieInfo> movieList, OnMovieClickListener onMovieClickListener) {
-        this.movieList = movieList;
+    public MoviesAdapter(OnMovieClickListener onMovieClickListener) {
+        super(new MovieDiffCalback());
         this.onMovieClickListener = onMovieClickListener;
     }
 
@@ -37,10 +39,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+        ViewHolder holder = (ViewHolder) viewHolder;
         MovieInfo movie = movieList.get(position);
-
         Glide.with(holder.itemView)
                 .load(movie.getCoverUrl())
                 .placeholder(R.mipmap.loading_default)

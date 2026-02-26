@@ -21,7 +21,8 @@ import java.util.List;
 
 public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding> {
 
-    private MoviesAdapter adapter;
+    public static final String TAG = "WQ_SearchMovieActivity";
+    private final MoviesAdapter adapter = new MoviesAdapter(new OnMovieClickImpl());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,14 +37,13 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
 
     private void initData() {
         mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        mBinding.rvMovies.setAdapter(adapter);
 
         MovieManager movieManager = new MovieManager();
-        String token = SPManager.getUserInfo().getToken();
-        movieManager.getMovies(token, new ResultCallback<List<MovieInfo>>() {
+        movieManager.getMovies(new ResultCallback<List<MovieInfo>>() {
             @Override
             public void onSuccess(List<MovieInfo> result) {
-                adapter = new MoviesAdapter(result,new OnMovieClickImpl());
-                mBinding.rvMovies.setAdapter(adapter);
+
             }
 
             @Override
@@ -52,6 +52,7 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
             }
         });
     }
+
     private class OnMovieClickImpl implements OnMovieClickListener {
         @Override
         public void onCoverClick(MovieInfo movie) {
