@@ -7,14 +7,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.memory.wq.R;
+import com.memory.wq.adapters.MovieCateAdapter;
 import com.memory.wq.adapters.MoviesAdapter;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.ActivityChooseMovieBinding;
 import com.memory.wq.enumertions.RoleType;
+import com.memory.wq.interfaces.OnCateClickListener;
 import com.memory.wq.interfaces.OnMovieClickListener;
 import com.memory.wq.managers.MovieManager;
-import com.memory.wq.managers.SPManager;
 import com.memory.wq.utils.ResultCallback;
 
 import java.util.List;
@@ -22,7 +23,8 @@ import java.util.List;
 public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding> {
 
     public static final String TAG = "WQ_SearchMovieActivity";
-    private final MoviesAdapter adapter = new MoviesAdapter(new OnMovieClickImpl());
+    private final MoviesAdapter mMovieAdapter = new MoviesAdapter(new OnMovieClickImpl());
+    private final MovieCateAdapter mCateAdapter = new MovieCateAdapter(new OnMovieCateClickImpl());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +38,10 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
     }
 
     private void initData() {
+        mBinding.rvCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+
         mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        mBinding.rvMovies.setAdapter(adapter);
+        mBinding.rvMovies.setAdapter(mMovieAdapter);
 
         MovieManager movieManager = new MovieManager();
         movieManager.getMovies(new ResultCallback<List<MovieInfo>>() {
@@ -67,5 +71,7 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
 
         }
     }
+    private class OnMovieCateClickImpl implements OnCateClickListener {
 
+    }
 }

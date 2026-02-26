@@ -15,7 +15,7 @@ import com.bumptech.glide.load.MultiTransformation;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.memory.wq.R;
-import com.memory.wq.adapters.diffcallbacks.MovieDiffCalback;
+import com.memory.wq.adapters.diffcallbacks.MovieDiffCallback;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.databinding.ItemMovieLayoutBinding;
 import com.memory.wq.interfaces.OnMovieClickListener;
@@ -27,7 +27,7 @@ public class MoviesAdapter extends ListAdapter<MovieInfo,RecyclerView.ViewHolder
     private OnMovieClickListener onMovieClickListener;
 
     public MoviesAdapter(OnMovieClickListener onMovieClickListener) {
-        super(new MovieDiffCalback());
+        super(new MovieDiffCallback());
         this.onMovieClickListener = onMovieClickListener;
     }
 
