@@ -1,6 +1,5 @@
 package com.memory.wq.adapters;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,12 +7,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.PostCommentInfo;
-import com.memory.wq.constants.AppProperties;
+import com.memory.wq.interfaces.OnCommentActionListener;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.utils.TimeUtils;
 
@@ -21,14 +21,14 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.CommentVH> {
-
+public class PostCommentAdapter extends ListAdapter<PostCommentInfo, PostCommentAdapter.CommentVH> {
     private static final String TAG = "WQ_PostCommentAdapter";
-    private List<PostCommentInfo> commentInfoList;
-    private OnCommentActionListener listener;
 
-    public PostCommentAdapter(List<PostCommentInfo> commentInfoList) {
-        this.commentInfoList = commentInfoList;
+    private final OnCommentActionListener listener;
+
+    public PostCommentAdapter(OnCommentActionListener listener) {
+        super();
+        this.listener = listener;
     }
 
     @NonNull
@@ -41,7 +41,7 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull CommentVH holder, int position) {
-        PostCommentInfo commentInfo = commentInfoList.get(position);
+        PostCommentInfo commentInfo = getCurrentList().get(position);
 
         // 设置父评论数据
         Glide.with(holder.itemView.getContext())
@@ -87,7 +87,7 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
 
     @Override
     public int getItemCount() {
-        return commentInfoList.size();
+        return getCurrentList().size();
     }
 
     static class CommentVH extends RecyclerView.ViewHolder {
@@ -113,11 +113,4 @@ public class PostCommentAdapter extends RecyclerView.Adapter<PostCommentAdapter.
 
     }
 
-    public void setOnCommentActionListener(OnCommentActionListener listener) {
-        this.listener = listener;
-    }
-
-    public interface OnCommentActionListener {
-        void onReplyToComment(PostCommentInfo commentInfo);
-    }
 }

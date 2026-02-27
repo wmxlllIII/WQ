@@ -16,21 +16,21 @@ import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.databinding.ActivityPostInfoBinding;
+import com.memory.wq.interfaces.OnCommentActionListener;
 import com.memory.wq.managers.CommentManager;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
 
     public static final String TAG = "WQ_PostDetailActivity";
     private PostInfo mPostInfo;
-    private final List<PostCommentInfo> mCommentInfoList = new ArrayList<>();
     private CommentManager mCommentManager;
+    private final PostCommentAdapter mAdapter = new PostCommentAdapter(new OnCommentActionListenerImpl());
     private PostCommentInfo mComment;
 
     @Override
@@ -58,7 +58,7 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
             @Override
             public void onSuccess(List<PostCommentInfo> result) {
                 if (result != null && result.size() > 0) {
-                    mCommentInfoList.addAll(result);
+                    mAdapter.submitList(result);
                     setCommentData();
                 }
 
@@ -74,18 +74,8 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
     }
 
     private void setCommentData() {
-        PostCommentAdapter adapter = new PostCommentAdapter(mCommentInfoList);
         mBinding.rvComments.setLayoutManager(new LinearLayoutManager(this));
-        mBinding.rvComments.setAdapter(adapter);
-
-        adapter.setOnCommentActionListener(new PostCommentAdapter.OnCommentActionListener() {
-            @Override
-            public void onReplyToComment(PostCommentInfo comment) {
-                PostDetailActivity.this.mComment = comment;
-                showKeyboard(mBinding.etComment);
-                MyToast.showToast(PostDetailActivity.this, "点击了回复" + comment.getUserName());
-            }
-        });
+        mBinding.rvComments.setAdapter(mAdapter);
     }
 
     private void setData() {
@@ -170,6 +160,14 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
                 }
             });
         });
+        mBinding.llMsg.setOnClickListener(v -> {
+            mBinding.nestedScroll.post(() ->
+                    mBinding.nestedScroll.smoothScrollTo(
+                            0,
+                            mBinding.rvComments.getTop()
+                    )
+            );
+        });
     }
 
     private void sendComment(String content) {
@@ -205,5 +203,38 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
                 MyToast.showToast(PostDetailActivity.this, "发布失败");
             }
         });
+    }
+
+    private void loadComments() {
+        QueryPostInfo queryPostInfo = new QueryPostInfo();
+        queryPostInfo.setPage(1);
+        queryPostInfo.setSize(10);
+
+        mCommentManager.getCommentByPostId(
+                mPostInfo.getPostId(),
+                queryPostInfo,
+                new ResultCallback<List<PostCommentInfo>>() {
+                    @Override
+                    public void onSuccess(List<PostCommentInfo> result) {
+                        if (result != null && !result.isEmpty()) {
+                            mAdapter.submitList(result);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String err) {
+
+                    }
+                });
+    }
+
+    private class OnCommentActionListenerImpl implements OnCommentActionListener {
+
+        @Override
+        public void onReplyToComment(PostCommentInfo comment) {
+            PostDetailActivity.this.mComment = comment;
+            showKeyboard(mBinding.etComment);
+            MyToast.showToast(PostDetailActivity.this, "点击了回复" + comment.getUserName());
+        }
     }
 }

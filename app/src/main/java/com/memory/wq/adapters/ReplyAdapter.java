@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.memory.wq.R;
 import com.memory.wq.beans.PostCommentInfo;
+import com.memory.wq.interfaces.OnCommentActionListener;
 import com.memory.wq.utils.TimeUtils;
 
 import java.util.List;
@@ -20,9 +21,9 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHol
 
     private Context context;
     private List<PostCommentInfo> replyList;
-    private PostCommentAdapter.OnCommentActionListener listener;
+    private final OnCommentActionListener listener;
 
-    public ReplyAdapter(Context context, List<PostCommentInfo> replyList, PostCommentAdapter.OnCommentActionListener listener) {
+    public ReplyAdapter(Context context, List<PostCommentInfo> replyList, OnCommentActionListener listener) {
         this.context = context;
         this.replyList = replyList;
         this.listener=listener;
