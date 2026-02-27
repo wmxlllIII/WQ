@@ -277,4 +277,15 @@ public class GenerateJson {
         }
         return object.toString();
     }
+
+    public static String getSaveProgressJson(int movieId, int currentProgress) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("movieId", movieId);
+            object.put("progress", currentProgress);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getSaveProgressJson #287" + e.getMessage());
+        }
+        return object.toString();
+    }
 }

@@ -52,7 +52,7 @@ import java.util.List;
 import io.agora.mediaplayer.Constants;
 
 public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements AgoraManager.AgoraEventListener {
-    private static final String TAG = AudioActivity.class.getName();
+    private static final String TAG = "WQ_AudioActivity";
 
     private static final int PERMISSION_REQ_ID = 22;
     private static final String[] REQUESTED_PERMISSIONS = {
@@ -112,7 +112,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
 
         Intent intent = getIntent();
         roleType = (RoleType) intent.getSerializableExtra(AppProperties.ROLE_TYPE);
-        mRoomId = roleType == RoleType.ROLE_TYPE_BROADCASTER ? mUserId : intent.getLongExtra(AppProperties.ROOM_ID,-1L);
+        mRoomId = roleType == RoleType.ROLE_TYPE_BROADCASTER ? mUserId : intent.getLongExtra(AppProperties.ROOM_ID, -1L);
 
 
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
@@ -535,9 +535,17 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
         mBinding.lvComment.smoothScrollToPosition(commentList.size() - 1);
     }
 
+    private void saveProgress(int movieId, int currentProgress) {
+        mMovieManager.saveWatchProgress(movieId,currentProgress);
+    }
+
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        if (movieInfo != null) {
+            int currentProgress = mBinding.seekBar.getProgress();
+            saveProgress(movieInfo.getMovieId(), currentProgress);
+        }
+
         if (mAgoraManager != null) {
             mAgoraManager.leaveChannel();
             mAgoraManager.destroy();
@@ -546,6 +554,8 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
             MovieManager movieManager = new MovieManager();
             movieManager.releaseRoom(token, String.valueOf(mRoomId));
         }
+
+        super.onDestroy();
     }
 
 }

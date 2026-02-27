@@ -202,4 +202,21 @@ public class MovieManager {
             });
         });
     }
+
+    public void saveWatchProgress(int movieId, int currentProgress) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getSaveProgressJson(movieId, currentProgress);
+            HttpStreamOP.postJson(AppProperties.SAVE_WATCH_PROGRESS, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
+                }
+            });
+        });
+    }
 }
