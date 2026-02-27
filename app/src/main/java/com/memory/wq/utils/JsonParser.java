@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.FriendRelaInfo;
+import com.memory.wq.beans.MovieCateInfo;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.PostCommentInfo;
@@ -475,5 +476,22 @@ public class JsonParser {
             Log.e(TAG, "[x] stsTokenParser #466 " + e.getMessage());
         }
         return stsTokenInfo;
+    }
+
+    public static List<MovieCateInfo> movieCateParser(JSONArray data) {
+        List<MovieCateInfo> movieCateInfoList = new ArrayList<>();
+        for (int i = 0; i < data.length(); i++) {
+            try {
+                JSONObject item = data.getJSONObject(i);
+                MovieCateInfo movieCateInfo = new MovieCateInfo();
+                movieCateInfo.setCateId(item.getInt("cateId"));
+                movieCateInfo.setCateName(item.getString("cateName"));
+                movieCateInfoList.add(movieCateInfo);
+                Log.d(TAG, "movieCateParser: " + movieCateInfo.toString());
+            } catch (Exception e) {
+                Log.d(TAG, "[x] movieCateParser #492" + e.getMessage());
+            }
+        }
+        return movieCateInfoList;
     }
 }

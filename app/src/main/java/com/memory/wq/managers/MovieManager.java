@@ -193,8 +193,8 @@ public class MovieManager {
                         JSONObject json = new JSONObject(response.body().string());
                         int code = json.getInt("code");
                         if (code == 1) {
-                            //todo 解析类别
-                            mHandler.post(() -> callback.onSuccess(new ArrayList<>()));
+                            List<MovieCateInfo> movieCateInfoList = JsonParser.movieCateParser(json.getJSONArray("data"));
+                            mHandler.post(() -> callback.onSuccess(movieCateInfoList));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
