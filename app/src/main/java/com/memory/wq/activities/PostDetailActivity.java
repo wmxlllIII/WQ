@@ -15,14 +15,15 @@ import com.memory.wq.adapters.PostImagesAdapter;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.QueryPostInfo;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.ActivityPostInfoBinding;
 import com.memory.wq.interfaces.OnCommentActionListener;
-import com.memory.wq.managers.CommentManager;
 import com.memory.wq.managers.AccountManager;
-import com.memory.wq.constants.AppProperties;
+import com.memory.wq.managers.CommentManager;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
@@ -32,6 +33,8 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
     private CommentManager mCommentManager;
     private final PostCommentAdapter mAdapter = new PostCommentAdapter(new OnCommentActionListenerImpl());
     private PostCommentInfo mComment;
+    private int mCurrentPage = 1;
+    private static final int PAGE_SIZE = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,31 +54,7 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
         setData();
 
         mCommentManager = new CommentManager();
-        QueryPostInfo queryPostInfo = new QueryPostInfo();
-        queryPostInfo.setPage(1);
-        queryPostInfo.setSize(10);
-        mCommentManager.getCommentByPostId(mPostInfo.getPostId(), queryPostInfo, new ResultCallback<List<PostCommentInfo>>() {
-            @Override
-            public void onSuccess(List<PostCommentInfo> result) {
-                if (result != null && result.size() > 0) {
-                    mAdapter.submitList(result);
-                    setCommentData();
-                }
-
-            }
-
-            @Override
-            public void onError(String err) {
-
-            }
-        });
-
-
-    }
-
-    private void setCommentData() {
-        mBinding.rvComments.setLayoutManager(new LinearLayoutManager(this));
-        mBinding.rvComments.setAdapter(mAdapter);
+        loadComments(1, true);
     }
 
     private void setData() {
@@ -106,6 +85,9 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
     }
 
     private void initView() {
+        mBinding.rvComments.setLayoutManager(new LinearLayoutManager(this));
+        mBinding.rvComments.setAdapter(mAdapter);
+
         mBinding.bottomInputBar.setOnClickListener(view -> {
             if (AccountManager.isVisitorUser()) {
                 new AlertDialog.Builder(this)
@@ -196,6 +178,8 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
                 hideKeyboard();
                 MyToast.showToast(PostDetailActivity.this, "发布成功");
 
+                loadComments(1, true);
+
             }
 
             @Override
@@ -205,34 +189,46 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
         });
     }
 
-    private void loadComments() {
+    private void loadComments(int page, boolean isRefresh) {
+
         QueryPostInfo queryPostInfo = new QueryPostInfo();
-        queryPostInfo.setPage(1);
-        queryPostInfo.setSize(10);
+        queryPostInfo.setPage(page);
+        queryPostInfo.setSize(PAGE_SIZE);
 
         mCommentManager.getCommentByPostId(
                 mPostInfo.getPostId(),
                 queryPostInfo,
                 new ResultCallback<List<PostCommentInfo>>() {
+
                     @Override
                     public void onSuccess(List<PostCommentInfo> result) {
-                        if (result != null && !result.isEmpty()) {
+
+                        if (result == null) return;
+
+                        if (isRefresh) {
                             mAdapter.submitList(result);
+                            mCurrentPage = 1;
+                        } else {
+                            List<PostCommentInfo> current = mAdapter.getCurrentList();
+                            List<PostCommentInfo> newList = new ArrayList<>(current);
+                            newList.addAll(result);
+
+                            mAdapter.submitList(newList);
+                            mCurrentPage++;
                         }
                     }
 
                     @Override
-                    public void onError(String err) {
-
-                    }
-                });
+                    public void onError(String err) {}
+                }
+        );
     }
 
     private class OnCommentActionListenerImpl implements OnCommentActionListener {
 
         @Override
         public void onReplyToComment(PostCommentInfo comment) {
-            PostDetailActivity.this.mComment = comment;
+            mComment = comment;
             showKeyboard(mBinding.etComment);
             MyToast.showToast(PostDetailActivity.this, "点击了回复" + comment.getUserName());
         }
