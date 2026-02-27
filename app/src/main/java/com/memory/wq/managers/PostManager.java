@@ -137,7 +137,7 @@ public class PostManager {
         });
     }
 
-    public void getMyPost(String token, QueryPostInfo queryPostInfo, ResultCallback<PageResult<PostInfo>> callback) {
+    public void getMyPost(QueryPostInfo queryPostInfo, ResultCallback<PageResult<PostInfo>> callback) {
         String json = GenerateJson.getMyPostJson(queryPostInfo);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.POST_MY_GET, json, new Callback() {

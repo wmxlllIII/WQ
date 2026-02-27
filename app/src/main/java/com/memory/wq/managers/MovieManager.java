@@ -12,6 +12,7 @@ import com.memory.wq.beans.MovieCateInfo;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.RoomInfo;
+import com.memory.wq.beans.WatchHistoryInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.db.op.MsgSqlOP;
@@ -207,6 +208,22 @@ public class MovieManager {
         ThreadPoolManager.getInstance().execute(() -> {
             String json = GenerateJson.getSaveProgressJson(movieId, currentProgress);
             HttpStreamOP.postJson(AppProperties.SAVE_WATCH_PROGRESS, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
+                }
+            });
+        });
+    }
+
+    public void getWatchHistory(ResultCallback<WatchHistoryInfo> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            HttpStreamOP.postJson(AppProperties.GET_WATCH_HISTORY, "{}", new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
 

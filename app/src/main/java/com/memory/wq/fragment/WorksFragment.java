@@ -37,8 +37,6 @@ public class WorksFragment extends Fragment {
     private final int pageSize = 15;
     private boolean hasNextPage = true;
     private boolean isLoading = false;
-    private String token;
-
     private List<PostInfo> mPostList = new ArrayList<>();
 
     @Nullable
@@ -57,7 +55,6 @@ public class WorksFragment extends Fragment {
 
     private void initData() {
         mPostManager = new PostManager();
-        token = SPManager.getUserInfo().getToken();
         loadNextPage();
     }
 
@@ -99,7 +96,7 @@ public class WorksFragment extends Fragment {
         QueryPostInfo query = new QueryPostInfo();
         query.setPage(currentPage);
         query.setSize(pageSize);
-        mPostManager.getMyPost(token, query, new ResultCallback<PageResult<PostInfo>>() {
+        mPostManager.getMyPost(query, new ResultCallback<PageResult<PostInfo>>() {
             @Override
             public void onSuccess(PageResult<PostInfo> result) {
                 List<PostInfo> newData = result.getResultList();
