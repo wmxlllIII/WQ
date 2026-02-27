@@ -8,6 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.memory.wq.beans.MovieCateInfo;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.RoomInfo;
@@ -32,10 +33,10 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class MovieManager {
-    public static final String TAG = MovieManager.class.getName();
+    public static final String TAG = "WQ_MovieManager";
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    public void getMovies(ResultCallback<List<MovieInfo>> callback) {
+    public void getMoviesByCate(int cateId, ResultCallback<List<MovieInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.MOVIES, "{}", new Callback() {
                 @Override
@@ -167,6 +168,36 @@ public class MovieManager {
                         e.printStackTrace();
                     }
 
+                }
+            });
+        });
+    }
+
+    public void getCates(ResultCallback<List<MovieCateInfo>> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            HttpStreamOP.postJson(AppProperties.GET_MOVIE_CATE, "{}", new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    mHandler.post(() -> callback.onError(null));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        mHandler.post(() -> callback.onError(null));
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            //todo 解析类别
+                            mHandler.post(() -> callback.onSuccess(new ArrayList<>()));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         });
