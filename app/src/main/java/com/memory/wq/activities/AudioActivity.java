@@ -197,7 +197,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> implements
 
     private boolean checkSelfPermissions() {
         for (String permission : REQUESTED_PERMISSIONS) {
-            if (mPermissionManager.isPermitPermission(permission)) {
+            if (!mPermissionManager.isPermitPermission(permission)) {
                 return false;
             }
         }
