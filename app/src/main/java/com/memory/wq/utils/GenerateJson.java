@@ -6,12 +6,10 @@ import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.beans.PostInfo;
-import com.memory.wq.beans.UserInfo;
 import com.memory.wq.enumertions.JsonType;
 import com.memory.wq.enumertions.SearchUserType;
 import com.memory.wq.enumertions.UpdateInfoType;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -285,6 +283,36 @@ public class GenerateJson {
             object.put("progress", currentProgress);
         } catch (JSONException e) {
             Log.d(TAG, "[X] getSaveProgressJson #287" + e.getMessage());
+        }
+        return object.toString();
+    }
+
+    public static String getMoviesByCateJson(int cateId) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("cateId", cateId);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getMoviesByCateJson #297" + e.getMessage());
+        }
+        return object.toString();
+    }
+
+    public static String getMoviesByActorJson(int actorId) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("actorId", actorId);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getMoviesByActor #305" + e.getMessage());
+        }
+        return object.toString();
+    }
+
+    public static String getActorInfoJson(int actorId) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("actorId", actorId);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getActorInfoJson #315" + e.getMessage());
         }
         return object.toString();
     }

@@ -37,7 +37,10 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
     }
 
     private void initView() {
-
+        mBinding.rvCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+        mBinding.rvCategories.setAdapter(mCateAdapter);
+        mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        mBinding.rvMovies.setAdapter(mMovieAdapter);
     }
 
     @Override
@@ -46,11 +49,6 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
     }
 
     private void initData() {
-        mBinding.rvCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        mBinding.rvCategories.setAdapter(mCateAdapter);
-        mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        mBinding.rvMovies.setAdapter(mMovieAdapter);
-
         mMovieManager.getCates(new ResultCallback<List<MovieCateInfo>>() {
 
             @Override

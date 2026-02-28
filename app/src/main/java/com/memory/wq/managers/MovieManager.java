@@ -8,6 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.memory.wq.beans.ActorInfo;
 import com.memory.wq.beans.MovieCateInfo;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.MsgInfo;
@@ -39,18 +40,54 @@ public class MovieManager {
 
     public void getMoviesByCate(int cateId, ResultCallback<List<MovieInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.MOVIES, "{}", new Callback() {
+            String json = GenerateJson.getMoviesByCateJson(cateId);
+            HttpStreamOP.postJson(AppProperties.MOVIES, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    Log.d(TAG, "[x] getMovies #43");
-                    mHandler.post(() -> callback.onError("getMovies出错了"));
+                    Log.d(TAG, "[x] getMoviesByCate #43");
+                    mHandler.post(() -> callback.onError("getMoviesByCate出错了"));
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        Log.d(TAG, "[x] getMovies #49");
-                        mHandler.post(() -> callback.onError("getMovies出错了"));
+                        Log.d(TAG, "[x] getMoviesByCate #49");
+                        mHandler.post(() -> callback.onError("getMoviesByCate 出错了"));
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            JSONArray movieList = json.getJSONArray("data");
+                            List<MovieInfo> movieInfoList = JsonParser.movieParser(movieList);
+                            mHandler.post(() -> callback.onSuccess(movieInfoList));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+        });
+    }
+
+    public void getMoviesByActor(int actorId, ResultCallback<List<MovieInfo>> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getMoviesByActorJson(actorId);
+            HttpStreamOP.postJson(AppProperties.MOVIES, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] getMoviesByActor #81");
+                    mHandler.post(() -> callback.onError("getMoviesByActor 出错了"));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getMoviesByActor #88");
+                        mHandler.post(() -> callback.onError("getMoviesByActor 出错了"));
                         return;
                     }
 
@@ -179,6 +216,7 @@ public class MovieManager {
             HttpStreamOP.postJson(AppProperties.GET_MOVIE_CATE, "{}", new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] getCates #219");
                     mHandler.post(() -> callback.onError(null));
                 }
 
@@ -210,7 +248,7 @@ public class MovieManager {
             HttpStreamOP.postJson(AppProperties.SAVE_WATCH_PROGRESS, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
+                    Log.d(TAG, "[x] saveWatchProgress #251");
                 }
 
                 @Override
@@ -226,7 +264,26 @@ public class MovieManager {
             HttpStreamOP.postJson(AppProperties.GET_WATCH_HISTORY, "{}", new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] getWatchHistory #268");
+                    mHandler.post(() -> callback.onError("getWatchHistory 出错了"));
+                }
 
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
+                }
+            });
+        });
+    }
+
+    public void getActorInfo(int actorId, ResultCallback<ActorInfo> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getActorInfoJson(actorId);
+            HttpStreamOP.postJson(AppProperties.GET_ACTOR_INFO, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] getActorInfo #286");
+                    mHandler.post(() -> callback.onError("getActorInfo 出错了"));
                 }
 
                 @Override
