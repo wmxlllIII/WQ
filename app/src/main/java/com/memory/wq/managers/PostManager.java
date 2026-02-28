@@ -254,4 +254,34 @@ public class PostManager {
             });
         });
     }
+
+    public void getFootprintPost(ResultCallback<List<PostInfo>> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            HttpStreamOP.postJson(AppProperties.GET_FOOTPRINT_POST, "{}", new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    mHandler.post(() -> callback.onError("获取足迹帖子失败"));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getFootprintPost #269");
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        List<PostInfo> postInfoList = JsonParser.likePostParser(json);
+                        mHandler.post(() -> {
+                            callback.onSuccess(postInfoList);
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d(TAG, "[x] getLikePost #281 " + e.getMessage());
+                    }
+                }
+            });
+        });
+    }
 }
