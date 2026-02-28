@@ -494,4 +494,20 @@ public class JsonParser {
         }
         return movieCateInfoList;
     }
+
+    public static List<PostInfo> likePostParser(JSONObject json) {
+        List<PostInfo> postInfoList = new ArrayList<>();
+        try {
+            JSONArray postArray = json.getJSONArray("resultList");
+
+            for (int i = 0; i < postArray.length(); i++) {
+                JSONObject item = postArray.getJSONObject(i);
+                PostInfo postInfo = postInfoParser(item);
+                postInfoList.add(postInfo);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return postInfoList;
+    }
 }

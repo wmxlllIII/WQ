@@ -224,4 +224,34 @@ public class PostManager {
             });
         });
     }
+
+    public void getLikePost(ResultCallback<List<PostInfo>> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            HttpStreamOP.postJson(AppProperties.GET_LIKE_POST, "{}", new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    mHandler.post(() -> callback.onError("获取喜欢帖子失败"));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getLikePost #238");
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        List<PostInfo> postInfoList = JsonParser.likePostParser(json);
+                        mHandler.post(() -> {
+                            callback.onSuccess(postInfoList);
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d(TAG, "[x] getLikePost #250 " + e.getMessage());
+                    }
+                }
+            });
+        });
+    }
 }
