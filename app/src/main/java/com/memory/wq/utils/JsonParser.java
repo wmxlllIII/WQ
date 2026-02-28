@@ -506,7 +506,7 @@ public class JsonParser {
                 postInfoList.add(postInfo);
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.d(TAG, "[x] likePostParser #509" + e.getMessage());
         }
         return postInfoList;
     }
