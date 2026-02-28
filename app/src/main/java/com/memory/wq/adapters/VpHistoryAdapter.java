@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.memory.wq.fragment.FootprintFragment;
+import com.memory.wq.fragment.LikeFragment;
 import com.memory.wq.fragment.WorksFragment;
 
 public class VpHistoryAdapter extends FragmentStateAdapter {
@@ -19,8 +21,9 @@ public class VpHistoryAdapter extends FragmentStateAdapter {
             case 0:
                 return new WorksFragment();
             case 1:
-                return new WorksFragment();
+                return new LikeFragment();
             case 2:
+                return new FootprintFragment();
             case 3:
             default:
                 return new WorksFragment();
