@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
+import com.memory.wq.adapters.diffcallbacks.PostCommentDiffCallback;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.interfaces.OnCommentActionListener;
 import com.memory.wq.managers.AccountManager;
@@ -27,7 +28,7 @@ public class PostCommentAdapter extends ListAdapter<PostCommentInfo, PostComment
     private final OnCommentActionListener listener;
 
     public PostCommentAdapter(OnCommentActionListener listener) {
-        super();
+        super(new PostCommentDiffCallback());
         this.listener = listener;
     }
 

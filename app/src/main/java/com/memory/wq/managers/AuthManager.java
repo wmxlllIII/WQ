@@ -39,8 +39,8 @@ public class AuthManager {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final UserSqlOP mUserSqlOP = new UserSqlOP(WqApplication.getInstance());
 
-    public void login(String account, String pwd, ResultCallback<UserInfo> callback) {
-        String loginJson = GenerateJson.generateJson(JsonType.JSONTYPE_LOGIN, account, 0, pwd);
+    public void login(String account, String pwd, int loginType, ResultCallback<UserInfo> callback) {
+        String loginJson = GenerateJson.getLoginJson(account, pwd, loginType);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.LOGIN_URL, loginJson, new Callback() {
 
@@ -134,7 +134,7 @@ public class AuthManager {
     }
 
     public void register(String email, int code, String password, ResultCallback<UserInfo> callback) {
-        String json = GenerateJson.generateJson(JsonType.JSONTYPE_REGISTER, email, code, password);
+        String json = GenerateJson.getRegisterJson(email, password, code);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.REGISTER_URL, json, new Callback() {
                 @Override
@@ -169,7 +169,7 @@ public class AuthManager {
     }
 
     public void getCode(String email, ResultCallback<Boolean> callback) {
-        String getCodeJson = GenerateJson.generateJson(JsonType.JSONTYPE_REQUEST, email, 0, "");
+        String getCodeJson = GenerateJson.getValidCodeJson(email);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.REQUEST_URL, getCodeJson, new Callback() {
                 @Override

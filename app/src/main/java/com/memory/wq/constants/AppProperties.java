@@ -44,18 +44,18 @@ public class AppProperties {
     public static final String COMMENT_GET = HTTP_SERVER_ADDRESS + "/auth/getComment";
     public static final String COMMENT_ADD = HTTP_SERVER_ADDRESS + "/auth/addComment";
     public static final String GET_MSG = HTTP_SERVER_ADDRESS + "/auth/getMsg";
-    public static final String GET_MOVIE_CATE = HTTP_SERVER_ADDRESS + "/auth/getMsg";
-    public static final String SAVE_WATCH_PROGRESS = HTTP_SERVER_ADDRESS + "/auth/getMsg";
-    public static final String GET_WATCH_HISTORY = HTTP_SERVER_ADDRESS + "/auth/getMsg";
-    public static final String GET_ACTOR_INFO = HTTP_SERVER_ADDRESS + "/auth/getMsg";
-    public static final String GET_LIKE_POST = HTTP_SERVER_ADDRESS + "/auth/getMsg";
-    public static final String GET_FOOTPRINT_POST = HTTP_SERVER_ADDRESS + "/auth/getMsg";
+    public static final String GET_MOVIE_CATE = HTTP_SERVER_ADDRESS + "/auth/getMovieCategory";
+    public static final String SAVE_WATCH_PROGRESS = HTTP_SERVER_ADDRESS + "/auth/saveMovieProgress";
+    public static final String GET_WATCH_HISTORY = HTTP_SERVER_ADDRESS + "/auth/getWatchHistory";
+    public static final String GET_ACTOR_INFO = HTTP_SERVER_ADDRESS + "/auth/getActorProfile";
+    public static final String GET_LIKE_POST = HTTP_SERVER_ADDRESS + "/auth/getLikePost";
+    public static final String GET_FOOTPRINT_POST = HTTP_SERVER_ADDRESS + "/auth/getFootprintPost";
 
     public static final String AGORA_TOKEN = HTTP_SERVER_ADDRESS + "/api/token";
     public static final String STS_TOKEN = HTTP_SERVER_ADDRESS + "/auth/getStsPermission";
     public static final String FOLLOW_USER = HTTP_SERVER_ADDRESS + "/auth/followUser";
     public static final String UNFOLLOW_USER = HTTP_SERVER_ADDRESS + "/auth/unfollowUser";
-    public static final String COMMENT_LIKE = HTTP_SERVER_ADDRESS + "/auth/like";
+    public static final String POST_LIKE = HTTP_SERVER_ADDRESS + "/auth/likePost";
 
 
     public static final String ROLE_TYPE = "ROLE_TYPE";

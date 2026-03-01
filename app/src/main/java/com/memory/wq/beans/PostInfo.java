@@ -5,10 +5,10 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class PostInfo implements Parcelable {
-    //TODO 暂时先用邮箱查,改为使用用户数字id查发布者信息
+public class PostInfo implements Serializable {
 //    private String uuNumber;
 
     private int postId;
@@ -22,48 +22,12 @@ public class PostInfo implements Parcelable {
     private boolean isLiked;
     private long timestamp;
 
-    public PostInfo() {
+    public int getPostId() {
+        return postId;
     }
 
-    protected PostInfo(Parcel in) {
-        postId = in.readInt();
-        poster = in.readString();
-        title = in.readString();
-        commentCoverUrl = in.readString();
-        posterAvatar = in.readString();
-        content = in.readString();
-        contentImagesUrlList = in.createStringArrayList();
-        likeCount = in.readInt();
-        timestamp = in.readLong();
-        isLiked = in.readBoolean();
-    }
-
-    public static final Creator<PostInfo> CREATOR = new Creator<PostInfo>() {
-        @Override
-        public PostInfo createFromParcel(Parcel in) {
-            return new PostInfo(in);
-        }
-
-        @Override
-        public PostInfo[] newArray(int size) {
-            return new PostInfo[size];
-        }
-    };
-
-    public String getPosterAvatar() {
-        return posterAvatar;
-    }
-
-    public void setPosterAvatar(String posterAvatar) {
-        this.posterAvatar = posterAvatar;
-    }
-
-    public int getLikeCount() {
-        return likeCount;
-    }
-
-    public void setLikeCount(int likeCount) {
-        this.likeCount = likeCount;
+    public void setPostId(int postId) {
+        this.postId = postId;
     }
 
     public String getPoster() {
@@ -72,14 +36,6 @@ public class PostInfo implements Parcelable {
 
     public void setPoster(String poster) {
         this.poster = poster;
-    }
-
-    public int getPostId() {
-        return postId;
-    }
-
-    public void setPostId(int postId) {
-        this.postId = postId;
     }
 
     public String getTitle() {
@@ -98,6 +54,14 @@ public class PostInfo implements Parcelable {
         this.commentCoverUrl = commentCoverUrl;
     }
 
+    public String getPosterAvatar() {
+        return posterAvatar;
+    }
+
+    public void setPosterAvatar(String posterAvatar) {
+        this.posterAvatar = posterAvatar;
+    }
+
     public String getContent() {
         return content;
     }
@@ -114,12 +78,12 @@ public class PostInfo implements Parcelable {
         this.contentImagesUrlList = contentImagesUrlList;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public int getLikeCount() {
+        return likeCount;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
     }
 
     public boolean isLiked() {
@@ -130,24 +94,12 @@ public class PostInfo implements Parcelable {
         isLiked = liked;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public long getTimestamp() {
+        return timestamp;
     }
 
-    @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
-
-        dest.writeInt(postId);
-        dest.writeString(poster);
-        dest.writeString(title);
-        dest.writeString(commentCoverUrl);
-        dest.writeString(posterAvatar);
-        dest.writeString(content);
-        dest.writeStringList(contentImagesUrlList);
-        dest.writeInt(likeCount);
-        dest.writeLong(timestamp);
-        dest.writeBoolean(isLiked);
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
     @Override

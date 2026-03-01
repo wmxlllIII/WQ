@@ -7,7 +7,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.memory.wq.beans.PostCommentInfo;
-import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.HttpStreamOP;
@@ -37,8 +36,7 @@ public class CommentManager {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     Log.d(TAG, "[x] getCommentByPostId #30");
-                    callback.onError(e.getMessage());
-                    return;
+                    handler.post(() -> callback.onError(e.getMessage()));
                 }
 
                 @Override
@@ -76,7 +74,8 @@ public class CommentManager {
             HttpStreamOP.postJson(AppProperties.COMMENT_ADD, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
+                    Log.d(TAG, "[x] addComment #78");
+                    handler.post(() -> callback.onError(e.getMessage()));
                 }
 
                 @Override
@@ -104,20 +103,5 @@ public class CommentManager {
         });
     }
 
-    public void likeCommentIfNeed(PostInfo postInfo, ResultCallback<Boolean> callback) {
-        String json = GenerateJson.getLikeCommentJson(postInfo);
-        ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.COMMENT_LIKE, json, new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
 
-                }
-
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-
-                }
-            });
-        });
-    }
 }

@@ -398,7 +398,7 @@ public class JsonParser {
         postInfo.setLikeCount(item.getInt("likeCount"));
         postInfo.setTimestamp(item.getLong("createAt"));
         postInfo.setTitle(item.getString("title"));
-        postInfo.setLiked(item.getBoolean("liked"));
+//        postInfo.setLiked(item.getBoolean("liked"));
 
         String content = item.getString("content");
         if (TextUtils.isEmpty(content)) {

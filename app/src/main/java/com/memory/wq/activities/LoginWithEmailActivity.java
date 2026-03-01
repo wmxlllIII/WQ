@@ -56,9 +56,13 @@ public class LoginWithEmailActivity extends BaseActivity<ActivityLoginWithEmailB
 
         mBinding.etLoginAccount.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
             @Override
             public void afterTextChanged(Editable s) {
                 boolean isValidAccount = mAuthManager.isValidAccount(s.toString().trim());
@@ -97,7 +101,8 @@ public class LoginWithEmailActivity extends BaseActivity<ActivityLoginWithEmailB
             return;
         }
 
-        mAuthManager.login(account, pwd, new ResultCallback<UserInfo>() {
+        //0邮箱，1账号，2手机，-1未知
+        mAuthManager.login(account, pwd, 0, new ResultCallback<UserInfo>() {
 
             @Override
             public void onSuccess(UserInfo userInfo) {

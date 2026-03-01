@@ -284,4 +284,25 @@ public class PostManager {
             });
         });
     }
+
+    public void likePostIfNeed(PostInfo postInfo, ResultCallback<Boolean> callback) {
+        String json = GenerateJson.getLikeCommentJson(postInfo);
+        ThreadPoolManager.getInstance().execute(() -> {
+            HttpStreamOP.postJson(AppProperties.POST_LIKE, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] likePostIfNeed #294");
+                    mHandler.post(() -> callback.onError(e.getMessage()));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] likePostIfNeed #301");
+                        mHandler.post(() -> callback.onError(response.message()));
+                    }
+                }
+            });
+        });
+    }
 }

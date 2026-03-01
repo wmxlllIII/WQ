@@ -17,23 +17,43 @@ public class GenerateJson {
 
     private static final String TAG = "WQ_GenerateJson";
 
-    public static String generateJson(JsonType type, String email, int code, String password) {
-        String json = "";
-        switch (type) {
-            case JSONTYPE_REQUEST:
-                json = "{\"email\":\"" + email + "\"}";
-                break;
-            case JSONTYPE_REGISTER:
-                json = "{\"email\":\"" + email + "\",\"code\":\"" + code + "\",\"password\":\"" + password + "\"}";
-                break;
-            case JSONTYPE_LOGIN:
-                json = "{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}";
-                break;
-
+    public static String getLoginJson(String authValue, String password, int authType) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("authValue", authValue);
+            object.put("authType", authType);
+            object.put("password", password);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getLoginJson #61" + e.getMessage());
+            e.printStackTrace();
         }
-        return json;
+        return object.toString();
     }
 
+    public static String getValidCodeJson(String authValue) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("email", authValue);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getValidCodeJson #72" + e.getMessage());
+            e.printStackTrace();
+        }
+        return object.toString();
+    }
+
+
+    public static String getRegisterJson(String authValue, String password, int code) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("email", authValue);
+            object.put("password", password);
+            object.put("code", code);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getRegisterJson #61" + e.getMessage());
+            e.printStackTrace();
+        }
+        return object.toString();
+    }
     public static String getApplyFriendJson(long targetId, String validMsg) {
         JSONObject object = new JSONObject();
         try {
@@ -269,7 +289,6 @@ public class GenerateJson {
         JSONObject object = new JSONObject();
         try {
             object.put("postId", postInfo.getPostId());
-            object.put("needLike", !postInfo.isLiked());
         } catch (JSONException e) {
             Log.d(TAG, "[X] getLikeCommentJson #245" + e.getMessage());
         }

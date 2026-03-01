@@ -20,6 +20,7 @@ import com.memory.wq.databinding.ActivityPostInfoBinding;
 import com.memory.wq.interfaces.OnCommentActionListener;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.CommentManager;
+import com.memory.wq.managers.PostManager;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
@@ -30,7 +31,8 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
 
     public static final String TAG = "WQ_PostDetailActivity";
     private PostInfo mPostInfo;
-    private CommentManager mCommentManager;
+    private CommentManager mCommentManager = new CommentManager();
+    private PostManager mPostManager = new PostManager();
     private final PostCommentAdapter mAdapter = new PostCommentAdapter(new OnCommentActionListenerImpl());
     private PostCommentInfo mComment;
     private int mCurrentPage = 1;
@@ -130,7 +132,7 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
         mBinding.ivLike.setImageResource(mPostInfo.isLiked() ? R.mipmap.icon_like_full : R.mipmap.icon_like_empty);
         mBinding.tvLikeCount.setText(String.valueOf(mPostInfo.getLikeCount()));
         mBinding.llLike.setOnClickListener(view -> {
-            mCommentManager.likeCommentIfNeed(mPostInfo, new ResultCallback<Boolean>() {
+            mPostManager.likePostIfNeed(mPostInfo, new ResultCallback<Boolean>() {
                 @Override
                 public void onSuccess(Boolean result) {
 
