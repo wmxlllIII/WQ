@@ -157,6 +157,7 @@ public class AuthManager {
                             mHandler.post(() -> {
                                 callback.onSuccess(userInfo);
                             });
+                            return;
                         }
                     } catch (JSONException e) {
                         Log.d(TAG, "[x] register #159" + e.getMessage());

@@ -12,7 +12,7 @@ public class PostInfo implements Serializable {
 //    private String uuNumber;
 
     private int postId;
-    private String poster;
+    private long poster;
     private String title;
     private String commentCoverUrl;
     private String posterAvatar;
@@ -30,11 +30,11 @@ public class PostInfo implements Serializable {
         this.postId = postId;
     }
 
-    public String getPoster() {
+    public long getPoster() {
         return poster;
     }
 
-    public void setPoster(String poster) {
+    public void setPoster(long poster) {
         this.poster = poster;
     }
 

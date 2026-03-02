@@ -9,10 +9,12 @@ import com.memory.wq.beans.MovieCateInfo;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.PostCommentInfo;
+import com.memory.wq.beans.PostDetailInfo;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.RoomInfo;
 import com.memory.wq.beans.RtcInfo;
 import com.memory.wq.beans.StsTokenInfo;
+import com.memory.wq.beans.TagInfo;
 import com.memory.wq.beans.UserInfo;
 import com.memory.wq.enumertions.ContentType;
 import com.memory.wq.enumertions.EventType;
@@ -154,12 +156,26 @@ public class JsonParser {
     }
 
     public static FriendInfo searchFriendParser(JSONObject json) {
+        /**
+         * {
+         * 	"code": 0,
+         * 	"data": {
+         * 		"friend": true,
+         * 		"friendInfoVO": {
+         * 			"avatarUrl": "",
+         * 			"updateAt": 0,
+         * 			"username": "",
+         * 			"uuNumber": 0
+         * 		        },
+         * 		"inBlackList": true    * 	},
+         * 	"msg": ""
+         * }
+         */
         FriendInfo friendInfo = new FriendInfo();
         try {
             JSONObject data = json.getJSONObject("data");
             JSONObject friendVOJson = data.getJSONObject("friendInfoVO");
             String avatarUrl = friendVOJson.getString("avatarUrl");
-            String email = friendVOJson.getString("email");
             String username = friendVOJson.getString("username");
             long uuNumber = friendVOJson.getLong("uuNumber");
             long updateAt = friendVOJson.getLong("updateAt");
@@ -167,7 +183,6 @@ public class JsonParser {
             boolean inBlackList = data.getBoolean("inBlackList");
 
             friendInfo.setAvatarUrl(avatarUrl);
-            friendInfo.setEmail(email);
             friendInfo.setNickname(username);
             friendInfo.setUuNumber(uuNumber);
             friendInfo.setUpdateAt(updateAt);
@@ -386,7 +401,7 @@ public class JsonParser {
         Log.d(TAG, "postInfoParser: " + item.toString());
         PostInfo postInfo = new PostInfo();
         postInfo.setPostId(item.getInt("postId"));
-        postInfo.setPoster(item.getString("userId"));
+        postInfo.setPoster(item.getLong("userId"));
         String coverUrl = item.getString("coverUrl");
         if ("null".equals(coverUrl)) {
             coverUrl = null;
@@ -398,7 +413,7 @@ public class JsonParser {
         postInfo.setLikeCount(item.getInt("likeCount"));
         postInfo.setTimestamp(item.getLong("createAt"));
         postInfo.setTitle(item.getString("title"));
-//        postInfo.setLiked(item.getBoolean("liked"));
+        postInfo.setLiked(item.getBoolean("isLiked"));
 
         String content = item.getString("content");
         if (TextUtils.isEmpty(content)) {
@@ -498,16 +513,137 @@ public class JsonParser {
     public static List<PostInfo> likePostParser(JSONObject json) {
         List<PostInfo> postInfoList = new ArrayList<>();
         try {
-            JSONArray postArray = json.getJSONArray("resultList");
+
+            JSONArray postArray = json.getJSONArray("data");
+            if (postArray.length() == 0) {
+                Log.d(TAG, "[✓] likePostParser #503 数据为空");
+                return postInfoList;
+            }
 
             for (int i = 0; i < postArray.length(); i++) {
-                JSONObject item = postArray.getJSONObject(i);
-                PostInfo postInfo = postInfoParser(item);
-                postInfoList.add(postInfo);
+                try {
+                    JSONObject postObj = postArray.getJSONObject(i);
+
+                    PostInfo postInfo = new PostInfo();
+
+                    // 解析基本字段
+                    postInfo.setPostId(postObj.optInt("postId", 0));
+                    postInfo.setPoster(postObj.optLong("userId", 0));
+                    postInfo.setTitle(postObj.optString("title", ""));
+                    postInfo.setContent(postObj.optString("content", ""));
+                    postInfo.setLikeCount(postObj.optInt("likeCount", 0));
+                    postInfo.setLiked(postObj.optBoolean("isLiked", false));
+                    postInfo.setCommentCoverUrl(postObj.optString("coverUrl", ""));
+                    // 解析图片URL数组
+                    if (postObj.has("imageUrls") && !postObj.isNull("imageUrls")) {
+                        JSONArray imageArray = postObj.getJSONArray("imageUrls");
+                        List<String> imageUrls = new ArrayList<>();
+                        for (int j = 0; j < imageArray.length(); j++) {
+                            String imageUrl = imageArray.getString(j);
+                            if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                                // 如果需要处理URL，可以在这里添加
+                                // imageUrl = UrlUtil.fillUrl(imageUrl);
+                                imageUrls.add(imageUrl);
+                            }
+                        }
+                        postInfo.setContentImagesUrlList(imageUrls);
+                    }
+
+
+                    if (postObj.has("tags")) {
+                        // 解析标签数组（如果有）
+                        JSONArray tagsArray = postObj.getJSONArray("tags");
+                        List<TagInfo> tags = new ArrayList<>();
+                        for (int j = 0; j < tagsArray.length(); j++) {
+                            JSONObject tagObj = tagsArray.getJSONObject(j);
+                            TagInfo tagInfo = new TagInfo();
+                            tagInfo.setId(tagObj.optInt("id", 0));
+                            tagInfo.setTagName(tagObj.optString("tagName", ""));
+                            tags.add(tagInfo);
+                        }
+
+                    }
+
+                    postInfoList.add(postInfo);
+
+                } catch (JSONException e) {
+                    Log.d(TAG, "[x] likePostParser #504 解析单个帖子失败, index=" + i + ", error: " + e.getMessage());
+                    // 继续解析下一个，不中断整个解析过程
+                    e.printStackTrace();
+                }
             }
         } catch (JSONException e) {
-            Log.d(TAG, "[x] likePostParser #509" + e.getMessage());
+            Log.d(TAG, "[x] likePostParser #506 " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            Log.d(TAG, "[x] likePostParser #507 未知错误: " + e.getMessage());
+            e.printStackTrace();
         }
+
         return postInfoList;
+    }
+
+    public static PostDetailInfo postDetailParser(JSONObject json) {
+        try {
+            JSONObject data = json.getJSONObject("data");
+
+            PostDetailInfo postDetailInfo = new PostDetailInfo();
+
+            // 解析基本字段
+            postDetailInfo.setPostId(data.getInt("postId"));
+            postDetailInfo.setPostTitle(data.getString("postTitle"));
+            postDetailInfo.setPostContent(data.getString("postContent"));
+            postDetailInfo.setPosterId(data.getLong("posterId"));
+            postDetailInfo.setLikeCount(data.getInt("likeCount"));
+            postDetailInfo.setCommentCount(data.getInt("commentCount"));
+            postDetailInfo.setLiked(data.getBoolean("liked"));
+
+            // 解析图片URL列表
+            JSONArray imagesArray = data.getJSONArray("contentImagesUrlList");
+            List<String> imagesList = new ArrayList<>();
+            for (int i = 0; i < imagesArray.length(); i++) {
+                imagesList.add(imagesArray.getString(i));
+            }
+            postDetailInfo.setContentImagesUrlList(imagesList);
+
+            // 解析标签数组
+            JSONArray tagsArray = data.getJSONArray("tags");
+            List<TagInfo> tags = new ArrayList<>();
+            for (int i = 0; i < tagsArray.length(); i++) {
+                JSONObject tagObj = tagsArray.getJSONObject(i);
+                TagInfo tag = new TagInfo();
+                tag.setId(tagObj.getInt("id"));
+                tag.setTagName(tagObj.getString("tagName"));
+                tags.add(tag);
+            }
+            postDetailInfo.setTags(tags);
+
+            return postDetailInfo;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, "[x] postDetailParser #555" + e.getMessage());
+            return null;
+        }
+    }
+
+    public static FriendInfo userByIdParser(JSONObject json) {
+        try {
+            JSONObject data = json.getJSONObject("data");
+
+            FriendInfo friend = new FriendInfo();
+
+            friend.setUuNumber(data.getLong("uuNumber"));
+            friend.setNickname(data.getString("username"));
+            friend.setAvatarUrl(data.getString("avatarUrl"));
+            friend.setFollow(data.getBoolean("isFollow"));
+
+            return friend;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, "[x] userByIdParser #578" + e.getMessage());
+        }
+        return null;
     }
 }

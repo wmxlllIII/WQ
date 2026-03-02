@@ -32,7 +32,9 @@ public class AppProperties {
     public static final String SEND_MSG = HTTP_SERVER_ADDRESS + "/auth/msg/send";
     public static final String UPDATE_USER = HTTP_SERVER_ADDRESS + "/auth/updateUserinfo";
 
-    public static final String MOVIES = HTTP_SERVER_ADDRESS + "/auth/movie/movies";
+    public static final String GET_MOVIE_BY_CATE = HTTP_SERVER_ADDRESS + "/auth/movie/moviesByCate";
+    public static final String GET_MOVIE_BY_ACTOR = HTTP_SERVER_ADDRESS + "/auth/movie/moviesByActor";
+
     public static final String ROOMS = HTTP_SERVER_ADDRESS + "/auth/movie/rooms";
     public static final String SAVE_ROOM = HTTP_SERVER_ADDRESS + "/auth/movie/saveRoom";
     public static final String REMOVE_ROOM = HTTP_SERVER_ADDRESS + "/auth/movie/removeRoom";
@@ -50,6 +52,9 @@ public class AppProperties {
     public static final String GET_ACTOR_INFO = HTTP_SERVER_ADDRESS + "/auth/getActorProfile";
     public static final String GET_LIKE_POST = HTTP_SERVER_ADDRESS + "/auth/getLikePost";
     public static final String GET_FOOTPRINT_POST = HTTP_SERVER_ADDRESS + "/auth/getFootprintPost";
+    public static final String SAVE_FOOTPRINT_POST = HTTP_SERVER_ADDRESS + "/auth/saveFootprintPost";
+    public static final String GET_USER_BY_ID = HTTP_SERVER_ADDRESS + "/auth/getUserById";
+    public static final String GET_POST_DETAIL = HTTP_SERVER_ADDRESS + "/auth/getPostDetail";
 
     public static final String AGORA_TOKEN = HTTP_SERVER_ADDRESS + "/api/token";
     public static final String STS_TOKEN = HTTP_SERVER_ADDRESS + "/auth/getStsPermission";
@@ -65,6 +70,6 @@ public class AppProperties {
     public static final String CHAT_ID = "ChatId";
     public static final String PERSON_ID = "personId";
     public static final String SHARE_MESSAGE = "SHARE_MESSAGE";
-    public static final String POSTINFO = "postInfo";
+    public static final String POSTID = "postId";
 
 }

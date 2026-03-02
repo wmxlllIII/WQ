@@ -1,6 +1,5 @@
 package com.memory.wq.adapters;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,49 +8,47 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
+import com.memory.wq.adapters.diffcallbacks.ImageDiffCallback;
+import com.memory.wq.databinding.ItemPostDetailImagesLayoutBinding;
 
-import java.util.List;
+public class PostImagesAdapter extends ListAdapter<String, PostImagesAdapter.ImageViewHolder> {
 
-public class PostImagesAdapter extends RecyclerView.Adapter<PostImagesAdapter.ImageViewHolder> {
-    private Context context;
-    private List<String> imageUrlList;
-
-    public PostImagesAdapter(Context context, List<String> imageUrlList) {
-        this.context = context;
-        this.imageUrlList = imageUrlList;
+    public PostImagesAdapter() {
+        super(new ImageDiffCallback());
     }
 
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_post_detail_images_layout, parent, false);
-        return new ImageViewHolder(view);
+        ItemPostDetailImagesLayoutBinding binding = ItemPostDetailImagesLayoutBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ImageViewHolder(binding.getRoot());
     }
 
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-        String imageUrl = imageUrlList.get(position);
-        Glide.with(context)
+        String imageUrl = getCurrentList().get(position);
+        Glide.with(holder.itemView.getContext())
                 .load(imageUrl)
                 .placeholder(R.mipmap.loading_default)
                 .error(R.mipmap.loading_failure)
                 .into(holder.iv_image);
-        if (imageUrlList == null || imageUrlList.isEmpty()) {
+        if (getCurrentList().isEmpty()) {
             holder.ll_photo_indicator.setVisibility(View.GONE);
             return;
         }
 
         holder.tv_photo_posi.setText(String.valueOf(position + 1));
-        holder.tv_photo_size.setText(String.valueOf(imageUrlList.size()));
+        holder.tv_photo_size.setText(String.valueOf(getCurrentList().size()));
     }
 
     @Override
     public int getItemCount() {
-        return imageUrlList == null ? 0 : imageUrlList.size();
+        return getCurrentList().size();
     }
 
     static class ImageViewHolder extends RecyclerView.ViewHolder {

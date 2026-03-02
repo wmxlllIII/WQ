@@ -15,8 +15,10 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_margin="16dp"
-            android:background="@color/white"
+            android:background="@color/black"
             android:hint="搜索电影"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
             android:paddingHorizontal="12dp" />
 
         <!-- 分类横向列表 -->

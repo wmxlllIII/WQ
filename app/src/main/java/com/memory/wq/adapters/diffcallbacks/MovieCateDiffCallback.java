@@ -8,11 +8,11 @@ import com.memory.wq.beans.MovieCateInfo;
 public class MovieCateDiffCallback extends DiffUtil.ItemCallback<MovieCateInfo>{
     @Override
     public boolean areItemsTheSame(@NonNull MovieCateInfo oldItem, @NonNull MovieCateInfo newItem) {
-        return false;
+        return oldItem.getCateId() == newItem.getCateId();
     }
 
     @Override
     public boolean areContentsTheSame(@NonNull MovieCateInfo oldItem, @NonNull MovieCateInfo newItem) {
-        return false;
+        return oldItem.getCateName().equals(newItem.getCateName());
     }
 }

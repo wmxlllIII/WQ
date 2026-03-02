@@ -22,9 +22,8 @@ import com.memory.wq.interfaces.OnMovieClickListener;
 
 import java.util.List;
 
-public class MoviesAdapter extends ListAdapter<MovieInfo,RecyclerView.ViewHolder> {
-    private List<MovieInfo> movieList;
-    private OnMovieClickListener onMovieClickListener;
+public class MoviesAdapter extends ListAdapter<MovieInfo, RecyclerView.ViewHolder> {
+    private final OnMovieClickListener onMovieClickListener;
 
     public MoviesAdapter(OnMovieClickListener onMovieClickListener) {
         super(new MovieDiffCallback());
@@ -41,7 +40,7 @@ public class MoviesAdapter extends ListAdapter<MovieInfo,RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         ViewHolder holder = (ViewHolder) viewHolder;
-        MovieInfo movie = movieList.get(position);
+        MovieInfo movie = getCurrentList().get(position);
         Glide.with(holder.itemView)
                 .load(movie.getCoverUrl())
                 .placeholder(R.mipmap.loading_default)
@@ -68,7 +67,7 @@ public class MoviesAdapter extends ListAdapter<MovieInfo,RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        return movieList.size();
+        return getCurrentList().size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

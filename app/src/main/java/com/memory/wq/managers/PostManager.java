@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.memory.wq.beans.PostDetailInfo;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.beans.StsTokenInfo;
@@ -242,10 +243,12 @@ public class PostManager {
 
                     try {
                         JSONObject json = new JSONObject(response.body().string());
-                        List<PostInfo> postInfoList = JsonParser.likePostParser(json);
-                        mHandler.post(() -> {
-                            callback.onSuccess(postInfoList);
-                        });
+                        if (json.getInt("code") == 1){
+                            List<PostInfo> postInfoList = JsonParser.likePostParser(json);
+                            mHandler.post(() -> {
+                                callback.onSuccess(postInfoList);
+                            });
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d(TAG, "[x] getLikePost #250 " + e.getMessage());
@@ -260,6 +263,7 @@ public class PostManager {
             HttpStreamOP.postJson(AppProperties.GET_FOOTPRINT_POST, "{}", new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] getFootprintPost #264");
                     mHandler.post(() -> callback.onError("获取足迹帖子失败"));
                 }
 
@@ -285,8 +289,39 @@ public class PostManager {
         });
     }
 
-    public void likePostIfNeed(PostInfo postInfo, ResultCallback<Boolean> callback) {
-        String json = GenerateJson.getLikeCommentJson(postInfo);
+    public void saveFootprintPost(int postId) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getSaveFootprintJson(postId);
+            HttpStreamOP.postJson(AppProperties.SAVE_FOOTPRINT_POST, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] saveFootprintPost #294");
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] saveFootprintPost #301");
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            Log.d(TAG, "[✓] saveFootprintPost #308");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d(TAG, "[x] saveFootprintPost #312 " + e.getMessage());
+                    }
+                }
+            });
+        });
+    }
+
+    public void likePostIfNeed(int postId, ResultCallback<Boolean> callback) {
+        String json = GenerateJson.getLikeCommentJson(postId);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.POST_LIKE, json, new Callback() {
                 @Override
@@ -301,6 +336,51 @@ public class PostManager {
                         Log.d(TAG, "[x] likePostIfNeed #301");
                         mHandler.post(() -> callback.onError(response.message()));
                     }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            Log.d(TAG, "[✓] likePostIfNeed #340");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d(TAG, "[x] likePostIfNeed #344 " + e.getMessage());
+                    }
+                }
+            });
+        });
+    }
+
+    public void getPostDetail(int mPostId, ResultCallback<PostDetailInfo> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getPostDetailJson(mPostId);
+            HttpStreamOP.postJson(AppProperties.GET_POST_DETAIL, json, new Callback() {
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getPostDetail #374");
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            PostDetailInfo postDetailInfo = JsonParser.postDetailParser(json);
+                            mHandler.post(() -> callback.onSuccess(postDetailInfo));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.d(TAG, "[x] getPostDetail #389 " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] getPostDetail #373");
+                    mHandler.post(() -> callback.onError(e.getMessage()));
                 }
             });
         });

@@ -15,6 +15,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.memory.wq.beans.FriendInfo;
+import com.memory.wq.beans.UserInfo;
 import com.memory.wq.enumertions.SelectImageType;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.FileOP;
@@ -67,7 +69,7 @@ public class UserManager {
                         }
                         try {
                             JSONObject json = new JSONObject(response.body().string());
-                            Log.d(TAG, "[test] upLoadAvatar #70"+json);
+                            Log.d(TAG, "[test] upLoadAvatar #70" + json);
                             int code = json.getInt("code");
                             if (code == 1) {
                                 String avatar = JsonParser.avatarParse(json);
@@ -147,6 +149,36 @@ public class UserManager {
                     } catch (Exception e) {
                         Log.d(TAG, "[x] deleteFriend #1 " + e.getMessage());
                     }
+                }
+            });
+        });
+    }
+
+    public void getUserById(long userId, ResultCallback<FriendInfo> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getUserByIdJson(userId);
+            HttpStreamOP.postJson(AppProperties.GET_USER_BY_ID, json, new Callback() {
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getUserById #213");
+                        return;
+                    }
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        if (json.getInt("code") == 1) {
+                            Log.d(TAG, "[test] getUserById #218 " + json);
+                            FriendInfo friend = JsonParser.userByIdParser(json);
+                            mHandler.post(() -> callback.onSuccess(friend));
+                        }
+                    } catch (Exception e) {
+                        Log.d(TAG, "[x] getUserById #174 " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
                 }
             });
         });

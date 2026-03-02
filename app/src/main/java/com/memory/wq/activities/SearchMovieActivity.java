@@ -36,16 +36,16 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
         initData();
     }
 
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_choose_movie;
+    }
+
     private void initView() {
         mBinding.rvCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         mBinding.rvCategories.setAdapter(mCateAdapter);
         mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         mBinding.rvMovies.setAdapter(mMovieAdapter);
-    }
-
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_choose_movie;
     }
 
     private void initData() {
@@ -98,5 +98,9 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
 
     private class OnMovieCateClickImpl implements OnCateClickListener {
 
+        @Override
+        public void onCateClick(int cateId) {
+            loadMoviesByCate(cateId);
+        }
     }
 }

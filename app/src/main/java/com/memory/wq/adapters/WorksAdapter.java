@@ -1,75 +1,44 @@
 package com.memory.wq.adapters;
 
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ListAdapter;
 
-import com.bumptech.glide.Glide;
-import com.memory.wq.R;
+import com.memory.wq.adapters.diffcallbacks.PostDiffCallback;
 import com.memory.wq.beans.PostInfo;
-import com.memory.wq.constants.AppProperties;
-import com.memory.wq.adapters.viewholders.WorksVH;
+import com.memory.wq.adapters.viewholders.WorksViewHolder;
+import com.memory.wq.databinding.ItemVpWorksLayoutBinding;
+import com.memory.wq.interfaces.OnPostClickListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class WorksAdapter extends RecyclerView.Adapter<WorksVH> {
+public class WorksAdapter extends ListAdapter<PostInfo, WorksViewHolder> {
 
     private static final String TAG = "WorksAdapter";
+    private final OnPostClickListener mListener;
 
-    private final List<PostInfo> workList = new ArrayList<>();
-    private OnItemClickListener listener;
-
-
-    public void setData(List<PostInfo> workList) {
-        this.workList.clear();
-        this.workList.addAll(workList);
-        notifyDataSetChanged();
-    }
-
-    public void addItem(PostInfo work) {
-        workList.add(0, work);
-        notifyItemInserted(0);
+    public WorksAdapter(OnPostClickListener listener) {
+        super(new PostDiffCallback());
+        this.mListener = listener;
     }
 
     @NonNull
     @Override
-    public WorksVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.item_vp_works_layout, parent, false);
-        return new WorksVH(view);
+    public WorksViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ItemVpWorksLayoutBinding binding = ItemVpWorksLayoutBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new WorksViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull WorksVH holder, int position) {
-        PostInfo post = workList.get(position);
-        Glide.with(holder.itemView.getContext())
-                .load(post.getCommentCoverUrl())
-                .into(holder.cover);
-        holder.itemView.setOnClickListener(v -> {
-            if (listener == null) {
-                Log.d(TAG, "[x] onBindViewHolder #56");
-                return;
-            }
+    public void onBindViewHolder(@NonNull WorksViewHolder holder, int position) {
+        PostInfo post = getCurrentList().get(position);
+        holder.bind(post, mListener);
 
-            listener.onItemClick(post, position);
-        });
     }
 
     @Override
     public int getItemCount() {
-        return workList.size();
+        return getCurrentList().size();
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(PostInfo postInfo, int position);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
-    }
 }

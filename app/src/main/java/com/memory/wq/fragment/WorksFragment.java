@@ -17,6 +17,7 @@ import com.memory.wq.adapters.WorksAdapter;
 import com.memory.wq.beans.PostInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.databinding.FragmentWorksLayoutBinding;
+import com.memory.wq.interfaces.OnPostClickListener;
 import com.memory.wq.managers.PostManager;
 import com.memory.wq.managers.SPManager;
 import com.memory.wq.constants.AppProperties;
@@ -30,20 +31,19 @@ import java.util.List;
 public class WorksFragment extends Fragment {
 
     private FragmentWorksLayoutBinding mBinding;
-    private WorksAdapter mAdapter;
-    private PostManager mPostManager;
+    private final WorksAdapter mAdapter = new WorksAdapter(new OnPostClickListenerImpl());
+    private final PostManager mPostManager = new PostManager();
+    ;
 
     private int currentPage = 1;
     private final int pageSize = 15;
     private boolean hasNextPage = true;
     private boolean isLoading = false;
-    private List<PostInfo> mPostList = new ArrayList<>();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = FragmentWorksLayoutBinding.inflate(inflater, container, false);
-        initRecycleView();
         return mBinding.getRoot();
     }
 
@@ -53,17 +53,20 @@ public class WorksFragment extends Fragment {
         initData();
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden){
+            loadNextPage();
+        }
+    }
+
     private void initData() {
-        mPostManager = new PostManager();
         loadNextPage();
     }
 
     private void initView() {
-        mAdapter.setOnItemClickListener((post, position) -> {
-            Intent intent = new Intent(getContext(), PostDetailActivity.class);
-            intent.putExtra(AppProperties.POSTINFO, post);
-            startActivity(intent);
-        });
+        mBinding.rvWorks.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        mBinding.rvWorks.setAdapter(mAdapter);
 
         mBinding.rvWorks.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -81,14 +84,8 @@ public class WorksFragment extends Fragment {
         });
     }
 
-    private void initRecycleView() {
-        mBinding.rvWorks.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        mAdapter = new WorksAdapter();
-        mBinding.rvWorks.setAdapter(mAdapter);
-    }
-
     private void loadNextPage() {
-        if (isLoading || !hasNextPage){
+        if (isLoading || !hasNextPage) {
             return;
         }
         isLoading = true;
@@ -101,9 +98,7 @@ public class WorksFragment extends Fragment {
             public void onSuccess(PageResult<PostInfo> result) {
                 List<PostInfo> newData = result.getResultList();
                 if (newData != null && !newData.isEmpty()) {
-                    int oldSize = mPostList.size();
-                    mPostList.addAll(newData);
-                    mAdapter.setData(mPostList);
+                    mAdapter.submitList(newData);
                     currentPage++;
                     hasNextPage = result.isHasNext();
                 } else {
@@ -118,5 +113,15 @@ public class WorksFragment extends Fragment {
                 isLoading = false;
             }
         });
+    }
+
+    private class OnPostClickListenerImpl implements OnPostClickListener {
+
+        @Override
+        public void onPostClick(int position, PostInfo post) {
+            Intent intent = new Intent(getContext(), PostDetailActivity.class);
+            intent.putExtra(AppProperties.POSTID, post.getPostId());
+            startActivity(intent);
+        }
     }
 }

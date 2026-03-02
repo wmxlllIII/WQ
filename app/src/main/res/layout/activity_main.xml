@@ -119,24 +119,6 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/ll_player"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:padding="5dp"
-                        android:layout_weight="0.5">
-
-                        <ImageView
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
-                            android:src="@mipmap/icon_player"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintRight_toRightOf="parent" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/ll_msg"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"

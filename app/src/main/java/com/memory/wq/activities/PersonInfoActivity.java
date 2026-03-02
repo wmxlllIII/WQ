@@ -105,13 +105,14 @@ public class PersonInfoActivity extends BaseActivity<ActivityPersonalBinding> {
         loadPersonalInfo();
     }
 
-    private void sendReq(long targetId, String validMsg) {
+    private void sendReq(long targetId, String validMsg, ResultCallback<Boolean> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
             String json = GenerateJson.getApplyFriendJson(targetId, validMsg);
             HttpStreamOP.postJson(AppProperties.FRIEND_REQ, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     Log.d(TAG, "[x] sendReq 申请失败 #112");
+                    callback.onError("请求失败");
                 }
 
                 @Override
@@ -130,10 +131,10 @@ public class PersonInfoActivity extends BaseActivity<ActivityPersonalBinding> {
                             if (state.equals("已申请")) {
                                 Log.d(TAG, "[✓] sendReq #123");
                                 runOnUiThread(() -> {
-                                    MyToast.showToast(PersonInfoActivity.this, "发送成功");
+
                                 });
                             } else if (state.equals("已申请")) {
-                                MyToast.showToast(PersonInfoActivity.this, "发送成功");
+
                                 runOnUiThread(() -> {
 
                                 });
@@ -183,7 +184,17 @@ public class PersonInfoActivity extends BaseActivity<ActivityPersonalBinding> {
         dialog.setOnConfirmListener(new AddFriendDialog.OnConfirmListener() {
             @Override
             public void onConfirm(String content) {
-                sendReq(mFriendId, content);
+                sendReq(mFriendId, content, new ResultCallback<Boolean>() {
+                    @Override
+                    public void onSuccess(Boolean result) {
+                        MyToast.showToast(PersonInfoActivity.this, result ? "发送成功" : "发送失败");
+                    }
+
+                    @Override
+                    public void onError(String err) {
+                        MyToast.showToast(PersonInfoActivity.this, "发送失败");
+                    }
+                });
             }
 
             @Override

@@ -285,10 +285,10 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getLikeCommentJson(PostInfo postInfo) {
+    public static String getLikeCommentJson(int postId) {
         JSONObject object = new JSONObject();
         try {
-            object.put("postId", postInfo.getPostId());
+            object.put("postId", postId);
         } catch (JSONException e) {
             Log.d(TAG, "[X] getLikeCommentJson #245" + e.getMessage());
         }
@@ -332,6 +332,36 @@ public class GenerateJson {
             object.put("actorId", actorId);
         } catch (JSONException e) {
             Log.d(TAG, "[X] getActorInfoJson #315" + e.getMessage());
+        }
+        return object.toString();
+    }
+
+    public static String getSaveFootprintJson(int postId) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("postId", postId);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getSaveFootprintJson #344" + e.getMessage());
+        }
+        return object.toString();
+    }
+
+    public static String getPostDetailJson(int postId) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("postId", postId);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getPostDetailJson #354" + e.getMessage());
+        }
+        return object.toString();
+    }
+
+    public static String getUserByIdJson(long userId) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("userId", userId);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getUserByIdJson #364" + e.getMessage());
         }
         return object.toString();
     }

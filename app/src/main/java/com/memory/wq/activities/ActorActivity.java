@@ -98,5 +98,9 @@ public class ActorActivity extends BaseActivity<ActivityActorBinding> {
 
     private class OnMovieCateClickImpl implements OnCateClickListener {
 
+        @Override
+        public void onCateClick(int cateId) {
+            loadMoviesByCate(cateId);
+        }
     }
 }

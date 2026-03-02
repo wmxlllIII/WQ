@@ -12,8 +12,9 @@ import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.adapters.PostCommentAdapter;
 import com.memory.wq.adapters.PostImagesAdapter;
+import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.PostCommentInfo;
-import com.memory.wq.beans.PostInfo;
+import com.memory.wq.beans.PostDetailInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.ActivityPostInfoBinding;
@@ -21,6 +22,7 @@ import com.memory.wq.interfaces.OnCommentActionListener;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.CommentManager;
 import com.memory.wq.managers.PostManager;
+import com.memory.wq.managers.UserManager;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
@@ -30,10 +32,12 @@ import java.util.List;
 public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
 
     public static final String TAG = "WQ_PostDetailActivity";
-    private PostInfo mPostInfo;
-    private CommentManager mCommentManager = new CommentManager();
-    private PostManager mPostManager = new PostManager();
-    private final PostCommentAdapter mAdapter = new PostCommentAdapter(new OnCommentActionListenerImpl());
+    private int mPostId;
+    private final CommentManager mCommentManager = new CommentManager();
+    private final PostManager mPostManager = new PostManager();
+    private final UserManager mUserManager = new UserManager();
+    private final PostImagesAdapter mPostImagesAdapter = new PostImagesAdapter();
+    private final PostCommentAdapter mCommentAdapter = new PostCommentAdapter(new OnCommentActionListenerImpl());
     private PostCommentInfo mComment;
     private int mCurrentPage = 1;
     private static final int PAGE_SIZE = 10;
@@ -52,43 +56,80 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
 
     private void initData() {
         Intent intent = getIntent();
-        mPostInfo = (PostInfo) intent.getParcelableExtra(AppProperties.POSTINFO);
-        setData();
-
-        mCommentManager = new CommentManager();
-        loadComments(1, true);
-    }
-
-    private void setData() {
-        if (mPostInfo == null) {
-            Log.d(TAG, "===[x] initData #106");
-            MyToast.showToast(this, "帖子数据加载失败");
+        mPostId = intent.getIntExtra(AppProperties.POSTID, -1);
+        if (mPostId == -1) {
+            Log.d(TAG, "[x] initData #62");
             return;
         }
 
+        mPostManager.saveFootprintPost(mPostId);
+        mPostManager.getPostDetail(mPostId, new ResultCallback<PostDetailInfo>() {
+
+            @Override
+            public void onSuccess(PostDetailInfo postDetail) {
+                updatePostUI(postDetail);
+
+                mUserManager.getUserById(postDetail.getPosterId(), new ResultCallback<FriendInfo>() {
+                    @Override
+                    public void onSuccess(FriendInfo user) {
+                        updatePosterUI(user);
+                    }
+
+                    @Override
+                    public void onError(String err) {
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void onError(String err) {
+
+            }
+        });
+
+        loadComments(1, true);
+    }
+
+    private void updatePosterUI(FriendInfo user) {
         Glide.with(this)
-                .load(mPostInfo.getPosterAvatar())
+                .load(user.getAvatarUrl())
                 .placeholder(R.mipmap.loading_default)
                 .error(R.mipmap.loading_failure)
                 .into(mBinding.ivAvatar);
-        //标题
-        mBinding.tvPostTitle.setText(mPostInfo.getTitle());
-        //内容
-        mBinding.tvPostContent.setText(mPostInfo.getContent());
-        //图片列表
-        Log.d(TAG, "===postInfo" + mPostInfo);
-        PostImagesAdapter imagesAdapter = new PostImagesAdapter(this, mPostInfo.getContentImagesUrlList());
-        mBinding.vpPostImages.setAdapter(imagesAdapter);
-        mBinding.vpPostImages.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
-        //喜欢数量
-        mBinding.tvLikeCount.setText(String.valueOf(mPostInfo.getLikeCount()));
-        mBinding.tvNickname.setText(mPostInfo.getPoster());
 
+        mBinding.tvNickname.setText(user.getNickname());
+
+        mBinding.ivAvatar.setOnClickListener(view -> {
+            Intent intent = new Intent(PostDetailActivity.this, PersonInfoActivity.class);
+            intent.putExtra(AppProperties.PERSON_ID, user.getUuNumber());
+            startActivity(intent);
+        });
+
+        mBinding.tvFollow.setText(AccountManager.getUserId() == user.getUuNumber() ? "删除" : user.isFollow() ? "取消关注" : "关注");
+    }
+
+    private void updatePostUI(PostDetailInfo postDetail) {
+        if (postDetail == null) {
+            Log.d(TAG, "[x] updateUI #106");
+            return;
+        }
+        mBinding.tvPostTitle.setText(postDetail.getPostTitle());
+        mBinding.tvPostContent.setText(postDetail.getPostContent());
+
+        mBinding.tvLikeCount.setText(String.valueOf(postDetail.getLikeCount()));
+        mBinding.ivLike.setImageResource(postDetail.isLiked() ? R.mipmap.icon_like_full : R.mipmap.icon_like_empty);
+        mBinding.tvMsgCount.setText(String.valueOf(postDetail.getCommentCount()));
+        mPostImagesAdapter.submitList(postDetail.getContentImagesUrlList());
     }
 
     private void initView() {
         mBinding.rvComments.setLayoutManager(new LinearLayoutManager(this));
-        mBinding.rvComments.setAdapter(mAdapter);
+        mBinding.rvComments.setAdapter(mCommentAdapter);
+
+        mBinding.vpPostImages.setAdapter(mPostImagesAdapter);
+        mBinding.vpPostImages.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
 
         mBinding.bottomInputBar.setOnClickListener(view -> {
             if (AccountManager.isVisitorUser()) {
@@ -123,16 +164,9 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
             finish();
         });
 
-        mBinding.ivAvatar.setOnClickListener(view -> {
-            Intent intent = new Intent(PostDetailActivity.this, PersonInfoActivity.class);
-            intent.putExtra(AppProperties.PERSON_ID, mPostInfo.getPoster());
-            startActivity(intent);
-        });
 
-        mBinding.ivLike.setImageResource(mPostInfo.isLiked() ? R.mipmap.icon_like_full : R.mipmap.icon_like_empty);
-        mBinding.tvLikeCount.setText(String.valueOf(mPostInfo.getLikeCount()));
         mBinding.llLike.setOnClickListener(view -> {
-            mPostManager.likePostIfNeed(mPostInfo, new ResultCallback<Boolean>() {
+            mPostManager.likePostIfNeed(mPostId, new ResultCallback<Boolean>() {
                 @Override
                 public void onSuccess(Boolean result) {
 
@@ -152,11 +186,15 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
                     )
             );
         });
+
+        mBinding.tvFollow.setOnClickListener(v -> {
+
+        });
     }
 
     private void sendComment(String content) {
         PostCommentInfo postCommentInfo = new PostCommentInfo();
-        postCommentInfo.setPostId(mPostInfo.getPostId());
+        postCommentInfo.setPostId(mPostId);
         postCommentInfo.setParentId(-1);
         postCommentInfo.setContent(content);
         addComment(postCommentInfo);
@@ -198,7 +236,7 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
         queryPostInfo.setSize(PAGE_SIZE);
 
         mCommentManager.getCommentByPostId(
-                mPostInfo.getPostId(),
+                mPostId,
                 queryPostInfo,
                 new ResultCallback<List<PostCommentInfo>>() {
 
@@ -208,20 +246,21 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
                         if (result == null) return;
 
                         if (isRefresh) {
-                            mAdapter.submitList(result);
+                            mCommentAdapter.submitList(result);
                             mCurrentPage = 1;
                         } else {
-                            List<PostCommentInfo> current = mAdapter.getCurrentList();
+                            List<PostCommentInfo> current = mCommentAdapter.getCurrentList();
                             List<PostCommentInfo> newList = new ArrayList<>(current);
                             newList.addAll(result);
 
-                            mAdapter.submitList(newList);
+                            mCommentAdapter.submitList(newList);
                             mCurrentPage++;
                         }
                     }
 
                     @Override
-                    public void onError(String err) {}
+                    public void onError(String err) {
+                    }
                 }
         );
     }

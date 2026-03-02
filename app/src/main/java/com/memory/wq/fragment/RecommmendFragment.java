@@ -244,7 +244,7 @@ public class RecommmendFragment extends Fragment {
         @Override
         public void onPostClick(int position, PostInfo postInfo) {
             Intent intent = new Intent(getContext(), PostDetailActivity.class);
-            intent.putExtra(AppProperties.POSTINFO, postInfo);
+            intent.putExtra(AppProperties.POSTID, postInfo.getPostId());
             startActivity(intent);
         }
     }

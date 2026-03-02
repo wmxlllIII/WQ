@@ -41,7 +41,7 @@ public class MovieManager {
     public void getMoviesByCate(int cateId, ResultCallback<List<MovieInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
             String json = GenerateJson.getMoviesByCateJson(cateId);
-            HttpStreamOP.postJson(AppProperties.MOVIES, json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.GET_MOVIE_BY_CATE, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     Log.d(TAG, "[x] getMoviesByCate #43");
@@ -62,6 +62,7 @@ public class MovieManager {
                         if (code == 1) {
                             JSONArray movieList = json.getJSONArray("data");
                             List<MovieInfo> movieInfoList = JsonParser.movieParser(movieList);
+                            Log.d(TAG, "[test] getMoviesByCate " + movieInfoList.size());
                             mHandler.post(() -> callback.onSuccess(movieInfoList));
                         }
                     } catch (JSONException e) {
@@ -76,7 +77,7 @@ public class MovieManager {
     public void getMoviesByActor(int actorId, ResultCallback<List<MovieInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
             String json = GenerateJson.getMoviesByActorJson(actorId);
-            HttpStreamOP.postJson(AppProperties.MOVIES, json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.GET_MOVIE_BY_ACTOR, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     Log.d(TAG, "[x] getMoviesByActor #81");
@@ -223,6 +224,7 @@ public class MovieManager {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getCates #226");
                         mHandler.post(() -> callback.onError(null));
                         return;
                     }

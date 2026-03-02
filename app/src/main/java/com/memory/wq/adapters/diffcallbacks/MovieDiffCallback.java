@@ -5,14 +5,18 @@ import androidx.recyclerview.widget.DiffUtil;
 
 import com.memory.wq.beans.MovieInfo;
 
-public class MovieDiffCallback extends DiffUtil.ItemCallback<MovieInfo>{
+public class MovieDiffCallback extends DiffUtil.ItemCallback<MovieInfo> {
     @Override
     public boolean areItemsTheSame(@NonNull MovieInfo oldItem, @NonNull MovieInfo newItem) {
-        return false;
+        return oldItem.getMovieId() == newItem.getMovieId();
     }
 
     @Override
     public boolean areContentsTheSame(@NonNull MovieInfo oldItem, @NonNull MovieInfo newItem) {
-        return false;
+        return oldItem.getTitle().equals(newItem.getTitle()) &&
+                oldItem.getMovieUrl().equals(newItem.getMovieUrl()) &&
+                oldItem.getLength().equals(newItem.getLength()) &&
+                oldItem.getCoverUrl().equals(newItem.getCoverUrl()) &&
+                oldItem.getActors().equals(newItem.getActors());
     }
 }
