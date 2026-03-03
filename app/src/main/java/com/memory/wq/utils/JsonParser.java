@@ -7,6 +7,7 @@ import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.beans.MovieCateInfo;
 import com.memory.wq.beans.MovieInfo;
+import com.memory.wq.beans.MovieProfileInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.PostDetailInfo;
@@ -644,6 +645,10 @@ public class JsonParser {
             e.printStackTrace();
             Log.d(TAG, "[x] userByIdParser #578" + e.getMessage());
         }
+        return null;
+    }
+
+    public static MovieProfileInfo movieProfileParser(JSONObject json) {
         return null;
     }
 }

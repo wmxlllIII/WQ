@@ -365,4 +365,14 @@ public class GenerateJson {
         }
         return object.toString();
     }
+
+    public static String getMovieDetailJson(int movieId) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("movieId", movieId);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getMovieDetailJson #374" + e.getMessage());
+        }
+        return object.toString();
+    }
 }

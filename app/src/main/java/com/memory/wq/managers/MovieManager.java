@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import com.memory.wq.beans.ActorInfo;
 import com.memory.wq.beans.MovieCateInfo;
 import com.memory.wq.beans.MovieInfo;
+import com.memory.wq.beans.MovieProfileInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.RoomInfo;
 import com.memory.wq.beans.WatchHistoryInfo;
@@ -291,6 +292,40 @@ public class MovieManager {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
 
+                }
+            });
+        });
+    }
+
+    public void getMovieProfile(int movieId, ResultCallback<MovieProfileInfo> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getMovieDetailJson(movieId);
+            HttpStreamOP.postJson(AppProperties.GET_MOVIE_DETAIL, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] getMovieProfile #306");
+                    mHandler.post(() -> callback.onError("getWatchHistory 出错了"));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getCates #226");
+                        mHandler.post(() -> callback.onError(null));
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            MovieProfileInfo movieProfile = JsonParser.movieProfileParser(json);
+                            mHandler.post(() -> callback.onSuccess(movieProfile));
+                            return;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         });
