@@ -71,5 +71,6 @@ public class AppProperties {
     public static final String PERSON_ID = "personId";
     public static final String SHARE_MESSAGE = "SHARE_MESSAGE";
     public static final String POSTID = "postId";
+    public static final String ActorId = "ActorId";
 
 }

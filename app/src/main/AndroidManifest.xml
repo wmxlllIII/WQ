@@ -26,6 +26,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WQ">
         <activity
+            android:name=".activities.MovieProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.ActorActivity"
             android:exported="false" />
 

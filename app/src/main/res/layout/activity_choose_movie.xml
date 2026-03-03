@@ -9,17 +9,45 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- 搜索区域 -->
-        <EditText
-            android:id="@+id/et_search_movie"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_margin="16dp"
-            android:background="@color/black"
-            android:hint="搜索电影"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white"
-            android:paddingHorizontal="12dp" />
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="@dimen/common_back_size"
+                android:layout_height="@dimen/common_back_size"
+                android:src="@mipmap/icon_back_light"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/et_search_movie"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_margin="16dp"
+                    android:background="@color/black"
+                    android:hint="搜索电影"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
+                    android:paddingHorizontal="12dp" />
+                <TextView
+                    android:id="@+id/tv_search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="搜索"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <!-- 分类横向列表 -->
         <androidx.recyclerview.widget.RecyclerView
