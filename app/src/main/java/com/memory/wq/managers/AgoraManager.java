@@ -6,6 +6,7 @@ import android.view.SurfaceView;
 
 import com.memory.wq.beans.RtcInfo;
 import com.memory.wq.constants.AppProperties;
+import com.memory.wq.interfaces.AgoraEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -496,19 +497,5 @@ public class AgoraManager {
 
         }
     };
-
-
-    public interface AgoraEventListener {
-        void onRemoteUserJoined(int uid);
-
-        void onRtmMessageReceived(String message);
-
-        void onMediaStateChanged(io.agora.mediaplayer.Constants.MediaPlayerState state);
-
-        void onFirstRemoteVideoFrame(int uid, int width, int height, int elapsed);
-
-        void onPlaybackProgress(int progress);
-    }
-
 
 }
