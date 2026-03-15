@@ -6,12 +6,17 @@ import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.beans.PostInfo;
+import com.memory.wq.enumertions.ChatType;
+import com.memory.wq.enumertions.ContentType;
 import com.memory.wq.enumertions.JsonType;
 import com.memory.wq.enumertions.SearchUserType;
 import com.memory.wq.enumertions.UpdateInfoType;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Set;
 
 public class GenerateJson {
 
@@ -54,6 +59,7 @@ public class GenerateJson {
         }
         return object.toString();
     }
+
     public static String getApplyFriendJson(long targetId, String validMsg) {
         JSONObject object = new JSONObject();
         try {
@@ -101,12 +107,13 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getSendMsgJson(long targetUuNumber, String content, int msgType) {
+    public static String getSendMsgJson(long chatId, ChatType chatType, String msg, ContentType msgType) {
         JSONObject object = new JSONObject();
         try {
-            object.put("msg", content);
-            object.put("msgType", msgType);
-            object.put("targetUuNumber", targetUuNumber);
+            object.put("chatId", chatId);
+            object.put("chatType", chatType.toInt());
+            object.put("msgType", msgType.toInt());
+            object.put("msg", msg);
         } catch (JSONException e) {
             Log.d(TAG, "[x] getMsgJson #90");
         }
@@ -172,15 +179,15 @@ public class GenerateJson {
 
     public static String getShareMsgJson(MsgInfo shareMsg) {
         JSONObject object = new JSONObject();
-        try {
-            object.put("targetId", shareMsg.getReceiverId());
-            object.put("linkTitle", shareMsg.getLinkTitle());
-            object.put("linkContent", shareMsg.getLinkContent());
-            object.put("linkImageUrl", shareMsg.getLinkImageUrl());
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            object.put("targetId", shareMsg.getReceiverId());
+//            object.put("linkTitle", shareMsg.getLinkTitle());
+//            object.put("linkContent", shareMsg.getLinkContent());
+//            object.put("linkImageUrl", shareMsg.getLinkImageUrl());
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
         return object.toString();
     }
 
@@ -372,6 +379,22 @@ public class GenerateJson {
             object.put("movieId", movieId);
         } catch (JSONException e) {
             Log.d(TAG, "[X] getMovieDetailJson #374" + e.getMessage());
+        }
+        return object.toString();
+    }
+
+    public static String getBuildGroupJson(String groupName, String groupAvatar, Set<Long> selectedUsers) {
+        JSONObject object = new JSONObject();
+        try {
+            JSONArray memberIds = new JSONArray();
+            for (Long userId : selectedUsers) {
+                memberIds.put(userId);
+            }
+            object.put("memberIds", memberIds);
+            object.put("groupName", groupName);
+            object.put("groupAvatar", groupAvatar);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getBuildGroupJson #394" + e.getMessage());
         }
         return object.toString();
     }

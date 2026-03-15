@@ -30,14 +30,15 @@ public class ChatActivity extends BaseActivity<ActivityChatBinding> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        long chatId = (Long) intent.getSerializableExtra(AppProperties.CHAT_ID);
-        if (chatId<=0){
+        long chatId = (Long) intent.getLongExtra(AppProperties.CHAT_ID, -1L);
+        int chatType = (int) intent.getIntExtra(AppProperties.CHAT_TYPE, -1);
+        if (chatId <= 0) {
             MyToast.showToast(this, "聊天对象不存在");
             return;
         }
 
         mChatVM = new ViewModelProvider(this).get(ChatViewModel.class);
-        mChatVM.setChatId(chatId);
+        mChatVM.setChatId(chatId, chatType);
         initObserver();
     }
 

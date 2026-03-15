@@ -33,7 +33,7 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        return getItem(position).getMsgType().toInt();
+        return getItem(position).getMessageType();
     }
 
     @NonNull
@@ -70,54 +70,55 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
         if (holder instanceof TextViewHolder) {
             handleTextMessage((TextViewHolder) holder, msgInfo);
 
-        } else if (holder instanceof LinkViewHolder) {
-            handleLinkMessage((LinkViewHolder) holder, msgInfo);
         }
+//        else if (holder instanceof LinkViewHolder) {
+//            handleLinkMessage((LinkViewHolder) holder, msgInfo);
+//        }
 
     }
 
-    private void handleLinkMessage(LinkViewHolder holder, MsgInfo msgInfo) {
-        String linkImageUrl = msgInfo.getLinkImageUrl();
-        String linkTitle = msgInfo.getLinkTitle();
-        //房间id
-        String linkContent = msgInfo.getLinkContent();
-        String content = msgInfo.getContent();
-
-        if (msgInfo.getSenderId() == AccountManager.getUserInfo().getUuNumber()) {
-
-            holder.ll_left_link.setVisibility(View.GONE);
-            holder.ll_right_link.setVisibility(View.VISIBLE);
-
-
-            Glide.with(holder.itemView.getContext())
-                    .load(linkImageUrl)
-                    .into(holder.iv_link_image_right);
-            holder.tv_link_title_right.setText(linkTitle);
-            holder.tv_link_content_right.setText(content);
-
+//    private void handleLinkMessage(LinkViewHolder holder, MsgInfo msgInfo) {
+//        String linkImageUrl = msgInfo.getLinkImageUrl();
+//        String linkTitle = msgInfo.getLinkTitle();
+//        //房间id
+//        String linkContent = msgInfo.getLinkContent();
+//        String content = msgInfo.getContent();
+//
+//        if (msgInfo.getSenderId() == AccountManager.getUserInfo().getUuNumber()) {
+//
+//            holder.ll_left_link.setVisibility(View.GONE);
+//            holder.ll_right_link.setVisibility(View.VISIBLE);
+//
+//
 //            Glide.with(holder.itemView.getContext())
-//                    .load(msgInfo.getSenderAvatar())
-//                    .into(holder.iv_my_avatar_link);
-        } else {
-
-            holder.ll_left_link.setVisibility(View.VISIBLE);
-            holder.ll_right_link.setVisibility(View.GONE);
-
-            Glide.with(holder.itemView.getContext())
-                    .load(linkImageUrl)
-                    .into(holder.iv_link_image_left);
-            holder.tv_link_title_left.setText(linkTitle);
-            holder.tv_link_content_left.setText(content);
-
+//                    .load(linkImageUrl)
+//                    .into(holder.iv_link_image_right);
+//            holder.tv_link_title_right.setText(linkTitle);
+//            holder.tv_link_content_right.setText(content);
+//
+////            Glide.with(holder.itemView.getContext())
+////                    .load(msgInfo.getSenderAvatar())
+////                    .into(holder.iv_my_avatar_link);
+//        } else {
+//
+//            holder.ll_left_link.setVisibility(View.VISIBLE);
+//            holder.ll_right_link.setVisibility(View.GONE);
+//
 //            Glide.with(holder.itemView.getContext())
-//                    .load(msgInfo.getReceiverAvatar())
-//                    .into(holder.iv_friend_avatar_link);
-        }
+//                    .load(linkImageUrl)
+//                    .into(holder.iv_link_image_left);
+//            holder.tv_link_title_left.setText(linkTitle);
+//            holder.tv_link_content_left.setText(content);
+//
 
-        holder.ll_left_link.setOnClickListener(v -> listener.onLinkClick(msgInfo));
-        holder.ll_right_link.setOnClickListener(v -> listener.onLinkClick(msgInfo));
-    }
-
+    /// /            Glide.with(holder.itemView.getContext())
+    /// /                    .load(msgInfo.getReceiverAvatar())
+    /// /                    .into(holder.iv_friend_avatar_link);
+//        }
+//
+//        holder.ll_left_link.setOnClickListener(v -> listener.onLinkClick(msgInfo));
+//        holder.ll_right_link.setOnClickListener(v -> listener.onLinkClick(msgInfo));
+//    }
     private void handleTextMessage(TextViewHolder holder, MsgInfo msgInfo) {
         Log.d(TAG, "===MsgInfo==" + msgInfo);
         if (msgInfo.getSenderId() == AccountManager.getUserInfo().getUuNumber()) {
@@ -133,24 +134,18 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
         }
 
         holder.iv_my_avatar.setOnClickListener(v ->
-                listener.onAvatarClick(
-                        msgInfo.getSenderId() == AccountManager.getUserInfo().getUuNumber() ?
-                                msgInfo.getSenderId() : msgInfo.getReceiverId()
-                )
+                listener.onAvatarClick(msgInfo.getSenderId())
         );
         holder.iv_friend_avatar.setOnClickListener(v ->
-                listener.onAvatarClick(
-                        msgInfo.getSenderId() == AccountManager.getUserInfo().getUuNumber() ?
-                                msgInfo.getReceiverId() : msgInfo.getSenderId()
-                )
+                listener.onAvatarClick(msgInfo.getSenderId())
         );
-//        Glide.with(holder.iv_friend_avatar.getContext())
-//                .load(msgInfo.getReceiverAvatar())
-//                .into(holder.iv_friend_avatar);
-//
-//        Glide.with(holder.iv_my_avatar.getContext())
-//                .load(msgInfo.getSenderAvatar())
-//                .into(holder.iv_my_avatar);
+        Glide.with(holder.iv_friend_avatar.getContext())
+                .load(msgInfo.getSenderAvatar())
+                .into(holder.iv_friend_avatar);
+
+        Glide.with(holder.iv_my_avatar.getContext())
+                .load(msgInfo.getSenderAvatar())
+                .into(holder.iv_my_avatar);
     }
 
 

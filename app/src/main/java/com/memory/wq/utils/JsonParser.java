@@ -111,16 +111,21 @@ public class JsonParser {
 
     private static FriendRelaInfo parseFriReq(JSONObject item) throws JSONException {
         FriendRelaInfo info = new FriendRelaInfo();
-        info.setRelaId(item.optInt("serverId"));
-        info.setSourceId(item.optLong("sourceId"));
-        info.setTargetId(item.optLong("targetId"));
+        info.setId(item.optInt("id"));
+
+        info.setSenderId(item.optLong("senderId"));
+        info.setSenderName(item.optString("senderName"));
+        info.setSenderAvatar(item.optString("senderAvatar"));
+
+        info.setReceiverId(item.optLong("receiverId"));
+        info.setReceiverName(item.optString("receiverName"));
+        info.setReceiverAvatar(item.optString("receiverAvatar"));
 
         info.setValidMsg(item.optString("validMsg"));
-        long createAt = item.optLong("createAt");
-        long updateAt = item.optLong("updateAt");
-        info.setCreateAt(createAt);
-        info.setUpdateAt(updateAt);
-        info.setState(item.optString("status"));
+        info.setStatus(item.optInt("status"));
+        info.setCreateAt(item.optLong("createAt"));
+        info.setUpdateAt(item.optLong("updateAt"));
+
         return info;
     }
 
@@ -138,18 +143,22 @@ public class JsonParser {
     }
 
     public static FriendRelaInfo friRelaParser(JSONObject item) {
-        FriendRelaInfo friendRela = new FriendRelaInfo();
-        friendRela.setRelaId(item.optInt("id"));
-        friendRela.setSourceId(item.optLong("senderId"));
-        friendRela.setTargetId(item.optLong("receiverId"));
+        FriendRelaInfo info = new FriendRelaInfo();
+        info.setId(item.optInt("id"));
 
-        friendRela.setValidMsg(item.optString("validMsg"));
-        long createAt = item.optLong("createAt");
-        long updateAt = item.optLong("updateAt");
-        friendRela.setCreateAt(createAt);
-        friendRela.setUpdateAt(updateAt);
-        friendRela.setState(item.optString("status"));
-        return friendRela;
+        info.setSenderId(item.optLong("senderId"));
+        info.setSenderName(item.optString("senderName"));
+        info.setSenderAvatar(item.optString("senderAvatar"));
+
+        info.setReceiverId(item.optLong("receiverId"));
+        info.setReceiverName(item.optString("receiverName"));
+        info.setReceiverAvatar(item.optString("receiverAvatar"));
+
+        info.setValidMsg(item.optString("validMsg"));
+        info.setStatus(item.optInt("status"));
+        info.setCreateAt(item.optLong("createAt"));
+        info.setUpdateAt(item.optLong("updateAt"));
+        return info;
     }
 
     public static EventType getJsonType(String message) {
@@ -237,19 +246,29 @@ public class JsonParser {
 
     private static MsgInfo parseMsg(JSONObject item) throws JSONException {
         MsgInfo msgInfo = new MsgInfo();
-        long senderId = item.getLong("senderId");
-        long receiverId = item.getLong("receiverId");
-        String content = item.getString("content");
-        int type = item.getInt("type");
         int msgId = item.getInt("msgId");
-        long createAt = item.getLong("createAt");
 
-        msgInfo.setContent(content);
+        long senderId = item.getLong("senderId");
+        String senderName = item.getString("senderName");
+        String senderAvatar = item.getString("senderAvatar");
+
+        long chatId = item.getLong("chatId");
+        int chatType = item.getInt("chatType");
+        int messageType = item.getInt("messageType");
+        String content = item.getString("content");
+        long createAt = item.getLong("createAt");
+        long updateAt = item.getLong("updateAt");
+
         msgInfo.setMsgId(msgId);
-        msgInfo.setMsgType(ContentType.fromInt(type));
-        msgInfo.setReceiverId(receiverId);
         msgInfo.setSenderId(senderId);
+        msgInfo.setSenderName(senderName);
+        msgInfo.setSenderAvatar(senderAvatar);
+        msgInfo.setChatId(chatId);
+        msgInfo.setChatType(chatType);
+        msgInfo.setMessageType(messageType);
+        msgInfo.setContent(content);
         msgInfo.setCreateAt(createAt);
+        msgInfo.setUpdateAt(updateAt);
 
         return msgInfo;
     }
@@ -276,12 +295,12 @@ public class JsonParser {
         long receiverId = item.getLong("receiverId");
         String linkContent = item.getString("linkContent");
 
-        msgInfo.setMsgType(ContentType.TYPE_LINK);
-        msgInfo.setLinkTitle(linkTitle);
-        msgInfo.setLinkContent(linkContent);
-        msgInfo.setLinkImageUrl(linkImageUrl);
-        msgInfo.setSenderId(senderId);
-        msgInfo.setReceiverId(receiverId);
+//        msgInfo.setMsgType(ContentType.TYPE_LINK);
+//        msgInfo.setLinkTitle(linkTitle);
+//        msgInfo.setLinkContent(linkContent);
+//        msgInfo.setLinkImageUrl(linkImageUrl);
+//        msgInfo.setSenderId(senderId);
+//        msgInfo.setReceiverId(receiverId);
 
         return msgInfo;
     }
@@ -367,9 +386,9 @@ public class JsonParser {
             String linkTitle = json.getString("linkTitle");
             String linkContent = json.getString("linkContent");
             String linkImageUrl = json.getString("linkImageUrl");
-            msgInfo.setLinkTitle(linkTitle);
-            msgInfo.setLinkContent(linkContent);
-            msgInfo.setLinkImageUrl(linkImageUrl);
+//            msgInfo.setLinkTitle(linkTitle);
+//            msgInfo.setLinkContent(linkContent);
+//            msgInfo.setLinkImageUrl(linkImageUrl);
         } catch (JSONException e) {
             e.printStackTrace();
         }

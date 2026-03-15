@@ -18,18 +18,14 @@ public class FriendProvider extends ContentProvider {
     private final static String TAG = "WQ_FriendProvider";
     private static final String AUTHORITY = "com.memory.wq.provider.FriendProvider";
     public static final String TABLE_NAME_FRIEND = AppProperties.TABLE_NAME_FRIEND;
-    public static final String TABLE_NAME_FRIEND_RELATIONSHIP = AppProperties.TABLE_FRIEND_RELATIONSHIP;
     public static final Uri CONTENT_URI_FRIEND = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME_FRIEND);
-    public static final Uri CONTENT_URI_FRIEND_RELATIONSHIP = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME_FRIEND_RELATIONSHIP);
-
     private static final int MATCH_CODE_FRIEND = 1;
-    private static final int MATCH_CODE_FRIEND_RELATIONSHIP = 2;
+
     private static final UriMatcher mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     private SqlHelper mHelper;
 
     static {
         mUriMatcher.addURI(AUTHORITY, AppProperties.TABLE_NAME_FRIEND, MATCH_CODE_FRIEND);
-        mUriMatcher.addURI(AUTHORITY, AppProperties.TABLE_FRIEND_RELATIONSHIP, MATCH_CODE_FRIEND_RELATIONSHIP);
     }
 
     @Override
@@ -48,12 +44,6 @@ public class FriendProvider extends ContentProvider {
                 //todo 为什么使用setNotificationUri，什么意思，怎么用
                 friendCursor.setNotificationUri(getContext().getContentResolver(), CONTENT_URI_FRIEND);
                 return friendCursor;
-
-            case MATCH_CODE_FRIEND_RELATIONSHIP:
-                Cursor relaCursor = db.query(TABLE_NAME_FRIEND_RELATIONSHIP, projection, selection, selectionArgs, null, null, sortOrder);
-                //todo 为什么使用setNotificationUri，什么意思，怎么用
-                relaCursor.setNotificationUri(getContext().getContentResolver(), CONTENT_URI_FRIEND_RELATIONSHIP);
-                return relaCursor;
         }
         return null;
     }
@@ -72,17 +62,6 @@ public class FriendProvider extends ContentProvider {
                 Uri friNewUri = Uri.withAppendedPath(CONTENT_URI_FRIEND, String.valueOf(friRowId));
                 getContext().getContentResolver().notifyChange(CONTENT_URI_FRIEND, null);
                 return friNewUri;
-
-            case MATCH_CODE_FRIEND_RELATIONSHIP:
-
-                long relaRowId = db.insertWithOnConflict(TABLE_NAME_FRIEND_RELATIONSHIP, null, values,SQLiteDatabase.CONFLICT_REPLACE);
-                if (relaRowId < 0) {
-                    return null;
-                }
-
-                Uri newUri = Uri.withAppendedPath(CONTENT_URI_FRIEND_RELATIONSHIP, String.valueOf(relaRowId));
-                getContext().getContentResolver().notifyChange(CONTENT_URI_FRIEND_RELATIONSHIP, null);
-                return newUri;
         }
         return null;
     }
@@ -97,13 +76,6 @@ public class FriendProvider extends ContentProvider {
                 count = db.delete(TABLE_NAME_FRIEND, selection, selectionArgs);
                 if (count > 0) {
                     getContext().getContentResolver().notifyChange(CONTENT_URI_FRIEND, null);
-                }
-                break;
-
-            case MATCH_CODE_FRIEND_RELATIONSHIP:
-                count = db.delete(TABLE_NAME_FRIEND_RELATIONSHIP, selection, selectionArgs);
-                if (count > 0) {
-                    getContext().getContentResolver().notifyChange(CONTENT_URI_FRIEND_RELATIONSHIP, null);
                 }
                 break;
 
@@ -127,13 +99,6 @@ public class FriendProvider extends ContentProvider {
                 }
                 break;
 
-            case MATCH_CODE_FRIEND_RELATIONSHIP:
-                count = db.update(TABLE_NAME_FRIEND_RELATIONSHIP, values, selection, selectionArgs);
-                if (count > 0) {
-                    getContext().getContentResolver().notifyChange(CONTENT_URI_FRIEND_RELATIONSHIP, null);
-                }
-                break;
-
             default:
                 return 0;
         }
@@ -147,8 +112,6 @@ public class FriendProvider extends ContentProvider {
         switch (mUriMatcher.match(uri)) {
             case MATCH_CODE_FRIEND:
                 return "vnd.android.cursor.dir/" + TABLE_NAME_FRIEND;
-            case MATCH_CODE_FRIEND_RELATIONSHIP:
-                return "vnd.android.cursor.dir/" + TABLE_NAME_FRIEND_RELATIONSHIP;
         }
         return null;
     }

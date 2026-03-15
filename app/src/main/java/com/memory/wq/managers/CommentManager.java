@@ -83,7 +83,7 @@ public class CommentManager {
                     if (!response.isSuccessful()) {
                         Log.d(TAG, "[x] addComment #76");
                         handler.post(() -> {
-                            callback.onError("");
+                            callback.onError("网络错误");
                         });
                         return;
                     }

@@ -295,6 +295,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
         new FriendManager().getAllFriends(new ResultCallback<List<FriendInfo>>() {
             @Override
             public void onSuccess(List<FriendInfo> result) {
+                MyToast.showToast(AudioActivity.this, "缺少逻辑");
                 friendList.clear();
                 friendList.addAll(result);
                 showShareFunctionMenu();
@@ -328,14 +329,14 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
 
     private void shareRoomLinkToFriend(FriendInfo friendInfo) {
         MsgInfo shareMsg = new MsgInfo();
-        shareMsg.setMsgType(ContentType.TYPE_LINK);
-        shareMsg.setLinkTitle("加入共享房间");
-        shareMsg.setContent("点击链接加入观看" + movieInfo.getTitle());
-        shareMsg.setLinkContent(String.valueOf(mRoomId));
-
-        shareMsg.setLinkImageUrl(movieInfo.getCoverUrl());
-        shareMsg.setSenderId(SPManager.getUserInfo().getUuNumber());
-        shareMsg.setReceiverId(friendInfo.getUuNumber());
+//        shareMsg.setMsgType(ContentType.TYPE_LINK);
+//        shareMsg.setLinkTitle("加入共享房间");
+//        shareMsg.setContent("点击链接加入观看" + movieInfo.getTitle());
+//        shareMsg.setLinkContent(String.valueOf(mRoomId));
+//
+//        shareMsg.setLinkImageUrl(movieInfo.getCoverUrl());
+//        shareMsg.setSenderId(SPManager.getUserInfo().getUuNumber());
+//        shareMsg.setReceiverId(friendInfo.getUuNumber());
 
         Intent intent = new Intent(AudioActivity.this, ChatActivity.class);
         intent.putExtra(AppProperties.CHAT_ID, friendInfo.getUuNumber());

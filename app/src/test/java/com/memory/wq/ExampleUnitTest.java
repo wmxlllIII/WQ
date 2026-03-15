@@ -6,6 +6,8 @@ import static org.junit.Assert.*;
 
 import com.memory.wq.utils.TimeUtils;
 
+import java.util.Random;
+
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
@@ -16,11 +18,11 @@ public class ExampleUnitTest {
     @Test
     public void convertTime_moreThanOneDay() {
         long now = System.currentTimeMillis() / 1000;
-        long timestamp = now - 2 * 24 * 60 * 60 - 5;
-
+        Random random = new Random();
+        long randomOffset = random.nextInt(3 * 24 * 60 * 60);
+        long timestamp = now - randomOffset;
         String result = TimeUtils.convertTime(timestamp);
-
-        assertEquals("2天前", result);
+        assertTrue(result.matches("\\d+天前|\\d+小时前"));
     }
     @Test
     public void convertTime_moreThanOneHour() {

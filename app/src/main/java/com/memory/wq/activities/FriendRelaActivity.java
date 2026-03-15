@@ -45,7 +45,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     private WebService mWebService;
     private MyConn mConn;
     private boolean isBind = false;
-    private final EnumSet<EventType> EVENT_TYPE_SET = EnumSet.of(EventType.EVENT_TYPE_REQUEST_FRIEND);
+    private final EnumSet<EventType> EVENT_TYPE_SET = EnumSet.of(EventType.EVENT_TYPE_FRIEND_RELA);
     private final FriendRelaAdapter mAdapter = new FriendRelaAdapter(new FriItemClickListener());
     private MsgManager mMsgManager;
     private FriendManager mFriendManager;
@@ -77,7 +77,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
         };
 
         getContentResolver().registerContentObserver(
-                FriendProvider.CONTENT_URI_FRIEND_RELATIONSHIP,
+                FriendProvider.CONTENT_URI_FRIEND,
                 true,
                 mFriRelaProvider
         );
@@ -125,7 +125,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     @Override
     public <T> void onMessage(WebSocketMessage<T> message) {
         switch (message.getEventType()) {
-            case EVENT_TYPE_REQUEST_FRIEND:
+            case EVENT_TYPE_FRIEND_RELA:
                 List<FriendRelaInfo> friRelaList = (List<FriendRelaInfo>) message.getData();
                 if (friRelaList == null || friRelaList.isEmpty()) {
                     Log.d(TAG, "[x] onMessage #103");

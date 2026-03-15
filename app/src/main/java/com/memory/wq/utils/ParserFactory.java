@@ -6,7 +6,6 @@ import com.memory.wq.utils.parsers.FriendRequestParser;
 import com.memory.wq.utils.parsers.MsgInfoParser;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +16,7 @@ public class ParserFactory {
 
     static {
         PARSER_MAP.put(EventType.EVENT_TYPE_MSG, new MsgInfoParser());
-        PARSER_MAP.put(EventType.EVENT_TYPE_REQUEST_FRIEND, new FriendRequestParser());
+        PARSER_MAP.put(EventType.EVENT_TYPE_FRIEND_RELA, new FriendRequestParser());
 //        PARSER_MAP.put(EventType.EVENT_TYPE_SHAREMSG, new ShareMsgParser());
     }
 

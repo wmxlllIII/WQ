@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
 import com.memory.wq.beans.FriendRelaInfo;
+import com.memory.wq.enumertions.FriendRelaStatus;
 import com.memory.wq.interfaces.OnFriItemClickListener;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.adapters.diffcallbacks.FriRelaDiffCallback;
@@ -48,17 +49,17 @@ public class FriendRelaAdapter extends ListAdapter<FriendRelaInfo, RecyclerView.
     private void updateui(FriendRelaViewHolder holder, int position) {
         FriendRelaInfo friendRela = getItem(position);
         Log.d(TAG, "[test] updateui #50 " + friendRela);
-        boolean isReceiver = friendRela.getTargetId() == AccountManager.getUserInfo().getUuNumber();
+        boolean isReceiver = friendRela.getReceiverId() == AccountManager.getUserInfo().getUuNumber();
 
         Glide.with(holder.itemView.getContext())
-                .load("http://139.199.70.159:8080/avatar/5a0bd11b-83ef-4e96-9e75-c75c133175f6.jpg")
+                .load(isReceiver ? friendRela.getSenderAvatar() : friendRela.getReceiverAvatar())
                 .into(holder.iv_avatar);
-        holder.tv_nickname.setText("Memory");
+        holder.tv_nickname.setText(isReceiver ? friendRela.getSenderName() : friendRela.getReceiverName());
         holder.tv_verify_message.setText(friendRela.getValidMsg());
 
 
         if (isReceiver) {
-            if ("pending".equals(friendRela.getState())) {
+            if (friendRela.getStatus() == FriendRelaStatus.PENDING.toInt()) {
                 holder.tv_friend_state.setVisibility(View.GONE);
                 holder.iv_accept.setVisibility(View.VISIBLE);
                 holder.iv_reject.setVisibility(View.VISIBLE);
@@ -67,10 +68,10 @@ public class FriendRelaAdapter extends ListAdapter<FriendRelaInfo, RecyclerView.
                 holder.tv_friend_state.setVisibility(View.VISIBLE);
                 holder.iv_accept.setVisibility(View.GONE);
                 holder.iv_reject.setVisibility(View.GONE);
-                holder.tv_friend_state.setText(friendRela.getState().equals("accepted") ? "已添加" : "已拒绝");
+                holder.tv_friend_state.setText(friendRela.getStatus() == FriendRelaStatus.ACCEPTED.toInt() ? "已添加" : "已拒绝");
             }
         } else {
-            if ("pending".equals(friendRela.getState())) {
+            if (friendRela.getStatus() == FriendRelaStatus.PENDING.toInt()) {
                 holder.tv_friend_state.setVisibility(View.VISIBLE);
                 holder.iv_accept.setVisibility(View.GONE);
                 holder.iv_reject.setVisibility(View.GONE);
@@ -80,12 +81,12 @@ public class FriendRelaAdapter extends ListAdapter<FriendRelaInfo, RecyclerView.
                 holder.tv_friend_state.setVisibility(View.VISIBLE);
                 holder.iv_accept.setVisibility(View.GONE);
                 holder.iv_reject.setVisibility(View.GONE);
-                holder.tv_friend_state.setText("accepted".equals(friendRela.getState()) ? "已添加" : "待验证");
+                holder.tv_friend_state.setText(friendRela.getStatus() == FriendRelaStatus.ACCEPTED.toInt() ? "已添加" : "待验证");
             }
         }
 
-        holder.iv_accept.setOnClickListener(v -> listener.onAcceptClick(friendRela.getSourceId()));
-        holder.iv_reject.setOnClickListener(v -> listener.onRejectClick(friendRela.getSourceId()));
+        holder.iv_accept.setOnClickListener(v -> listener.onAcceptClick(isReceiver ? friendRela.getReceiverId() : friendRela.getSenderId()));
+        holder.iv_reject.setOnClickListener(v -> listener.onRejectClick(isReceiver ? friendRela.getReceiverId() :friendRela.getSenderId()));
 
 
     }

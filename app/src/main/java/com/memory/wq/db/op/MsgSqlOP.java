@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.memory.wq.beans.MsgInfo;
+import com.memory.wq.enumertions.ChatType;
 import com.memory.wq.enumertions.ContentType;
 import com.memory.wq.provider.MsgProvider;
 import com.memory.wq.provider.WqApplication;
@@ -20,17 +21,16 @@ public class MsgSqlOP {
     private final static String TAG = "WQ_MsgSqlOP";
     private final ContentResolver mResolver = WqApplication.getInstance().getContentResolver();
 
-    public List<MsgInfo> queryAllMsg(long currentUuNumber, long targetUuNumber) {
+    public List<MsgInfo> queryAllMsg(long curUser, long chatId, ChatType chatType) {
         List<MsgInfo> list = new ArrayList<>();
 
         Cursor cursor = mResolver.query(MsgProvider.CONTENT_URI,
                 null,
-                "(sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)",
+                "(sender_id = ? AND chat_id = ? and chat_type = ?)",
                 new String[]{
-                        String.valueOf(currentUuNumber),
-                        String.valueOf(targetUuNumber),
-                        String.valueOf(targetUuNumber),
-                        String.valueOf(currentUuNumber)
+                        String.valueOf(curUser),
+                        String.valueOf(chatId),
+                        String.valueOf(chatType)
                 },
                 "create_at ASC");
         if (cursor == null || cursor.getCount() <= 0) {
@@ -38,26 +38,34 @@ public class MsgSqlOP {
         }
 
         while (cursor.moveToNext()) {
-            long senderId = cursor.getLong(cursor.getColumnIndex("sender_id"));
-            long receiverId = cursor.getLong(cursor.getColumnIndex("receiver_id"));
-            String content = cursor.getString(cursor.getColumnIndex("content"));
-            int contentType = cursor.getInt(cursor.getColumnIndex("content_type"));
-            int createAt = cursor.getInt(cursor.getColumnIndex("create_at"));
             int msgId = cursor.getInt(cursor.getColumnIndex("msg_id"));
+            long senderId = cursor.getLong(cursor.getColumnIndex("sender_id"));
+
+            long chat_id = cursor.getLong(cursor.getColumnIndex("chat_id"));
+            int chat_type = cursor.getInt(cursor.getColumnIndex("chat_type"));
+
+            String content = cursor.getString(cursor.getColumnIndex("content"));
+            int messageType = cursor.getInt(cursor.getColumnIndex("message_type"));
+            int createAt = cursor.getInt(cursor.getColumnIndex("create_at"));
+            int updateAt = cursor.getInt(cursor.getColumnIndex("update_at"));
 
             MsgInfo msg = new MsgInfo();
-            msg.setSenderId(senderId);
-            msg.setReceiverId(receiverId);
-            msg.setMsgType(ContentType.fromInt(contentType));
-            msg.setCreateAt(createAt);
             msg.setMsgId(msgId);
-            if (contentType == 0) {
+            msg.setSenderId(senderId);
+            msg.setChatId(chat_id);
+            msg.setChatType(chat_type);
+
+            msg.setMessageType(messageType);
+            msg.setCreateAt(createAt);
+            msg.setUpdateAt(updateAt);
+
+            if (messageType == ContentType.TYPE_TEXT.toInt()) {
                 msg.setContent(content);
-            } else if (contentType == 1) {
-                MsgInfo shareMsg = JsonParser.shareMsgParser(content);
-                msg.setLinkImageUrl(shareMsg.getLinkImageUrl());
-                msg.setLinkTitle(shareMsg.getLinkTitle());
-                msg.setLinkContent(shareMsg.getLinkContent());
+            } else if (messageType == ContentType.TYPE_LINK.toInt()) {
+//                MsgInfo shareMsg = JsonParser.shareMsgParser(content);
+//                msg.setLinkImageUrl(shareMsg.getLinkImageUrl());
+//                msg.setLinkTitle(shareMsg.getLinkTitle());
+//                msg.setLinkContent(shareMsg.getLinkContent());
             }
 
             list.add(msg);
@@ -74,24 +82,15 @@ public class MsgSqlOP {
 
         for (MsgInfo msg : msgInfoList) {
             ContentValues values = new ContentValues();
-            int msgType = msg.getMsgType().toInt();
 
-            String content = msg.getContent();
-            long senderId = msg.getSenderId();
-            long receiverId = msg.getReceiverId();
-
-            values.put("sender_id", senderId);
-            values.put("receiver_id", receiverId);
-            values.put("content_type", msgType);
-            values.put("create_at", msg.getCreateAt());
             values.put("msg_id", msg.getMsgId());
-
-            if (msgType == ContentType.TYPE_TEXT.toInt()) {
-                values.put("content", content);
-            } else if (msgType == ContentType.TYPE_LINK.toInt()) {
-                String shareMsgJson = GenerateJson.getShareMsgJson(msg);
-                values.put("content", shareMsgJson);
-            }
+            values.put("sender_id", msg.getSenderId());
+            values.put("chat_id", msg.getChatId());
+            values.put("chat_type", msg.getChatType());
+            values.put("content", msg.getContent());
+            values.put("message_type", msg.getMessageType());
+            values.put("create_at", msg.getCreateAt());
+            values.put("update_at", msg.getUpdateAt());
 
             Uri uri = mResolver.insert(MsgProvider.CONTENT_URI, values);
             if (uri == null) {

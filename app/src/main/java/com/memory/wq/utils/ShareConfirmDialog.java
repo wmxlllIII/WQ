@@ -52,15 +52,15 @@ public class ShareConfirmDialog extends BottomSheetDialog {
                 .error(R.mipmap.loading_failure)
                 .into(iv_friend_avatar);
 
-        tv_share_friend_name.setText(friendInfo.getNickname());
-        tv_share_title.setText(linkInfo.getLinkTitle());
-        tv_share_content.setText(linkInfo.getContent());
-
-        Glide.with(getContext())
-                .load(AppProperties.HTTP_SERVER_ADDRESS + linkInfo.getLinkImageUrl())
-                .placeholder(R.mipmap.loading_default)
-                .error(R.mipmap.loading_failure)
-                .into(iv_cover);
+//        tv_share_friend_name.setText(friendInfo.getNickname());
+//        tv_share_title.setText(linkInfo.getLinkTitle());
+//        tv_share_content.setText(linkInfo.getContent());
+//
+//        Glide.with(getContext())
+//                .load(AppProperties.HTTP_SERVER_ADDRESS + linkInfo.getLinkImageUrl())
+//                .placeholder(R.mipmap.loading_default)
+//                .error(R.mipmap.loading_failure)
+//                .into(iv_cover);
 
         tv_share.setOnClickListener(new View.OnClickListener() {
             @Override

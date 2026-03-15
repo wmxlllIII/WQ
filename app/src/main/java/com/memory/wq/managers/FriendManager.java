@@ -113,7 +113,7 @@ public class FriendManager {
                             JSONArray data = json.getJSONArray("data");
                             Log.d(TAG, "getFriends json " + json);
                             List<FriendInfo> friendInfoList = JsonParser.friendInfoListParser(data);
-                            saveFriend2DB(friendInfoList);
+//                            saveFriend2DB(friendInfoList);
 
                         }
 
@@ -126,29 +126,27 @@ public class FriendManager {
     }
 
 
-    public void saveFriend2DB(List<FriendInfo> friendInfoList) {
-        FriendSqlOP friendSqlOP = new FriendSqlOP();
-        int count = 0;
-        while (!friendSqlOP.insertFriends(friendInfoList)) {
-            if (++count == 3)
-                break;
-        }
-        if (count != 3) ;
-
-    }
+//    public void saveFriend2DB(List<FriendInfo> friendInfoList) {
+//        FriendSqlOP friendSqlOP = new FriendSqlOP();
+//        int count = 0;
+//        while (!friendSqlOP.insertFriends(friendInfoList)) {
+//            if (++count == 3)
+//                break;
+//        }
+//        if (count != 3) ;
+//
+//    }
 
     public void getAllFriends(ResultCallback<List<FriendInfo>> callback) {
-        List<FriendInfo> friendsFromDB = getFriendFromDB();
-        mHandler.post(() -> callback.onSuccess(friendsFromDB));
+//        List<FriendInfo> friendsFromDB = getFriendFromDB();
+//        mHandler.post(() -> callback.onSuccess(friendsFromDB));
 
         getFriends(callback);
     }
 
-    private List<FriendInfo> getFriendFromDB() {
+    private List<Long> getFriendFromDB() {
         FriendSqlOP op = new FriendSqlOP();
-        //TODO
-        long id = SPManager.getUserInfo().getUuNumber();
-        return op.queryAllFriend(id);
+        return op.queryAllFriend(AccountManager.getUserId());
     }
 
     public void followUser(long userId, ResultCallback<Boolean> callback) {

@@ -7,7 +7,6 @@ public class AppProperties {
     public static final String TABLE_NAME_USER = "users";
     public static final String TABLE_NAME_FRIEND = "friends";
     public static final String TABLE_NAME_MESSAGE = "message";
-    public static final String TABLE_FRIEND_RELATIONSHIP = "friend_relationship";
     public static final String AUTHORITY = "com.memory.wq.albumprovider";
     public static final String AVATAR_RECEIVER_ACTION = "setCurrentAvatar";
 
@@ -62,6 +61,7 @@ public class AppProperties {
     public static final String FOLLOW_USER = HTTP_SERVER_ADDRESS + "/auth/followUser";
     public static final String UNFOLLOW_USER = HTTP_SERVER_ADDRESS + "/auth/unfollowUser";
     public static final String POST_LIKE = HTTP_SERVER_ADDRESS + "/auth/likePost";
+    public static final String BUILD_GROUP = HTTP_SERVER_ADDRESS + "/auth/buildGroup";
 
 
     public static final String ROLE_TYPE = "ROLE_TYPE";
@@ -69,6 +69,7 @@ public class AppProperties {
     public static final String ROOM_ID = "ROOM_ID";
 
     public static final String CHAT_ID = "ChatId";
+    public static final String CHAT_TYPE = "ChatType";
     public static final String PERSON_ID = "personId";
     public static final String SHARE_MESSAGE = "SHARE_MESSAGE";
     public static final String POSTID = "postId";

@@ -1,82 +1,91 @@
 package com.memory.wq.beans;
 
-import com.memory.wq.enumertions.ContentType;
-
 import java.io.Serializable;
 
 public class MsgInfo implements Serializable {
 
-    private long msgId;
-    private String content;
+    private int msgId;
+
     private long senderId;
-    private long receiverId;
+
+    private String senderName;
+
+    private String senderAvatar;
+
+    private long chatId;
+
+    private int chatType;
+
+    private int messageType;
+
+    private String content;
+
     private long createAt;
+
     private long updateAt;
 
-    private ContentType msgType;
-    private String linkTitle;
-    private String linkTime;
-    private String linkContent;
-    private String linkImageUrl;
-
-    public ContentType getMsgType() {
-        return msgType;
+    public int getMsgId() {
+        return msgId;
     }
 
-    public void setMsgType(ContentType msgType) {
-        this.msgType = msgType;
+    public void setMsgId(int msgId) {
+        this.msgId = msgId;
     }
 
-    public String getLinkTitle() {
-        return linkTitle;
+    public long getSenderId() {
+        return senderId;
     }
 
-
-    public void setLinkTitle(String linkTitle) {
-        this.linkTitle = linkTitle;
+    public void setSenderId(long senderId) {
+        this.senderId = senderId;
     }
 
-    public String getLinkTime() {
-        return linkTime;
+    public String getSenderName() {
+        return senderName;
     }
 
-    public void setLinkTime(String linkTime) {
-        this.linkTime = linkTime;
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 
-    public String getLinkContent() {
-        return linkContent;
+    public String getSenderAvatar() {
+        return senderAvatar;
     }
 
-    public void setLinkContent(String linkContent) {
-        this.linkContent = linkContent;
+    public void setSenderAvatar(String senderAvatar) {
+        this.senderAvatar = senderAvatar;
     }
 
-    public String getLinkImageUrl() {
-        return linkImageUrl;
+    public long getChatId() {
+        return chatId;
     }
 
-    public void setLinkImageUrl(String linkImageUrl) {
-        this.linkImageUrl = linkImageUrl;
+    public void setChatId(long chatId) {
+        this.chatId = chatId;
     }
 
+    public int getChatType() {
+        return chatType;
+    }
+
+    public void setChatType(int chatType) {
+        this.chatType = chatType;
+    }
+
+    public int getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(int messageType) {
+        this.messageType = messageType;
+    }
 
     public String getContent() {
         return content;
     }
 
-
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public long getMsgId() {
-
-        return msgId;
-    }
-
-    public void setMsgId(long msgId) {
-        this.msgId = msgId;
     }
 
     public long getCreateAt() {
@@ -95,19 +104,19 @@ public class MsgInfo implements Serializable {
         this.updateAt = updateAt;
     }
 
-    public long getSenderId() {
-        return senderId;
-    }
-
-    public void setSenderId(long senderId) {
-        this.senderId = senderId;
-    }
-
-    public long getReceiverId() {
-        return receiverId;
-    }
-
-    public void setReceiverId(long receiverId) {
-        this.receiverId = receiverId;
+    @Override
+    public String toString() {
+        return "MsgInfo{" +
+                "msgId=" + msgId +
+                ", senderId=" + senderId +
+                ", senderName='" + senderName + '\'' +
+                ", senderAvatar='" + senderAvatar + '\'' +
+                ", chatId=" + chatId +
+                ", chatType=" + chatType +
+                ", messageType=" + messageType +
+                ", content='" + content + '\'' +
+                ", createAt=" + createAt +
+                ", updateAt=" + updateAt +
+                '}';
     }
 }

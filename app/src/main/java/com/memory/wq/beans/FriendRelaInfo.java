@@ -1,44 +1,92 @@
 package com.memory.wq.beans;
 
 public class FriendRelaInfo {
-    private int relaId;
-    private long sourceId;
-    private long targetId;
-    private String state;
+    private int id;
+
+
+    private long senderId;
+
+
+    private String senderName;
+
+
+    private String senderAvatar;
+
+
+    private long receiverId;
+
+
+    private String receiverName;
+
+
+    private String receiverAvatar;
+
+
     private String validMsg;
+
+
+    private int status;
+
+
     private long createAt;
+
+
     private long updateAt;
 
-    public int getRelaId() {
-        return relaId;
+    public int getId() {
+        return id;
     }
 
-    public void setRelaId(int relaId) {
-        this.relaId = relaId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public long getSourceId() {
-        return sourceId;
+    public long getSenderId() {
+        return senderId;
     }
 
-    public void setSourceId(long sourceId) {
-        this.sourceId = sourceId;
+    public void setSenderId(long senderId) {
+        this.senderId = senderId;
     }
 
-    public long getTargetId() {
-        return targetId;
+    public String getSenderName() {
+        return senderName;
     }
 
-    public void setTargetId(long targetId) {
-        this.targetId = targetId;
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 
-    public String getState() {
-        return state;
+    public String getSenderAvatar() {
+        return senderAvatar;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setSenderAvatar(String senderAvatar) {
+        this.senderAvatar = senderAvatar;
+    }
+
+    public long getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(long receiverId) {
+        this.receiverId = receiverId;
+    }
+
+    public String getReceiverName() {
+        return receiverName;
+    }
+
+    public void setReceiverName(String receiverName) {
+        this.receiverName = receiverName;
+    }
+
+    public String getReceiverAvatar() {
+        return receiverAvatar;
+    }
+
+    public void setReceiverAvatar(String receiverAvatar) {
+        this.receiverAvatar = receiverAvatar;
     }
 
     public String getValidMsg() {
@@ -49,13 +97,12 @@ public class FriendRelaInfo {
         this.validMsg = validMsg;
     }
 
-
-    public long getUpdateAt() {
-        return updateAt;
+    public int getStatus() {
+        return status;
     }
 
-    public void setUpdateAt(long updateAt) {
-        this.updateAt = updateAt;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public long getCreateAt() {
@@ -66,14 +113,26 @@ public class FriendRelaInfo {
         this.createAt = createAt;
     }
 
+    public long getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(long updateAt) {
+        this.updateAt = updateAt;
+    }
+
     @Override
     public String toString() {
         return "FriendRelaInfo{" +
-                "relaId=" + relaId +
-                ", sourceId=" + sourceId +
-                ", targetId=" + targetId +
-                ", state='" + state + '\'' +
+                "id=" + id +
+                ", senderId=" + senderId +
+                ", senderName='" + senderName + '\'' +
+                ", senderAvatar='" + senderAvatar + '\'' +
+                ", receiverId=" + receiverId +
+                ", receiverName='" + receiverName + '\'' +
+                ", receiverAvatar='" + receiverAvatar + '\'' +
                 ", validMsg='" + validMsg + '\'' +
+                ", status=" + status +
                 ", createAt=" + createAt +
                 ", updateAt=" + updateAt +
                 '}';

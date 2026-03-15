@@ -47,7 +47,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements I
     private final int PAGE_COWATCH = 1;
     private final int PAGE_MESSAGE = 2;
     private final int PAGE_HISTORY = 3;
-    private final EnumSet<EventType> mEventTypes = EnumSet.of(EventType.EVENT_TYPE_REQUEST_FRIEND);
+    private final EnumSet<EventType> mEventTypes = EnumSet.of(EventType.EVENT_TYPE_FRIEND_RELA);
     private WebService mWebService;
 
 
@@ -107,7 +107,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements I
     @Override
     public <T> void onMessage(WebSocketMessage<T> message) {
         switch (message.getEventType()) {
-            case EVENT_TYPE_REQUEST_FRIEND:
+            case EVENT_TYPE_FRIEND_RELA:
                 mBinding.tvMsgnum.setVisibility(View.VISIBLE);
                 break;
             case EVENT_TYPE_MSG:

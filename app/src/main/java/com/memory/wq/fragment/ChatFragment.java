@@ -25,6 +25,8 @@ import com.memory.wq.beans.UiMessageState;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.FragmentChatBinding;
 import com.memory.wq.enumertions.ChatPage;
+import com.memory.wq.enumertions.ChatType;
+import com.memory.wq.enumertions.ContentType;
 import com.memory.wq.enumertions.RoleType;
 import com.memory.wq.interfaces.OnMsgItemClickListener;
 import com.memory.wq.managers.MovieManager;
@@ -126,8 +128,8 @@ public class ChatFragment extends Fragment {
             return;
         }
 
-        mChatVM.sendMsg(msg, success -> {
-            Log.d(TAG, "sendMsg:" + msg + "===isSucc" + success);
+        //TODO 聊天类型，消息类型
+        mChatVM.sendMsg(ChatType.CHAT_TYPE_INDIVIDUAL, msg, ContentType.TYPE_TEXT, success -> {
             if (success) {
                 mBinding.etInputText.setText("");
             }
@@ -170,9 +172,9 @@ public class ChatFragment extends Fragment {
         public void onLinkClick(MsgInfo msgInfo) {
             Intent intent = new Intent(getContext(), AudioActivity.class);
             intent.putExtra(AppProperties.ROLE_TYPE, RoleType.ROLE_TYPE_AUDIENCE);
-            intent.putExtra(AppProperties.ROOM_ID, msgInfo.getLinkContent());
-            startActivity(intent);
-            Log.d(TAG, "[✓] onLinkClick #184" + msgInfo.getLinkContent());
+//            intent.putExtra(AppProperties.ROOM_ID, msgInfo.getLinkContent());
+//            startActivity(intent);
+//            Log.d(TAG, "[✓] onLinkClick #184" + msgInfo.getLinkContent());
         }
 
         @Override

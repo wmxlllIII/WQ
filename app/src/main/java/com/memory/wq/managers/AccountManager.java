@@ -29,7 +29,6 @@ public class AccountManager {
         editor.apply();
     }
 
-
     public static boolean isVisitorUser() {
         SharedPreferences sp = WqApplication.getInstance().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         return UserType.USER_TYPE_VISITOR.getType().equals(sp.getString(KEY_USER_TYPE, UserType.USER_TYPE_VISITOR.getType()));

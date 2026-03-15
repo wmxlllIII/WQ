@@ -20,8 +20,8 @@ public class FriendRepository {
 
     public void loadFriends(ResultCallback<List<FriendInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
-            List<FriendInfo> friendList = mSqlOP.queryAllFriend(userId);
-            mHandler.post(()->{callback.onSuccess(friendList);});
+            List<Long> friendIdList = mSqlOP.queryAllFriend(userId);
+            mHandler.post(()->{callback.onSuccess(null);});
         });
     }
 }

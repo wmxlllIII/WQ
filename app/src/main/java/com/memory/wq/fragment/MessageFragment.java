@@ -47,7 +47,7 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
     private final FriendAdapter friendAdapter = new FriendAdapter(new onFriClickListener());
     private final FriendManager mFriendManager = new FriendManager();
 
-    private final EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_MSG, EventType.EVENT_TYPE_REQUEST_FRIEND);
+    private final EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_MSG, EventType.EVENT_TYPE_FRIEND_RELA);
     private WebService msgService;
     private MsgConn msgConn;
     private MsgsAdapter msgsAdapter;

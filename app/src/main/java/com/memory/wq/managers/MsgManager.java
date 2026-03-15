@@ -12,6 +12,9 @@ import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.db.op.FriendSqlOP;
+import com.memory.wq.enumertions.ChatType;
+import com.memory.wq.enumertions.ContentType;
+import com.memory.wq.enumertions.FriendRelaStatus;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.db.op.MsgSqlOP;
 import com.memory.wq.thread.ThreadPoolManager;
@@ -26,6 +29,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -39,7 +43,7 @@ public class MsgManager {
     private final FriendSqlOP mFriendSqlOP = new FriendSqlOP();
 
     public void getRelation(ResultCallback<List<FriendRelaInfo>> callback) {
-        List<FriendRelaInfo> friendRelaInfoList = mFriendSqlOP.queryAllRelations();
+        List<FriendRelaInfo> friendRelaInfoList = mFriendSqlOP.queryAllRelations(AccountManager.getUserId());
         mHandler.post(() -> callback.onSuccess(friendRelaInfoList));
     }
 
@@ -96,16 +100,15 @@ public class MsgManager {
                         JSONObject json = new JSONObject(response.body().string());
                         int code = json.getInt("code");
 
-                        Log.d(TAG, "[✓] updateRela #99" + code);
                         Log.d(TAG, "[✓] updateRela #97" + json);
                         if (code == 1) {
                             JSONObject data = json.getJSONObject("data");
                             JSONObject friRelaJson = data.getJSONObject("friendRelationship");
                             FriendRelaInfo friendRela = JsonParser.friRelaParser(friRelaJson);
-                            if (friendRela.getState().equals("accepted")) {
+                            if (friendRela.getStatus() == FriendRelaStatus.ACCEPTED.toInt()) {
                                 JSONObject userJson = data.getJSONObject("user");
                                 List<FriendInfo> friendInfoList = JsonParser.friParser(userJson);
-                                mFriendSqlOP.insertFriends(friendInfoList);
+//                                mFriendSqlOP.insertFriends(friendInfoList);
                             }
 
                             List<FriendRelaInfo> friendRelaList = new ArrayList<>();
@@ -127,8 +130,8 @@ public class MsgManager {
         });
     }
 
-    public void sendMsg(long targetUuNumber, String content, ResultCallback<List<MsgInfo>> callback) {
-        String json = GenerateJson.getSendMsgJson(targetUuNumber, content, -1);
+    public void sendMsg(long chatId, ChatType chatType, String content, ContentType msgType, ResultCallback<Boolean> callback) {
+        String json = GenerateJson.getSendMsgJson(chatId, chatType, content, msgType);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.SEND_MSG, json, new Callback() {
                 @Override
@@ -149,9 +152,9 @@ public class MsgManager {
                         JSONObject json = new JSONObject(response.body().string());
                         Log.d(TAG, "[✓] sendMsg json" + json);
                         if (json.getInt("code") == 1) {
-                            List<MsgInfo> msgList = JsonParser.msgParser(json.getJSONArray("data"));
-                            mMsgSqlOP.insertMessages(msgList);
-                            mHandler.post(() -> callback.onSuccess(msgList));
+                            mHandler.post(() -> callback.onSuccess(true));
+                        } else {
+                            mHandler.post(() -> callback.onSuccess(false));
                         }
                     } catch (Exception e) {
                         Log.d(TAG, "[x] sendMsg #310" + e.getMessage());
@@ -165,6 +168,43 @@ public class MsgManager {
     public void deleteMsg(int msgId, ResultCallback<Boolean> booleanResultCallback) {
         ThreadPoolManager.getInstance().execute(() -> {
 
+        });
+    }
+
+    public void buildGroup(String groupName, String groupAvatar, Set<Long> selectedUsers) {
+        if (selectedUsers == null || selectedUsers.isEmpty()) {
+            Log.d(TAG, "[x] buildGroupOrChat: #159");
+            return;
+        }
+        if (selectedUsers.size() < 3) {
+            Log.d(TAG, "[x] buildGroupOrChat: #164");
+            return;
+        }
+
+        String json = GenerateJson.getBuildGroupJson(groupName, groupAvatar, selectedUsers);
+        ThreadPoolManager.getInstance().execute(() -> {
+            HttpStreamOP.postJson(AppProperties.BUILD_GROUP, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] buildGroupOrChat #193 " + response.code());
+                        return;
+                    }
+
+                    try {
+                        String resp = response.body().string();
+                        Log.d(TAG, "[✓] buildGroupOrChat #199" + resp);
+                        JSONObject json = new JSONObject();
+                    } catch (Exception e) {
+                        Log.d(TAG, "[x] buildGroupOrChat #205" + e.getMessage());
+                    }
+                }
+            });
         });
     }
 }
