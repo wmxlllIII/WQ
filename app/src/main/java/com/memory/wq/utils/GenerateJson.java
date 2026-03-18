@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Set;
 
 public class GenerateJson {
@@ -398,5 +399,21 @@ public class GenerateJson {
             Log.d(TAG, "[X] getBuildGroupJson #394" + e.getMessage());
         }
         return object.toString();
+    }
+
+    public static String getUserListByIdListJson(List<Long> userIdList) {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray array = new JSONArray();
+        try {
+            for (Long id : userIdList) {
+                array.put(id);
+            }
+
+            jsonObject.put("userIdList", array);
+
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getUserListByIdListJson #415" + e.getMessage());
+        }
+        return jsonObject.toString();
     }
 }

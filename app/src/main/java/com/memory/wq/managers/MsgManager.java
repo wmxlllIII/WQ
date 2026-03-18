@@ -29,7 +29,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -45,37 +48,64 @@ public class MsgManager {
 
     public void getRelation(ResultCallback<List<FriendRelaInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
-            List<FriendRelaInfo> friendRelaInfoList = mFriendSqlOP.queryAllRelations(AccountManager.getUserId());
+            long selfId = AccountManager.getUserId();
+            List<FriendRelaInfo> friendRelaInfoList = mFriendSqlOP.queryAllRelations(selfId);
 
-            if (friendRelaInfoList == null) {
+            if (friendRelaInfoList == null || friendRelaInfoList.isEmpty()) {
+                mHandler.post(() -> callback.onSuccess(new ArrayList<>()));
                 return;
             }
+
+            List<Long> targetIdList = new ArrayList<>();
             friendRelaInfoList.forEach(friendRelaInfo -> {
-                boolean isSender = friendRelaInfo.getSenderId() == AccountManager.getUserId();
-
+                boolean isSender = friendRelaInfo.getSenderId() == selfId;
                 long targetId = isSender ? friendRelaInfo.getReceiverId() : friendRelaInfo.getSenderId();
+                targetIdList.add(targetId);
+            });
 
+            mUserManager.getUserListByIdList(targetIdList, new ResultCallback<List<FriendInfo>>() {
+                @Override
+                public void onSuccess(List<FriendInfo> result) {
+                    if (result == null || result.isEmpty()) {
+                        mHandler.post(() -> callback.onSuccess(friendRelaInfoList));
+                        return;
+                    }
 
-                mUserManager.getUserById(targetId, new ResultCallback<FriendInfo>() {
-                    @Override
-                    public void onSuccess(FriendInfo result) {
+                    Map<Long, FriendInfo> userMap = result.stream()
+                            .collect(Collectors.toMap(
+                                    FriendInfo::getUuNumber,
+                                    Function.identity()
+                            ));
+
+                    for (FriendRelaInfo rela : friendRelaInfoList) {
+                        boolean isSender = rela.getSenderId() == selfId;
+
+                        long targetId = isSender
+                                ? rela.getReceiverId()
+                                : rela.getSenderId();
+
+                        FriendInfo user = userMap.get(targetId);
+                        if (user == null){
+                            continue;
+                        }
+
                         if (isSender) {
-                            friendRelaInfo.setReceiverName(result.getNickname());
-                            friendRelaInfo.setReceiverAvatar(result.getAvatarUrl());
+                            rela.setReceiverName(user.getNickname());
+                            rela.setReceiverAvatar(user.getAvatarUrl());
                         } else {
-                            friendRelaInfo.setSenderName(result.getNickname());
-                            friendRelaInfo.setReceiverAvatar(result.getAvatarUrl());
+                            rela.setSenderName(user.getNickname());
+                            rela.setSenderAvatar(user.getAvatarUrl());
                         }
                     }
 
-                    @Override
-                    public void onError(String err) {
-                        Log.d(TAG, "[x] getRelation #68");
-                    }
-                });
-            });
+                    mHandler.post(() -> callback.onSuccess(friendRelaInfoList));
+                }
 
-            mHandler.post(() -> callback.onSuccess(friendRelaInfoList));
+                @Override
+                public void onError(String err) {
+                    Log.d(TAG, "[x] getRelation #68" + err);
+                }
+            });
         });
 
     }

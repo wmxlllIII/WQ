@@ -55,6 +55,7 @@ public class AppProperties {
     public static final String GET_USER_BY_ID = HTTP_SERVER_ADDRESS + "/auth/getUserById";
     public static final String GET_POST_DETAIL = HTTP_SERVER_ADDRESS + "/auth/getPostDetail";
     public static final String GET_MOVIE_DETAIL = HTTP_SERVER_ADDRESS + "/auth/getMovieDetail";
+    public static final String GET_USER_LIST_BY_ID_LIST = HTTP_SERVER_ADDRESS + "/auth/getUserListByIdList";
 
     public static final String AGORA_TOKEN = HTTP_SERVER_ADDRESS + "/api/token";
     public static final String STS_TOKEN = HTTP_SERVER_ADDRESS + "/auth/getStsPermission";

@@ -32,6 +32,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -178,6 +179,23 @@ public class UserManager {
 
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                }
+            });
+        });
+    }
+
+    public void getUserListByIdList(List<Long> userIdList, ResultCallback<List<FriendInfo>> callback) {
+        ThreadPoolManager.getInstance().execute(()->{
+            String json = GenerateJson.getUserListByIdListJson(userIdList);
+            HttpStreamOP.postJson(AppProperties.GET_USER_LIST_BY_ID_LIST, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
 
                 }
             });
