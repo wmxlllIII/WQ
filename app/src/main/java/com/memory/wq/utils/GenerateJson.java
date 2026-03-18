@@ -71,10 +71,11 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getUpdateRelaJson(long sourceUuNumber, boolean isAgree) {
+    public static String getUpdateRelaJson(long sourceUuNumber, boolean isAgree, String validMsg) {
         JSONObject object = new JSONObject();
         try {
             object.put("isAgree", isAgree);
+            object.put("validMsg", validMsg);
             object.put("sourceUuNumber", sourceUuNumber);
         } catch (JSONException e) {
             e.printStackTrace();

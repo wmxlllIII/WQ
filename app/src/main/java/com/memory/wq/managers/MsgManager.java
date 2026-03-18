@@ -39,48 +39,49 @@ public class MsgManager {
 
     public static final String TAG = "WQ_MsgManager";
     private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final UserManager mUserManager = new UserManager();
     private final MsgSqlOP mMsgSqlOP = new MsgSqlOP();
     private final FriendSqlOP mFriendSqlOP = new FriendSqlOP();
 
     public void getRelation(ResultCallback<List<FriendRelaInfo>> callback) {
-        List<FriendRelaInfo> friendRelaInfoList = mFriendSqlOP.queryAllRelations(AccountManager.getUserId());
-        mHandler.post(() -> callback.onSuccess(friendRelaInfoList));
-    }
+        ThreadPoolManager.getInstance().execute(() -> {
+            List<FriendRelaInfo> friendRelaInfoList = mFriendSqlOP.queryAllRelations(AccountManager.getUserId());
 
-    private static void getRelationFromServer(String url, ResultCallback<List<FriendRelaInfo>> callback) {
-        HttpStreamOP.postJson(url, "{}", new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
+            if (friendRelaInfoList == null) {
+                return;
             }
+            friendRelaInfoList.forEach(friendRelaInfo -> {
+                boolean isSender = friendRelaInfo.getSenderId() == AccountManager.getUserId();
 
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                long targetId = isSender ? friendRelaInfo.getReceiverId() : friendRelaInfo.getSenderId();
 
-                if (!response.isSuccessful() || response.body() == null) {
-                    Log.d(TAG, "onResponse:====回复失败 " + response.body());
-                    return;
-                }
-                try {
-                    JSONObject json = new JSONObject(response.body().string());
-                    if (json.getInt("code") == 1) {
-                        JSONArray requestList = json.getJSONArray("data");
-                        List<FriendRelaInfo> friendRelaList = JsonParser.friReqParser(requestList);
-                        callback.onSuccess(friendRelaList);
-                    } else {
-                        Log.d(TAG, "onResponse: ====返回码不是1");
+
+                mUserManager.getUserById(targetId, new ResultCallback<FriendInfo>() {
+                    @Override
+                    public void onSuccess(FriendInfo result) {
+                        if (isSender) {
+                            friendRelaInfo.setReceiverName(result.getNickname());
+                            friendRelaInfo.setReceiverAvatar(result.getAvatarUrl());
+                        } else {
+                            friendRelaInfo.setSenderName(result.getNickname());
+                            friendRelaInfo.setReceiverAvatar(result.getAvatarUrl());
+                        }
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+
+                    @Override
+                    public void onError(String err) {
+                        Log.d(TAG, "[x] getRelation #68");
+                    }
+                });
+            });
+
+            mHandler.post(() -> callback.onSuccess(friendRelaInfoList));
         });
 
     }
 
-    public void updateRela(long sourceUuNumber, boolean isAgree, ResultCallback<Boolean> callback) {
-        String json = GenerateJson.getUpdateRelaJson(sourceUuNumber, isAgree);
-        Log.d(TAG, "updateRela: is" + isAgree);
+    public void updateRela(long sourceId, boolean isAgree, String validMsg, ResultCallback<Boolean> callback) {
+        String json = GenerateJson.getUpdateRelaJson(sourceId, isAgree, validMsg);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.FRIEND_RES, json, new Callback() {
                 @Override
@@ -102,18 +103,6 @@ public class MsgManager {
 
                         Log.d(TAG, "[✓] updateRela #97" + json);
                         if (code == 1) {
-                            JSONObject data = json.getJSONObject("data");
-                            JSONObject friRelaJson = data.getJSONObject("friendRelationship");
-                            FriendRelaInfo friendRela = JsonParser.friRelaParser(friRelaJson);
-                            if (friendRela.getStatus() == FriendRelaStatus.ACCEPTED.toInt()) {
-                                JSONObject userJson = data.getJSONObject("user");
-                                List<FriendInfo> friendInfoList = JsonParser.friParser(userJson);
-//                                mFriendSqlOP.insertFriends(friendInfoList);
-                            }
-
-                            List<FriendRelaInfo> friendRelaList = new ArrayList<>();
-                            friendRelaList.add(friendRela);
-                            mFriendSqlOP.updateRelations(friendRelaList);
                             mHandler.post(() -> callback.onSuccess(true));
 
                         } else {

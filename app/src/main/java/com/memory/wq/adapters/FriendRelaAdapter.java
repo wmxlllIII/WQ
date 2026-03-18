@@ -48,7 +48,6 @@ public class FriendRelaAdapter extends ListAdapter<FriendRelaInfo, RecyclerView.
 
     private void updateui(FriendRelaViewHolder holder, int position) {
         FriendRelaInfo friendRela = getItem(position);
-        Log.d(TAG, "[test] updateui #50 " + friendRela);
         boolean isReceiver = friendRela.getReceiverId() == AccountManager.getUserInfo().getUuNumber();
 
         Glide.with(holder.itemView.getContext())
@@ -85,8 +84,8 @@ public class FriendRelaAdapter extends ListAdapter<FriendRelaInfo, RecyclerView.
             }
         }
 
-        holder.iv_accept.setOnClickListener(v -> listener.onAcceptClick(isReceiver ? friendRela.getReceiverId() : friendRela.getSenderId()));
-        holder.iv_reject.setOnClickListener(v -> listener.onRejectClick(isReceiver ? friendRela.getReceiverId() :friendRela.getSenderId()));
+        holder.iv_accept.setOnClickListener(v -> listener.onUpdateClick(friendRela.getSenderId() ,true ,friendRela.getValidMsg()));
+        holder.iv_reject.setOnClickListener(v -> listener.onUpdateClick(friendRela.getSenderId(), false,friendRela.getValidMsg()));
 
 
     }

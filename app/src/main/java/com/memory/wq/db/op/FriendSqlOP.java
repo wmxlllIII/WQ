@@ -29,6 +29,8 @@ public class FriendSqlOP {
     private static final String COLUMN_CREATE_AT = "create_at";
     private static final String COLUMN_UPDATE_AT = "update_at";
 
+
+    //todo 应该去除头像昵称可变量字段，不持久到本地，拿id向服务器要
     public List<FriendRelaInfo> queryAllRelations(long userId) {
         Cursor cursor = mResolver.query(FriendProvider.CONTENT_URI_FRIEND,
                 null,
@@ -81,39 +83,20 @@ public class FriendSqlOP {
             values.put(COLUMN_CREATE_AT, info.getCreateAt());
             values.put(COLUMN_UPDATE_AT, info.getUpdateAt());
 
-            Uri uri = mResolver.insert(FriendProvider.CONTENT_URI_FRIEND, values);
-            if (uri == null) {
-                return false;
+
+            String whereClause = COLUMN_ID + "=?";
+            String[] whereArgs = {String.valueOf(info.getId())};
+            int updatedRows = mResolver.update(FriendProvider.CONTENT_URI_FRIEND, values, whereClause, whereArgs);
+
+            // 2. 如果更新行数为0，说明记录不存在，执行插入
+            if (updatedRows == 0) {
+                Uri uri = mResolver.insert(FriendProvider.CONTENT_URI_FRIEND, values);
+                if (uri == null) {
+                    return false; // 插入失败
+                }
             }
         }
         return true;
-    }
-
-    public void updateRelations(List<FriendRelaInfo> friendRelaList) {
-        if (friendRelaList == null || friendRelaList.isEmpty()) {
-            return;
-        }
-
-        for (FriendRelaInfo info : friendRelaList) {
-            ContentValues values = new ContentValues();
-            values.put(COLUMN_ID, info.getId());
-            values.put(COLUMN_SENDER_ID, info.getSenderId());
-            values.put(COLUMN_RECEIVER_ID, info.getReceiverId());
-            values.put(COLUMN_STATUS, info.getStatus());
-            values.put(COLUMN_VALID_MSG, info.getValidMsg());
-            values.put(COLUMN_CREATE_AT, info.getCreateAt());
-            values.put(COLUMN_UPDATE_AT, info.getUpdateAt());
-
-            int rowsUpdated = mResolver.update(
-                    FriendProvider.CONTENT_URI_FRIEND,
-                    values,
-                    "rela_id = ?",
-                    new String[]{String.valueOf(info.getId())}
-            );
-            if (rowsUpdated <= 0) {
-                Log.d(TAG, "[test] updateRelations #77 rowsUpdated <= 0");
-            }
-        }
     }
 
     public List<Long> queryAllFriend(long userId) {

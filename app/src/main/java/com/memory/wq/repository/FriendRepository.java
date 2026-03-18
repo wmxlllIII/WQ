@@ -18,10 +18,10 @@ public class FriendRepository {
     private final FriendSqlOP mSqlOP =new FriendSqlOP();
     private final long userId = AccountManager.getUserInfo().getUuNumber();
 
-    public void loadFriends(ResultCallback<List<FriendInfo>> callback) {
+    public void loadFriends(ResultCallback<List<Long>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
             List<Long> friendIdList = mSqlOP.queryAllFriend(userId);
-            mHandler.post(()->{callback.onSuccess(null);});
+            mHandler.post(()->{callback.onSuccess(friendIdList);});
         });
     }
 }

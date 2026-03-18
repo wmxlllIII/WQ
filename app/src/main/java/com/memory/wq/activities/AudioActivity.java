@@ -292,7 +292,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
 
 
     private void showOptions() {
-        new FriendManager().getAllFriends(new ResultCallback<List<FriendInfo>>() {
+        new FriendManager().getFriends(new ResultCallback<List<FriendInfo>>() {
             @Override
             public void onSuccess(List<FriendInfo> result) {
                 MyToast.showToast(AudioActivity.this, "缺少逻辑");

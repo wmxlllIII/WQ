@@ -1,24 +1,16 @@
 package com.memory.wq.managers;
 
 
-import android.content.ContentResolver;
-import android.database.ContentObserver;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.enumertions.SearchUserType;
-import com.memory.wq.provider.FriendProvider;
-import com.memory.wq.db.op.FriendSqlOP;
 import com.memory.wq.provider.HttpStreamOP;
-import com.memory.wq.provider.WqApplication;
-import com.memory.wq.repository.FriendRepository;
 import com.memory.wq.thread.ThreadPoolManager;
 import com.memory.wq.utils.GenerateJson;
 import com.memory.wq.utils.JsonParser;
@@ -37,8 +29,6 @@ import okhttp3.Response;
 
 public class FriendManager {
     private static final String TAG = "WQ_FriendManager";
-    private ContentObserver mContentObserver;
-    private final FriendRepository mRepository = new FriendRepository();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     public void searchUser(SearchUserType type, String account, ResultCallback<FriendInfo> callback) {
@@ -75,24 +65,6 @@ public class FriendManager {
     }
 
     public void getFriends(ResultCallback<List<FriendInfo>> callback) {
-        ContentResolver resolver = WqApplication.getInstance().getContentResolver();
-        if (mContentObserver != null) {
-            resolver.unregisterContentObserver(mContentObserver);
-        }
-
-        mContentObserver = new ContentObserver(mHandler) {
-            @Override
-            public void onChange(boolean selfChange, @Nullable Uri uri) {
-                mRepository.loadFriends(callback);
-            }
-        };
-
-        resolver.registerContentObserver(
-                FriendProvider.CONTENT_URI_FRIEND,
-                true,
-                mContentObserver
-        );
-
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.ALL_FRIENDS, "{}", new Callback() {
                 @Override
@@ -113,8 +85,7 @@ public class FriendManager {
                             JSONArray data = json.getJSONArray("data");
                             Log.d(TAG, "getFriends json " + json);
                             List<FriendInfo> friendInfoList = JsonParser.friendInfoListParser(data);
-//                            saveFriend2DB(friendInfoList);
-
+                            mHandler.post(() -> callback.onSuccess(friendInfoList));
                         }
 
                     } catch (JSONException e) {
@@ -123,30 +94,6 @@ public class FriendManager {
                 }
             });
         });
-    }
-
-
-//    public void saveFriend2DB(List<FriendInfo> friendInfoList) {
-//        FriendSqlOP friendSqlOP = new FriendSqlOP();
-//        int count = 0;
-//        while (!friendSqlOP.insertFriends(friendInfoList)) {
-//            if (++count == 3)
-//                break;
-//        }
-//        if (count != 3) ;
-//
-//    }
-
-    public void getAllFriends(ResultCallback<List<FriendInfo>> callback) {
-//        List<FriendInfo> friendsFromDB = getFriendFromDB();
-//        mHandler.post(() -> callback.onSuccess(friendsFromDB));
-
-        getFriends(callback);
-    }
-
-    private List<Long> getFriendFromDB() {
-        FriendSqlOP op = new FriendSqlOP();
-        return op.queryAllFriend(AccountManager.getUserId());
     }
 
     public void followUser(long userId, ResultCallback<Boolean> callback) {
@@ -180,6 +127,7 @@ public class FriendManager {
             });
         });
     }
+
     public void unfollowUser(long userId, ResultCallback<Boolean> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
             String json = GenerateJson.getFollowJson(userId);

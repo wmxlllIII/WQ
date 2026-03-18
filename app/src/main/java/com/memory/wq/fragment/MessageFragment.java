@@ -46,8 +46,9 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
     private final static String TAG = "WQ_MessageFragment";
     private final FriendAdapter friendAdapter = new FriendAdapter(new onFriClickListener());
     private final FriendManager mFriendManager = new FriendManager();
+    private final Friend mFriendCallback = new Friend();
 
-    private final EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_MSG, EventType.EVENT_TYPE_FRIEND_RELA);
+    private final EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_MSG, EventType.EVENT_TYPE_REQUEST_FRIEND);
     private WebService msgService;
     private MsgConn msgConn;
     private MsgsAdapter msgsAdapter;
@@ -126,7 +127,7 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
     }
 
     private void loadFriends() {
-        mFriendManager.getFriends(new Friend());
+        mFriendManager.getFriends(mFriendCallback);
     }
 
     @Override
@@ -196,12 +197,7 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
         }
 
         @Override
-        public void onAcceptClick(long targetId) {
-
-        }
-
-        @Override
-        public void onRejectClick(long targetId) {
+        public void onUpdateClick(long targetId, boolean isAgree, String validMsg) {
 
         }
     }

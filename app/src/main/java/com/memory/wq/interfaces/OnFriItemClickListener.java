@@ -5,7 +5,5 @@ public interface OnFriItemClickListener {
 
     void onItemLongClick();
 
-    void onAcceptClick(long targetId);
-
-    void onRejectClick(long targetId);
+    void onUpdateClick(long targetId, boolean isAgree, String validMsg);
 }

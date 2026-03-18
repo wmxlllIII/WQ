@@ -49,7 +49,7 @@ public class PersistenceRouter {
 
         });
 
-        HANDLERS.put(EventType.EVENT_TYPE_FRIEND_RELA, (msg, context) -> {
+        HANDLERS.put(EventType.EVENT_TYPE_REQUEST_FRIEND, (msg, context) -> {
 
             if (!(msg.getData() instanceof List)) {
                 Log.d(TAG, "[x] persist EVENT_TYPE_REQUEST_FRIEND");
