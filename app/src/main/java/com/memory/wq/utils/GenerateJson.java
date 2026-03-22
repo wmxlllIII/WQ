@@ -3,6 +3,7 @@ package com.memory.wq.utils;
 import android.util.Log;
 
 import com.memory.wq.beans.MsgInfo;
+import com.memory.wq.beans.MsgListInfo;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.QueryPostInfo;
 import com.memory.wq.beans.PostInfo;
@@ -413,6 +414,61 @@ public class GenerateJson {
 
         } catch (JSONException e) {
             Log.d(TAG, "[X] getUserListByIdListJson #415" + e.getMessage());
+        }
+        return jsonObject.toString();
+    }
+
+    public static String getIsOnlineJson(List<Long> userIdList) {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray array = new JSONArray();
+        try {
+            for (Long id : userIdList) {
+                array.put(id);
+            }
+
+            jsonObject.put("userIds", array);
+
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getIsOnlineJson #415" + e.getMessage());
+        }
+        return jsonObject.toString();
+    }
+
+    public static String getChatInfoByIdJson(Long chatId) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("chatId", chatId);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getChatInfoByIdJson #441" + e.getMessage());
+        }
+        return jsonObject.toString();
+    }
+
+    public static String getMsgListJson(List<MsgListInfo> msgList) {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+
+        try {
+            for (MsgListInfo msg : msgList) {
+                JSONObject chatInfo = new JSONObject();
+                chatInfo.put("chatId", msg.getChatId());
+                chatInfo.put("chatType", msg.getChatType());
+
+                jsonArray.put(chatInfo);
+            }
+            jsonObject.put("msgChatIdList", jsonArray);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getMsgListJson #461" + e.getMessage());
+        }
+        return jsonObject.toString();
+    }
+
+    public static String getSearchMovieJson(String keyword) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("keyword", keyword);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getSearchMovieJson #471" + e.getMessage());
         }
         return jsonObject.toString();
     }

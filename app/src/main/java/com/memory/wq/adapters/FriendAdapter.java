@@ -42,13 +42,14 @@ public class FriendAdapter extends ListAdapter<FriendInfo, RecyclerView.ViewHold
         FriendViewHolder friendVH = (FriendViewHolder) holder;
         Glide.with(holder.itemView.getContext())
                 .load(friendInfo.getAvatarUrl())
+                .error(R.mipmap.icon_default_avatar)
                 .circleCrop()
                 .into(friendVH.iv_friend_avatar);
         friendVH.tv_friend_nickname.setText(friendInfo.getNickname());
         friendVH.iv_online_state.setVisibility(friendInfo.isOnline() ? View.VISIBLE : View.GONE);
 
         friendVH.iv_friend_avatar.setOnClickListener(v ->
-                mListener.onItemClick(friendInfo.getUuNumber())
+                mListener.onItemClick(friendInfo.getChatId())
         );
     }
 

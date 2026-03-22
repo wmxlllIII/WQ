@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,15 +25,20 @@ import com.memory.wq.activities.MainActivity;
 import com.memory.wq.activities.ChatActivity;
 import com.memory.wq.activities.QrCodeActivity;
 import com.memory.wq.adapters.FriendAdapter;
-import com.memory.wq.adapters.MsgsAdapter;
+import com.memory.wq.adapters.MsgListAdapter;
 import com.memory.wq.beans.FriendInfo;
+import com.memory.wq.beans.MsgInfo;
+import com.memory.wq.beans.MsgListInfo;
 import com.memory.wq.databinding.MessageLayoutBinding;
+import com.memory.wq.enumertions.ChatType;
 import com.memory.wq.enumertions.EventType;
 import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.interfaces.OnFriItemClickListener;
+import com.memory.wq.interfaces.OnMsgListClickListener;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.constants.AppProperties;
+import com.memory.wq.managers.MsgManager;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
 import com.memory.wq.service.WebSocketMessage;
@@ -44,14 +50,18 @@ import java.util.List;
 public class MessageFragment extends Fragment implements IWebSocketListener {
 
     private final static String TAG = "WQ_MessageFragment";
-    private final FriendAdapter friendAdapter = new FriendAdapter(new onFriClickListener());
+    private final FriendAdapter mFriendAdapter = new FriendAdapter(new OnFriClickListenerImpl());
     private final FriendManager mFriendManager = new FriendManager();
-    private final Friend mFriendCallback = new Friend();
+    private final FriendCallback mFriendCallback = new FriendCallback();
+
+    private final MsgListAdapter mMsgListAdapter = new MsgListAdapter(new OnMsgListClickListenerImpl());
+    private final MsgManager mMsgManager = new MsgManager();
+    private final MsgCallback mMsgCallback = new MsgCallback();
 
     private final EnumSet<EventType> eventTypes = EnumSet.of(EventType.EVENT_TYPE_MSG, EventType.EVENT_TYPE_REQUEST_FRIEND);
     private WebService msgService;
-    private MsgConn msgConn;
-    private MsgsAdapter msgsAdapter;
+    private MsgConn msgConn = new MsgConn();
+
     private AppCompatActivity mActivity;
     private MessageLayoutBinding mBinding;
 
@@ -64,14 +74,17 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
         }
 
         initView();
-        initRecycleView();
         initData();
         return mBinding.getRoot();
     }
 
-    private void initRecycleView() {
-        mBinding.rvFriends.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false));
-        mBinding.rvFriends.setAdapter(friendAdapter);
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            loadFriends();
+            loadMsgs();
+        }
     }
 
     private boolean ifNeedShowLoginDialog() {
@@ -86,7 +99,7 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
                 .setIcon(R.mipmap.ic_bannertest2)
                 .setNegativeButton("去登录", (dialogInterface, i) -> {
                     startActivity(new Intent(mActivity, LaunchActivity.class));
-                    getActivity().finish();
+                    mActivity.finish();
                 })
                 .setPositiveButton("取消", null)
                 .setCancelable(false)
@@ -104,12 +117,19 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
 
     private void initData() {
         Intent intent = new Intent(mActivity, WebService.class);
-        msgConn = new MsgConn();
         mActivity.startService(intent);
         mActivity.bindService(intent, msgConn, Context.BIND_AUTO_CREATE);
+        loadFriends();
+        loadMsgs();
     }
 
     private void initView() {
+        mBinding.rvFriends.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false));
+        mBinding.rvFriends.setAdapter(mFriendAdapter);
+
+        mBinding.rvMsg.setLayoutManager(new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false));
+        mBinding.rvMsg.setAdapter(mMsgListAdapter);
+
         mBinding.ivAdd.setOnClickListener(v -> startActivity(new Intent(mActivity, QrCodeActivity.class)));
 
         mBinding.ivSearch.setOnClickListener(v -> {
@@ -117,17 +137,14 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
             startActivity(new Intent(mActivity, FriendRelaActivity.class));
         });
 
-        mBinding.lvMsg.setOnItemClickListener((parent, view1, position, id) -> {
-            FriendInfo friendInfo = (FriendInfo) parent.getItemAtPosition(position);
-            Intent intent = new Intent(mActivity, ChatActivity.class);
-            intent.putExtra(AppProperties.CHAT_ID, friendInfo.getUuNumber());
-            mActivity.startActivity(intent);
-        });
-        loadFriends();
     }
 
     private void loadFriends() {
         mFriendManager.getFriends(mFriendCallback);
+    }
+
+    private void loadMsgs() {
+        mMsgManager.getMsgList(mMsgCallback);
     }
 
     @Override
@@ -137,14 +154,14 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
 
     @Override
     public <T> void onMessage(WebSocketMessage<T> message) {
-//        switch (eventType) {
-//            case EVENT_TYPE_REQUEST_FRIEND:
-//
-//                break;
-//            case EVENT_TYPE_MSG:
-//
-//                break;
-//        }
+        switch (message.getEventType()) {
+            case EVENT_TYPE_REQUEST_FRIEND:
+                loadFriends();
+                break;
+            case EVENT_TYPE_MSG:
+                loadMsgs();
+                break;
+        }
     }
 
     @Override
@@ -166,14 +183,11 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
         }
     }
 
-    class Friend implements ResultCallback<List<FriendInfo>> {
+    private class FriendCallback implements ResultCallback<List<FriendInfo>> {
 
         @Override
         public void onSuccess(List<FriendInfo> result) {
-            friendAdapter.submitList(result);
-            msgsAdapter = new MsgsAdapter(mActivity, result);
-            mBinding.lvMsg.setAdapter(msgsAdapter);
-
+            mFriendAdapter.submitList(result);
         }
 
         @Override
@@ -182,12 +196,26 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
         }
     }
 
-    class onFriClickListener implements OnFriItemClickListener {
+    private class MsgCallback implements ResultCallback<List<MsgListInfo>> {
 
         @Override
-        public void onItemClick(long targetId) {
-            Intent intent = new Intent(getContext(), ChatActivity.class);
-            intent.putExtra(AppProperties.CHAT_ID, targetId);
+        public void onSuccess(List<MsgListInfo> result) {
+            mMsgListAdapter.submitList(result);
+        }
+
+        @Override
+        public void onError(String err) {
+
+        }
+    }
+
+    private class OnFriClickListenerImpl implements OnFriItemClickListener {
+
+        @Override
+        public void onItemClick(long chatId) {
+            Intent intent = new Intent(mActivity, ChatActivity.class);
+            intent.putExtra(AppProperties.CHAT_ID, chatId);
+            intent.putExtra(AppProperties.CHAT_TYPE, ChatType.CHAT_TYPE_INDIVIDUAL.toInt());
             startActivity(intent);
         }
 
@@ -199,6 +227,17 @@ public class MessageFragment extends Fragment implements IWebSocketListener {
         @Override
         public void onUpdateClick(long targetId, boolean isAgree, String validMsg) {
 
+        }
+    }
+
+    private class OnMsgListClickListenerImpl implements OnMsgListClickListener {
+
+        @Override
+        public void onItemClick(long chatId, int chatType) {
+            Intent intent = new Intent(mActivity, ChatActivity.class);
+            intent.putExtra(AppProperties.CHAT_ID, chatId);
+            intent.putExtra(AppProperties.CHAT_TYPE, chatType);
+            startActivity(intent);
         }
     }
 }

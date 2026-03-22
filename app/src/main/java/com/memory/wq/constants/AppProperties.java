@@ -56,6 +56,7 @@ public class AppProperties {
     public static final String GET_POST_DETAIL = HTTP_SERVER_ADDRESS + "/auth/getPostDetail";
     public static final String GET_MOVIE_DETAIL = HTTP_SERVER_ADDRESS + "/auth/getMovieDetail";
     public static final String GET_USER_LIST_BY_ID_LIST = HTTP_SERVER_ADDRESS + "/auth/getUserListByIdList";
+    public static final String GET_CHAT_INFO_BY_ID = HTTP_SERVER_ADDRESS + "/auth/getChatInfoById";
 
     public static final String AGORA_TOKEN = HTTP_SERVER_ADDRESS + "/api/token";
     public static final String STS_TOKEN = HTTP_SERVER_ADDRESS + "/auth/getStsPermission";
@@ -63,6 +64,9 @@ public class AppProperties {
     public static final String UNFOLLOW_USER = HTTP_SERVER_ADDRESS + "/auth/unfollowUser";
     public static final String POST_LIKE = HTTP_SERVER_ADDRESS + "/auth/likePost";
     public static final String BUILD_GROUP = HTTP_SERVER_ADDRESS + "/auth/buildGroup";
+    public static final String GET_IS_ONLINE = HTTP_SERVER_ADDRESS + "/auth/getFriendIsOnline";
+    public static final String GET_MSG_LIST_BY_CHAI_ID = HTTP_SERVER_ADDRESS + "/auth/getMsgListByChatId";
+    public static final String SEARCH_MOVIE = HTTP_SERVER_ADDRESS + "/auth/searchMovie";
 
 
     public static final String ROLE_TYPE = "ROLE_TYPE";

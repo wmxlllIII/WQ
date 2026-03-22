@@ -21,7 +21,7 @@ public class ExampleUnitTest {
         Random random = new Random();
         long randomOffset = random.nextInt(3 * 24 * 60 * 60);
         long timestamp = now - randomOffset;
-        String result = TimeUtils.convertTime(timestamp);
+        String result = TimeUtils.convertToTextTime(timestamp);
         assertTrue(result.matches("\\d+天前|\\d+小时前"));
     }
     @Test
@@ -29,7 +29,7 @@ public class ExampleUnitTest {
         long now = System.currentTimeMillis() / 1000;
         long timestamp = now - 3 * 60 * 60 - 5;
 
-        String result = TimeUtils.convertTime(timestamp);
+        String result = TimeUtils.convertToTextTime(timestamp);
 
         assertEquals("3小时前", result);
     }
@@ -39,7 +39,7 @@ public class ExampleUnitTest {
         long now = System.currentTimeMillis() / 1000;
         long timestamp = now - 10 * 60 - 3;
 
-        String result = TimeUtils.convertTime(timestamp);
+        String result = TimeUtils.convertToTextTime(timestamp);
 
         assertEquals("10分钟前", result);
     }
@@ -49,7 +49,7 @@ public class ExampleUnitTest {
         long now = System.currentTimeMillis() / 1000;
         long timestamp = now - 20;
 
-        String result = TimeUtils.convertTime(timestamp);
+        String result = TimeUtils.convertToTextTime(timestamp);
 
         assertEquals("刚刚", result);
     }

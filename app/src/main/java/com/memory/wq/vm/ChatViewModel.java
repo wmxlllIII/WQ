@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.UiChatInfo;
 import com.memory.wq.beans.UiMessageState;
@@ -20,11 +21,13 @@ import com.memory.wq.enumertions.ChatType;
 import com.memory.wq.enumertions.ContentType;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.MsgManager;
+import com.memory.wq.managers.UserManager;
 import com.memory.wq.provider.MsgProvider;
 import com.memory.wq.provider.WqApplication;
 import com.memory.wq.repository.MsgRepository;
 import com.memory.wq.utils.ResultCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -35,22 +38,25 @@ public class ChatViewModel extends ViewModel {
     private final MsgRepository mRepository = new MsgRepository();
     private ContentObserver observer;
     private final MutableLiveData<Long> _chatId = new MutableLiveData<>();
-    private final MutableLiveData<Integer> _chatType = new MutableLiveData<>();
-    private final MutableLiveData<UiChatInfo> _uiChatInfo = new MutableLiveData<>();
-
     public LiveData<Long> chatId = _chatId;
+
+    private final MutableLiveData<Integer> _chatType = new MutableLiveData<>();
     public LiveData<Integer> chatType = _chatType;
+
+    private final MutableLiveData<UiChatInfo> _uiChatInfo = new MutableLiveData<>();
     public LiveData<UiChatInfo> uiChatInfo = _uiChatInfo;
 
     private final MutableLiveData<UiMessageState> _uiMessageState = new MutableLiveData<>();
     public final LiveData<UiMessageState> uiMessageState = _uiMessageState;
-    private final MsgManager mMsgManager = new MsgManager();
-    private final long curUser = AccountManager.getUserInfo().getUuNumber();
 
     private final MutableLiveData<ChatPage> _chatPage = new MutableLiveData<>(ChatPage.CHAT_INDIVIDUAL);
     public LiveData<ChatPage> chatPage = _chatPage;
 
-    public void setChatId(long chatId,int chatType) {
+    private final MsgManager mMsgManager = new MsgManager();
+    private final UserManager mUserManager = new UserManager();
+    private final long curUser = AccountManager.getUserInfo().getUuNumber();
+
+    public void setChatId(long chatId, int chatType) {
         _chatId.setValue(chatId);
         _chatType.setValue(chatType);
         loadChatInfo();
@@ -83,12 +89,12 @@ public class ChatViewModel extends ViewModel {
             Log.d(TAG, "[x] reloadMessagesFromDB #82");
             return;
         }
-        if (_chatType.getValue() == null || _chatType.getValue() <= 0) {
+        if (_chatType.getValue() == null || _chatType.getValue() < 0) {
             Log.d(TAG, "[x] reloadMessagesFromDB #86");
             return;
         }
 
-        mRepository.loadMessages(curUser, _chatId.getValue(), ChatType.fromInt(_chatType.getValue()), new ResultCallback<List<MsgInfo>>() {
+        mRepository.loadMessages(_chatId.getValue(), ChatType.fromInt(_chatType.getValue()), new ResultCallback<List<MsgInfo>>() {
             @Override
             public void onSuccess(List<MsgInfo> result) {
                 _uiMessageState.postValue(new UiMessageState.DisPlay(result));
@@ -103,17 +109,22 @@ public class ChatViewModel extends ViewModel {
     }
 
     private void loadChatInfo() {
-//        mMsgManager.loadChatInfo(_chatId.getValue(),_chatType.getValue(), new ResultCallback<UiChatInfo>() {
-//            @Override
-//            public void onSuccess(UiChatInfo result) {
-//
-//            }
-//
-//            @Override
-//            public void onError(String err) {
-//
-//            }
-//        });
+        mUserManager.getChatInfoById(_chatId.getValue(), new ResultCallback<UiChatInfo>() {
+            @Override
+            public void onSuccess(UiChatInfo chatInfo) {
+                if (chatInfo == null) {
+                    Log.d(TAG, "[x] loadChatInfo #115");
+                    return;
+                }
+
+                _uiChatInfo.postValue(chatInfo);
+            }
+
+            @Override
+            public void onError(String err) {
+
+            }
+        });
     }
 
     public void loadMessages() {
@@ -124,13 +135,13 @@ public class ChatViewModel extends ViewModel {
             return;
         }
 
-        if (_chatType.getValue() == null || _chatType.getValue() <= 0) {
+        if (_chatType.getValue() == null || _chatType.getValue() < 0) {
             _uiMessageState.setValue(new UiMessageState.Error("聊天类型错误"));
             Log.d(TAG, "[x] reloadMessagesFromDB #86");
             return;
         }
 
-        mRepository.loadMessages(curUser, _chatId.getValue(), ChatType.fromInt(_chatType.getValue()), new ResultCallback<List<MsgInfo>>() {
+        mRepository.loadMessages(_chatId.getValue(), ChatType.fromInt(_chatType.getValue()), new ResultCallback<List<MsgInfo>>() {
             @Override
             public void onSuccess(List<MsgInfo> result) {
                 _uiMessageState.postValue(new UiMessageState.DisPlay(result));

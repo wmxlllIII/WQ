@@ -77,16 +77,16 @@ public class ChatFragment extends Fragment {
     }
 
     private void initData() {
-        mBinding.rvMsg.setAdapter(mAdapter);
     }
 
     private void initView() {
         initObserver();
-        mBinding.ivBack.setOnClickListener(v -> mChatVM.navigateBack());
+        mBinding.ivBack.setOnClickListener(v -> getActivity().finish());
         mBinding.btnSend.setOnClickListener(v -> sendMsg());
         mBinding.ivDetail.setOnClickListener(view -> {
             mChatVM.navigateTo(ChatPage.CHAT_DETAIL);
         });
+        mBinding.rvMsg.setAdapter(mAdapter);
     }
 
     private void initObserver() {
@@ -101,11 +101,7 @@ public class ChatFragment extends Fragment {
         }
 
         String displayName = uiChatInfo.getDisplayName();
-        mBinding.tvNickname.setText(
-                TextUtils.isEmpty(displayName) ?
-                        uiChatInfo.getMembers().get(0).getNickname() :
-                        displayName
-        );
+        mBinding.tvNickname.setText(displayName);
     }
 
     private void _proUiMessageInfoUpdate(UiMessageState state) {

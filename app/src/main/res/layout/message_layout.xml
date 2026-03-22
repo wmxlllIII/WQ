@@ -77,6 +77,7 @@
                 android:id="@+id/rv_friends"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
+                android:overScrollMode="never"
                 android:layout_marginVertical="5dp" />
 
             <View
@@ -84,10 +85,11 @@
                 android:layout_height="1dp"
                 android:background="#424141" />
 
-            <ListView
-                android:id="@+id/lv_msg"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_msg"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:overScrollMode="never"/>
 
         </LinearLayout>
 

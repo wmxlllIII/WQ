@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.memory.wq.R;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.databinding.ItemInviteMemberBinding;
 import com.memory.wq.interfaces.OnInviteClickListener;
@@ -27,9 +29,10 @@ public class InviteMemberViewHolder extends RecyclerView.ViewHolder {
         binding.tvNickname.setText(friend.getNickname());
         Glide.with(binding.getRoot().getContext())
                 .load(friend.getAvatarUrl())
+                .error(R.mipmap.icon_default_avatar)
+                .transform(new RoundedCorners(12))
                 .into(binding.ivAvatar);
 
-        binding.cbSelect.setChecked(checked);
         binding.getRoot().setOnClickListener(v -> {
             if (listener == null) {
                 Log.d(TAG, "[X] bind #35");
@@ -37,6 +40,13 @@ public class InviteMemberViewHolder extends RecyclerView.ViewHolder {
             }
 
             listener.onCheckedChanged(friend.getUuNumber());
+        });
+
+        binding.cbSelect.setChecked(checked);
+        binding.cbSelect.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (listener != null) {
+                listener.onCheckedChanged(friend.getUuNumber());
+            }
         });
     }
 }

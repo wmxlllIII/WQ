@@ -44,7 +44,6 @@ public class RecommendAdapter extends ListAdapter<PostInfo, RecyclerView.ViewHol
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         PostInfo postInfo = getItem(position);
 
-        Log.d(TAG, "[test] onBindViewHolder #46 " + postInfo);
         setItemHolder((ItemViewHolder) holder, postInfo);
 
         holder.itemView.setOnClickListener(v -> {
@@ -74,7 +73,6 @@ public class RecommendAdapter extends ListAdapter<PostInfo, RecyclerView.ViewHol
                             )
                     )
                     .into(holder.iv_cover);
-//            Log.d(TAG, "setItemHolder: ===setItemHolder #70 " + AppProperties.HTTP_SERVER_ADDRESS + postInfo.getCommentCoverUrl());
         }
 
         Glide.with(holder.iv_avatar.getContext())

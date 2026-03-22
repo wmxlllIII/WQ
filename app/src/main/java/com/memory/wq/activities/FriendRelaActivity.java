@@ -99,9 +99,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
                     Log.d(TAG, "[x] onMessage #103");
                     return;
                 }
-
-                Log.d(TAG, "[test] onMessage: " + friRelaList);
-                mAdapter.submitList(friRelaList, () -> mBinding.rvFriendReq.scrollToPosition(mAdapter.getItemCount() - 1));
+                refreshData();
                 break;
         }
     }
@@ -187,7 +185,9 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
 
         @Override
         public void onItemClick(long targetId) {
-            // 进主页
+            Intent intent = new Intent(FriendRelaActivity.this, PersonInfoActivity.class);
+            intent.putExtra(AppProperties.PERSON_ID, targetId);
+            startActivity(intent);
         }
 
         @Override

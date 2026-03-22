@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.memory.wq.R;
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.enumertions.FriendRelaStatus;
@@ -52,6 +53,8 @@ public class FriendRelaAdapter extends ListAdapter<FriendRelaInfo, RecyclerView.
 
         Glide.with(holder.itemView.getContext())
                 .load(isReceiver ? friendRela.getSenderAvatar() : friendRela.getReceiverAvatar())
+                .error(R.mipmap.icon_default_avatar)
+                .transform(new RoundedCorners(12))
                 .into(holder.iv_avatar);
         holder.tv_nickname.setText(isReceiver ? friendRela.getSenderName() : friendRela.getReceiverName());
         holder.tv_verify_message.setText(friendRela.getValidMsg());
@@ -84,9 +87,9 @@ public class FriendRelaAdapter extends ListAdapter<FriendRelaInfo, RecyclerView.
             }
         }
 
-        holder.iv_accept.setOnClickListener(v -> listener.onUpdateClick(friendRela.getSenderId() ,true ,friendRela.getValidMsg()));
-        holder.iv_reject.setOnClickListener(v -> listener.onUpdateClick(friendRela.getSenderId(), false,friendRela.getValidMsg()));
-
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(friendRela.getChatId()));
+        holder.iv_accept.setOnClickListener(v -> listener.onUpdateClick(friendRela.getSenderId(), true, friendRela.getValidMsg()));
+        holder.iv_reject.setOnClickListener(v -> listener.onUpdateClick(friendRela.getSenderId(), false, friendRela.getValidMsg()));
 
     }
 

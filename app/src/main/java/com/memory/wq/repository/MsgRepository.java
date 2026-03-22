@@ -19,20 +19,13 @@ public class MsgRepository {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final MsgSqlOP mMsgSqlOP = new MsgSqlOP();
 
-    public void loadMessages(long curUser, long chatId, ChatType chatType, ResultCallback<List<MsgInfo>> callback) {
+    public void loadMessages(long chatId, ChatType chatType, ResultCallback<List<MsgInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
-            List<MsgInfo> list = mMsgSqlOP.queryAllMsg(curUser, chatId,chatType);
+            List<MsgInfo> list = mMsgSqlOP.queryAllMsg(chatId, chatType);
             mHandler.post(() -> {
-                Log.d(TAG, "loadMessages: 加载消息：" + list.size());
+                Log.d(TAG, "[test] loadMessages: #26加载消息：" + list);
                 callback.onSuccess(list);
             });
         });
-    }
-
-    public void insertMessages(List<MsgInfo> list) {
-        ThreadPoolManager.getInstance().execute(() -> {
-            boolean b = mMsgSqlOP.insertMessages(list);
-        });
-
     }
 }

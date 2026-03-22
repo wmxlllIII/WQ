@@ -3,6 +3,8 @@ package com.memory.wq.beans;
 public class FriendRelaInfo {
     private int id;
 
+    private long chatId;
+
 
     private long senderId;
 
@@ -121,10 +123,19 @@ public class FriendRelaInfo {
         this.updateAt = updateAt;
     }
 
+    public long getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(long chatId) {
+        this.chatId = chatId;
+    }
+
     @Override
     public String toString() {
         return "FriendRelaInfo{" +
                 "id=" + id +
+                ", chatId=" + chatId +
                 ", senderId=" + senderId +
                 ", senderName='" + senderName + '\'' +
                 ", senderAvatar='" + senderAvatar + '\'' +

@@ -32,7 +32,8 @@ public class ChatActivity extends BaseActivity<ActivityChatBinding> {
         Intent intent = getIntent();
         long chatId = (Long) intent.getLongExtra(AppProperties.CHAT_ID, -1L);
         int chatType = (int) intent.getIntExtra(AppProperties.CHAT_TYPE, -1);
-        if (chatId <= 0) {
+        Log.d(TAG, "onCreate: "+chatId+"==="+chatType);
+        if (chatId < 0 || chatType < 0) {
             MyToast.showToast(this, "聊天对象不存在");
             return;
         }

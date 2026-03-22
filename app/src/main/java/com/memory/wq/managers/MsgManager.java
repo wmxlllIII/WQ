@@ -10,11 +10,11 @@ import androidx.annotation.NonNull;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.beans.MsgInfo;
+import com.memory.wq.beans.MsgListInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.db.op.FriendSqlOP;
 import com.memory.wq.enumertions.ChatType;
 import com.memory.wq.enumertions.ContentType;
-import com.memory.wq.enumertions.FriendRelaStatus;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.db.op.MsgSqlOP;
 import com.memory.wq.thread.ThreadPoolManager;
@@ -22,7 +22,6 @@ import com.memory.wq.utils.GenerateJson;
 import com.memory.wq.utils.JsonParser;
 import com.memory.wq.utils.ResultCallback;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -85,7 +84,7 @@ public class MsgManager {
                                 : rela.getSenderId();
 
                         FriendInfo user = userMap.get(targetId);
-                        if (user == null){
+                        if (user == null) {
                             continue;
                         }
 
@@ -104,10 +103,10 @@ public class MsgManager {
                 @Override
                 public void onError(String err) {
                     Log.d(TAG, "[x] getRelation #68" + err);
+                    mHandler.post(() -> callback.onSuccess(new ArrayList<>()));
                 }
             });
         });
-
     }
 
     public void updateRela(long sourceId, boolean isAgree, String validMsg, ResultCallback<Boolean> callback) {
@@ -192,11 +191,11 @@ public class MsgManager {
 
     public void buildGroup(String groupName, String groupAvatar, Set<Long> selectedUsers) {
         if (selectedUsers == null || selectedUsers.isEmpty()) {
-            Log.d(TAG, "[x] buildGroupOrChat: #159");
+            Log.d(TAG, "[x] buildGroupOrChat: #195");
             return;
         }
         if (selectedUsers.size() < 3) {
-            Log.d(TAG, "[x] buildGroupOrChat: #164");
+            Log.d(TAG, "[x] buildGroupOrChat: #199");
             return;
         }
 
@@ -221,6 +220,56 @@ public class MsgManager {
                         JSONObject json = new JSONObject();
                     } catch (Exception e) {
                         Log.d(TAG, "[x] buildGroupOrChat #205" + e.getMessage());
+                    }
+                }
+            });
+        });
+    }
+
+    public void getMsgList(ResultCallback<List<MsgListInfo>> mMsgCallback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            List<MsgListInfo> msgList = mMsgSqlOP.queryMsgList();
+            getMsgListByChatId(msgList, mMsgCallback);
+        });
+    }
+
+    private void getMsgListByChatId(List<MsgListInfo> msgList, ResultCallback<List<MsgListInfo>> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getMsgListJson(msgList);
+            HttpStreamOP.postJson(AppProperties.GET_MSG_LIST_BY_CHAI_ID, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] getMsgListByChatId #252" + e.getMessage());
+                    mHandler.post(() -> callback.onError("网络异常"));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getMsgListByChatId #257 " + response.code());
+                        mHandler.post(() -> callback.onError("网络异常"));
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        if (json.getInt("code") == 1) {
+                            List<MsgListInfo> infoList = JsonParser.msgListParser(json);
+                            msgList.forEach(msgInfo -> infoList.stream()
+                                    .filter(info -> info.getChatId() == msgInfo.getChatId() && info.getChatType() == msgInfo.getChatType())
+                                    .findFirst()
+                                    .ifPresent(info -> {
+                                        info.setLastMsg(msgInfo.getLastMsg());
+                                        info.setCreateAt(msgInfo.getCreateAt());
+                                    }));
+                            mHandler.post(() -> callback.onSuccess(infoList));
+                            return;
+                        }
+
+                        mHandler.post(() -> callback.onError("更新数据失败，请稍后再试"));
+                    } catch (Exception e) {
+                        Log.d(TAG, "[x] getMsgListByChatId #267" + e.getMessage());
+                        mHandler.post(() -> callback.onError("网络异常"));
                     }
                 }
             });

@@ -1,8 +1,9 @@
 package com.memory.wq.utils;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 
@@ -14,7 +15,7 @@ public class TimeUtils {
         return timestamp;
     }
 
-    public static String convertTime(long timestamp) {
+    public static String convertToTextTime(long timestamp) {
         long now = System.currentTimeMillis() / 1000;
         long gap = now - timestamp;
         if (gap > 24 * 60 * 60) {
@@ -26,6 +27,19 @@ public class TimeUtils {
         } else {
             return "刚刚";
         }
+    }
+
+    public static String convertToNumberTime(long timestamp) {
+        long timestampInMillis = timestamp * 1000;
+
+        Instant instant = Instant.ofEpochMilli(timestampInMillis);
+
+        ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm")
+                .withZone(zoneId);
+
+        return formatter.format(instant);
     }
 
 }

@@ -18,8 +18,6 @@ import com.memory.wq.interfaces.OnCommentActionListener;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.utils.TimeUtils;
 
-import java.util.List;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostCommentAdapter extends ListAdapter<PostCommentInfo, PostCommentAdapter.CommentVH> {
@@ -55,7 +53,7 @@ public class PostCommentAdapter extends ListAdapter<PostCommentInfo, PostComment
         holder.tv_user.setText(commentInfo.getUserName());
         holder.tv_content.setText(commentInfo.getContent());
 
-        holder.tv_time.setText(TimeUtils.convertTime(commentInfo.getTimestamp()));
+        holder.tv_time.setText(TimeUtils.convertToTextTime(commentInfo.getTimestamp()));
         holder.tv_reply.setOnClickListener(view -> {
             if (listener != null) listener.onReplyToComment(commentInfo);
         });

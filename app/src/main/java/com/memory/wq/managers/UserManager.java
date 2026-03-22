@@ -1,8 +1,6 @@
 package com.memory.wq.managers;
 
 
-import static android.app.Activity.RESULT_OK;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +14,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.memory.wq.beans.FriendInfo;
-import com.memory.wq.beans.UserInfo;
+import com.memory.wq.beans.OnlineInfo;
+import com.memory.wq.beans.UiChatInfo;
 import com.memory.wq.enumertions.SelectImageType;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.FileOP;
@@ -26,12 +25,12 @@ import com.memory.wq.thread.ThreadPoolManager;
 import com.memory.wq.utils.GenerateJson;
 import com.memory.wq.utils.JsonParser;
 import com.memory.wq.utils.ResultCallback;
-import com.yalantis.ucrop.UCrop;
 
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -169,7 +168,8 @@ public class UserManager {
                         JSONObject json = new JSONObject(response.body().string());
                         if (json.getInt("code") == 1) {
                             Log.d(TAG, "[test] getUserById #218 " + json);
-                            FriendInfo friend = JsonParser.userByIdParser(json);
+                            JSONObject data = json.getJSONObject("data");
+                            FriendInfo friend = JsonParser.userByIdParser(data);
                             mHandler.post(() -> callback.onSuccess(friend));
                         }
                     } catch (Exception e) {
@@ -186,17 +186,101 @@ public class UserManager {
     }
 
     public void getUserListByIdList(List<Long> userIdList, ResultCallback<List<FriendInfo>> callback) {
-        ThreadPoolManager.getInstance().execute(()->{
+        ThreadPoolManager.getInstance().execute(() -> {
             String json = GenerateJson.getUserListByIdListJson(userIdList);
             HttpStreamOP.postJson(AppProperties.GET_USER_LIST_BY_ID_LIST, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
+                    Log.d(TAG, "[x] getUserListByIdList #194");
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getUserListByIdList #200");
+                        return;
+                    }
 
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        Log.d(TAG, "[test] getUserListByIdList #206");
+                        if (json.getInt("code") == 1) {
+                            List<FriendInfo> friend = JsonParser.userListByIdListParser(json);
+                            if (friend == null) {
+                                mHandler.post(() -> callback.onSuccess(new ArrayList<>()));
+                            }
+
+                            mHandler.post(() -> callback.onSuccess(friend));
+                        }
+                    } catch (Exception e) {
+                        Log.d(TAG, "[x] getUserListByIdList #222 " + e.getMessage());
+                    }
+                }
+            });
+        });
+    }
+
+    public void getFriendIsOnline(List<Long> userIdList, ResultCallback<List<OnlineInfo>> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getIsOnlineJson(userIdList);
+            HttpStreamOP.postJson(AppProperties.GET_IS_ONLINE, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] getFriendIsOnline #233");
+                    mHandler.post(() -> callback.onError("获取在线状态失败"));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getFriendIsOnline #239");
+                        mHandler.post(() -> callback.onError("获取在线状态失败"));
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        if (json.getInt("code") == 1) {
+                            List<OnlineInfo> onlineInfos = JsonParser.onlineListParser(json);
+                            mHandler.post(() -> callback.onSuccess(onlineInfos));
+                        }
+                    } catch (Exception e) {
+                        Log.d(TAG, "[x] getFriendIsOnline #251 " + e.getMessage());
+                    }
+                }
+            });
+        });
+    }
+
+    public void getChatInfoById(Long chatId, ResultCallback<UiChatInfo> resultCallback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getChatInfoByIdJson(chatId);
+            HttpStreamOP.postJson(AppProperties.GET_CHAT_INFO_BY_ID, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] getChatInfoById #262");
+                    mHandler.post(() -> resultCallback.onError("获取聊天信息失败"));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getChatInfoById #268");
+                        mHandler.post(() -> resultCallback.onError("获取聊天信息失败"));
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        Log.d(TAG, "[test] onResponse: " + json);
+                        if (json.getInt("code") == 1) {
+                            UiChatInfo uiChatInfo = JsonParser.chatInfoByIdParser(json);
+                            mHandler.post(() -> resultCallback.onSuccess(uiChatInfo));
+                        }
+                    } catch (Exception e) {
+                        Log.d(TAG, "[x] getChatInfoById #284 " + e.getMessage());
+                    }
+                    mHandler.post(() -> resultCallback.onError("获取聊天信息失败"));
                 }
             });
         });

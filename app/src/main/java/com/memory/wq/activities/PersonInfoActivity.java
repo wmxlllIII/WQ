@@ -126,19 +126,7 @@ public class PersonInfoActivity extends BaseActivity<ActivityPersonalBinding> {
                         JSONObject jsonObject = new JSONObject(body);
                         int code = jsonObject.getInt("code");
                         if (code == 1) {
-                            JSONObject data = jsonObject.getJSONObject("data");
-                            String state = data.getString("state");
-                            if (state.equals("已申请")) {
-                                Log.d(TAG, "[✓] sendReq #123");
-                                runOnUiThread(() -> {
 
-                                });
-                            } else if (state.equals("已申请")) {
-
-                                runOnUiThread(() -> {
-
-                                });
-                            }
                         }
 
                     } catch (JSONException e) {
@@ -148,7 +136,6 @@ public class PersonInfoActivity extends BaseActivity<ActivityPersonalBinding> {
             });
         });
     }
-
 
     private void followUser() {
         mFriendManager.followUser(mFriendId, new ResultCallback<Boolean>() {

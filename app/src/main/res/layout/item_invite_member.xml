@@ -12,9 +12,8 @@
 
         <CheckBox
             android:id="@+id/cb_select"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:button="@null"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -32,7 +31,6 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginStart="12dp"
-            android:src="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/cb_select"
             app:layout_constraintTop_toTopOf="parent" />
@@ -46,6 +44,7 @@
             android:maxLines="1"
             android:text="用户昵称"
             android:textSize="16dp"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_avatar"

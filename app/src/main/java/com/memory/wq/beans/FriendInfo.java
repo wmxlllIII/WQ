@@ -5,11 +5,11 @@ import java.io.Serializable;
 
 public class FriendInfo implements Serializable {
     private long uuNumber;
+    private long chatId;
     private String nickname;
     private String avatarUrl;
     private String verifyMsg;
     private boolean isOnline;
-    private String email;
     private long updateAt;
     private boolean isFriend;
     private boolean isBlack;
@@ -87,23 +87,23 @@ public class FriendInfo implements Serializable {
         isOnline = online;
     }
 
-    public String getEmail() {
-        return email;
+    public long getChatId() {
+        return chatId;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setChatId(long chatId) {
+        this.chatId = chatId;
     }
 
     @Override
     public String toString() {
         return "FriendInfo{" +
                 "uuNumber=" + uuNumber +
+                ", chatId=" + chatId +
                 ", nickname='" + nickname + '\'' +
                 ", avatarUrl='" + avatarUrl + '\'' +
                 ", verifyMsg='" + verifyMsg + '\'' +
                 ", isOnline=" + isOnline +
-                ", email='" + email + '\'' +
                 ", updateAt=" + updateAt +
                 ", isFriend=" + isFriend +
                 ", isBlack=" + isBlack +

@@ -4,7 +4,7 @@ import java.util.List;
 
 public class UiChatInfo {
     private String displayName;
-    private List<FriendInfo> members;
+    private List<Long> memberIdList;
 
     public String getDisplayName() {
         return displayName;
@@ -14,11 +14,19 @@ public class UiChatInfo {
         this.displayName = displayName;
     }
 
-    public List<FriendInfo> getMembers() {
-        return members;
+    public List<Long> getMemberIdList() {
+        return memberIdList;
     }
 
-    public void setMembers(List<FriendInfo> members) {
-        this.members = members;
+    public void setMemberIdList(List<Long> memberIdList) {
+        this.memberIdList = memberIdList;
+    }
+
+    @Override
+    public String toString() {
+        return "UiChatInfo{" +
+                "displayName='" + displayName + '\'' +
+                ", memberIdList=" + memberIdList +
+                '}';
     }
 }

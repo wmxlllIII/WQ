@@ -2,7 +2,9 @@ package com.memory.wq.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,6 +30,8 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
     private final MoviesAdapter mMovieAdapter = new MoviesAdapter(new OnMovieClickImpl());
     private final MovieCateAdapter mCateAdapter = new MovieCateAdapter(new OnMovieCateClickImpl());
     private final MovieManager mMovieManager = new MovieManager();
+    private final TextWatcher mTextWatcher = new SearchBarTextWatcher();
+    private final SearchMovieCallback mSearchMovieCallback = new SearchMovieCallback();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +50,15 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
         mBinding.rvCategories.setAdapter(mCateAdapter);
         mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         mBinding.rvMovies.setAdapter(mMovieAdapter);
+
+        mBinding.etSearchMovie.addTextChangedListener(mTextWatcher);
     }
 
     private void initData() {
+        loadUI();
+    }
+
+    private void loadUI() {
         mMovieManager.getCates(new ResultCallback<List<MovieCateInfo>>() {
 
             @Override
@@ -81,6 +91,26 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
         });
     }
 
+
+    private void triggerSearchMovie(String keyword) {
+        if (TextUtils.isEmpty(keyword)) {
+            loadUI();
+            return;
+        }
+
+        mMovieManager.searchMovie(keyword, mSearchMovieCallback);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mTextWatcher != null) {
+            mBinding.etSearchMovie.removeTextChangedListener(mTextWatcher);
+        }
+
+        super.onDestroy();
+    }
+
     private class OnMovieClickImpl implements OnMovieClickListener {
         @Override
         public void onCoverClick(MovieInfo movie) {
@@ -103,4 +133,35 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
             loadMoviesByCate(cateId);
         }
     }
+
+    private class SearchBarTextWatcher implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            triggerSearchMovie(s.toString());
+        }
+    }
+
+    private class SearchMovieCallback implements ResultCallback<List<MovieInfo>> {
+        @Override
+        public void onSuccess(List<MovieInfo> result) {
+            //todo
+            mMovieAdapter.submitList(result);
+        }
+
+        @Override
+        public void onError(String err) {
+
+        }
+    }
+
 }

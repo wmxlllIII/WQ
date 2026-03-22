@@ -202,9 +202,8 @@ public class AuthManager {
     }
 
     public void updateProfileInformation(UpdateInfoType updateType, Object data, ResultCallback<Boolean> callback) {
-        String json = GenerateJson.getUpdateUserInfoJson(updateType, data);
-        Log.d(TAG, "[✓] updateProfileInformation #205 " + json);
         ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getUpdateUserInfoJson(updateType, data);
             HttpStreamOP.postJson(AppProperties.UPDATE_USER, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {

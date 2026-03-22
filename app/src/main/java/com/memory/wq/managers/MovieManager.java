@@ -330,4 +330,38 @@ public class MovieManager {
             });
         });
     }
+
+    public void searchMovie(String keyword, ResultCallback<List<MovieInfo>> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getSearchMovieJson(keyword);
+            HttpStreamOP.postJson(AppProperties.SEARCH_MOVIE, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] searchMovie #340");
+                    mHandler.post(() -> callback.onError("网络错误"));
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] searchMovie #340");
+                        mHandler.post(() -> callback.onError(null));
+                        return;
+                    }
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            JSONArray data = json.getJSONArray("data");
+                            List<MovieInfo> movieInfoList = JsonParser.movieParser(data);
+                            mHandler.post(() -> callback.onSuccess(movieInfoList));
+                        }
+                    } catch (JSONException e) {
+                        Log.d(TAG, "[x] searchMovie #360" + e.getMessage());
+                        mHandler.post(() -> callback.onError("电影解析错误"));
+                    }
+                }
+            });
+        });
+    }
 }

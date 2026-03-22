@@ -74,7 +74,9 @@ public class InviteMemberFragment extends Fragment {
                 Log.d(TAG, "[x] initView #75");
                 return;
             }
+
             Set<Long> selectedUsers = mInviteMemberAdapter.getSelectedUsers();
+            Log.d(TAG, "[test] initView: "+selectedUsers);
             mChatVM.buildGroup("群名称","群头像", selectedUsers);
         });
     }

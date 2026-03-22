@@ -43,7 +43,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHol
         holder.tv_replyee.setText(reply.getUserName());
         holder.tv_replyer.setText(reply.getReplyToUserName());
         holder.tv_content.setText(reply.getContent());
-        holder.tv_time.setText(TimeUtils.convertTime(reply.getTimestamp()));
+        holder.tv_time.setText(TimeUtils.convertToTextTime(reply.getTimestamp()));
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onReplyToComment(reply);

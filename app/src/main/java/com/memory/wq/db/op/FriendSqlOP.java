@@ -22,6 +22,7 @@ public class FriendSqlOP {
     private final ContentResolver mResolver = WqApplication.getInstance().getContentResolver();
 
     private static final String COLUMN_ID = "rela_id";
+    private static final String COLUMN_CHAT_ID = "chat_id";
     private static final String COLUMN_SENDER_ID = "sender_id";
     private static final String COLUMN_RECEIVER_ID = "receiver_id";
     private static final String COLUMN_VALID_MSG = "valid_msg";
@@ -46,6 +47,7 @@ public class FriendSqlOP {
         while (cursor.moveToNext()) {
             FriendRelaInfo friendRelaInfo = new FriendRelaInfo();
             int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+            long chatId = cursor.getLong(cursor.getColumnIndex(COLUMN_CHAT_ID));
             long senderId = cursor.getLong(cursor.getColumnIndex(COLUMN_SENDER_ID));
             long receiverId = cursor.getLong(cursor.getColumnIndex(COLUMN_RECEIVER_ID));
             int status = cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS));
@@ -54,6 +56,7 @@ public class FriendSqlOP {
             long updateAt = cursor.getLong(cursor.getColumnIndex(COLUMN_UPDATE_AT));
 
             friendRelaInfo.setId(id);
+            friendRelaInfo.setChatId(chatId);
             friendRelaInfo.setSenderId(senderId);
             friendRelaInfo.setReceiverId(receiverId);
             friendRelaInfo.setStatus(status);
@@ -76,6 +79,7 @@ public class FriendSqlOP {
         for (FriendRelaInfo info : friendRelaList) {
             ContentValues values = new ContentValues();
             values.put(COLUMN_ID, info.getId());
+            values.put(COLUMN_CHAT_ID, info.getChatId());
             values.put(COLUMN_SENDER_ID, info.getSenderId());
             values.put(COLUMN_RECEIVER_ID, info.getReceiverId());
             values.put(COLUMN_STATUS, info.getStatus());

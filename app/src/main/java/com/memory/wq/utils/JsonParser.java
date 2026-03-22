@@ -9,6 +9,8 @@ import com.memory.wq.beans.MovieCateInfo;
 import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.MovieProfileInfo;
 import com.memory.wq.beans.MsgInfo;
+import com.memory.wq.beans.MsgListInfo;
+import com.memory.wq.beans.OnlineInfo;
 import com.memory.wq.beans.PostCommentInfo;
 import com.memory.wq.beans.PostDetailInfo;
 import com.memory.wq.beans.PostInfo;
@@ -16,8 +18,8 @@ import com.memory.wq.beans.RoomInfo;
 import com.memory.wq.beans.RtcInfo;
 import com.memory.wq.beans.StsTokenInfo;
 import com.memory.wq.beans.TagInfo;
+import com.memory.wq.beans.UiChatInfo;
 import com.memory.wq.beans.UserInfo;
-import com.memory.wq.enumertions.ContentType;
 import com.memory.wq.enumertions.EventType;
 
 import org.json.JSONArray;
@@ -100,7 +102,6 @@ public class JsonParser {
             for (int i = 0; i < requestList.length(); i++) {
                 JSONObject item = requestList.getJSONObject(i);
                 FriendRelaInfo friendReqInfo = parseFriReq(item);
-                Log.d(TAG, "[✓] friReqParser #100 " + friendReqInfo);
                 friendRelaList.add(friendReqInfo);
             }
         } catch (JSONException e) {
@@ -112,6 +113,7 @@ public class JsonParser {
     private static FriendRelaInfo parseFriReq(JSONObject item) throws JSONException {
         FriendRelaInfo info = new FriendRelaInfo();
         info.setId(item.optInt("id"));
+        info.setChatId(item.optLong("chatId"));
 
         info.setSenderId(item.optLong("senderId"));
         info.setSenderName(item.optString("senderName"));
@@ -176,7 +178,7 @@ public class JsonParser {
          * 			"updateAt": 0,
          * 			"username": "",
          * 			"uuNumber": 0
-         * 		        },
+         *                },
          * 		"inBlackList": true    * 	},
          * 	"msg": ""
          * }
@@ -215,7 +217,7 @@ public class JsonParser {
                 friendList.add(friendInfo);
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.d(TAG, "[x] friendInfoListParser #218" + e.getMessage());
         }
         return friendList;
     }
@@ -224,9 +226,7 @@ public class JsonParser {
         FriendInfo friendInfo = new FriendInfo();
         friendInfo.setUuNumber(item.getLong("uuNumber"));
         friendInfo.setNickname(item.getString("username"));
-        friendInfo.setEmail(item.getString("email"));
         friendInfo.setAvatarUrl(item.getString("avatarUrl"));
-//        friendInfo.setUpdateAt(TimeUtils.stringTime2Stamp(item.getString("updateAt")));
         return friendInfo;
     }
 
@@ -647,10 +647,8 @@ public class JsonParser {
         }
     }
 
-    public static FriendInfo userByIdParser(JSONObject json) {
+    public static FriendInfo userByIdParser(JSONObject data) {
         try {
-            JSONObject data = json.getJSONObject("data");
-
             FriendInfo friend = new FriendInfo();
 
             friend.setUuNumber(data.getLong("uuNumber"));
@@ -667,7 +665,94 @@ public class JsonParser {
         return null;
     }
 
+    public static List<FriendInfo> userListByIdListParser(JSONObject json) {
+        try {
+            JSONArray dataArray = json.getJSONArray("data");
+            List<FriendInfo> friendList = new ArrayList<>();
+            for (int i = 0; i < dataArray.length(); i++) {
+                JSONObject data = dataArray.getJSONObject(i);
+                FriendInfo friend = userByIdParser(data);
+                friendList.add(friend);
+            }
+            return friendList;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, "[x] userListByIdListParser #592" + e.getMessage());
+        }
+        return null;
+    }
+
     public static MovieProfileInfo movieProfileParser(JSONObject json) {
         return null;
     }
+
+    public static List<OnlineInfo> onlineListParser(JSONObject json) {
+        try {
+            JSONArray dataArray = json.getJSONArray("data");
+            List<OnlineInfo> onlineList = new ArrayList<>();
+            for (int i = 0; i < dataArray.length(); i++) {
+                JSONObject data = dataArray.getJSONObject(i);
+                OnlineInfo friend = onlineParser(data);
+                onlineList.add(friend);
+            }
+            return onlineList;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, "[x] onlineListParser #699" + e.getMessage());
+        }
+        return null;
+    }
+
+    public static OnlineInfo onlineParser(JSONObject data) {
+        try {
+            OnlineInfo online = new OnlineInfo();
+
+            online.setUserId(data.getLong("userId"));
+            online.setOnline(data.getBoolean("isOnline"));
+
+            return online;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, "[x] onlineParser #715" + e.getMessage());
+        }
+        return null;
+    }
+
+    public static UiChatInfo chatInfoByIdParser(JSONObject json) {
+        try {
+            JSONObject data = json.getJSONObject("data");
+            UiChatInfo uiChatInfo = new UiChatInfo();
+            uiChatInfo.setDisplayName(data.getString("displayName"));
+
+            JSONArray memberIdArray = data.getJSONArray("memberIdList");
+            List<Long> memberIdList = new ArrayList<>();
+            for (int i = 0; i < memberIdArray.length(); i++) {
+                memberIdList.add(memberIdArray.getLong(i));
+            }
+            uiChatInfo.setMemberIdList(memberIdList);
+
+            return uiChatInfo;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, "[x] chatInfoByIdParser #738" + e.getMessage());
+        }
+        return null;
+    }
+
+    public static List<MsgListInfo> msgListParser(JSONObject json) throws JSONException {
+        JSONArray data = json.getJSONArray("data");
+        List<MsgListInfo> msgList = new ArrayList<>();
+        for (int i = 0; i < data.length(); i++) {
+            JSONObject msg = data.getJSONObject(i);
+            MsgListInfo msgListInfo = new MsgListInfo();
+            msgListInfo.setChatId(msg.getLong("chatId"));
+            msgListInfo.setChatType(msg.getInt("chatType"));
+            msgListInfo.setDisplayName(msg.getString("displayName"));
+            msgListInfo.setAvatar(msg.getString("avatar"));
+            msgList.add(msgListInfo);
+        }
+        return msgList;
+    }
+
 }
