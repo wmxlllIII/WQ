@@ -147,7 +147,7 @@ public class UserManager {
                         }
 
                     } catch (Exception e) {
-                        Log.d(TAG, "[x] deleteFriend #1 " + e.getMessage());
+                        Log.d(TAG, "[x] deleteFriend #150 " + e.getMessage());
                     }
                 }
             });

@@ -3,6 +3,7 @@ package com.memory.wq.utils;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.memory.wq.beans.ActorInfo;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.FriendRelaInfo;
 import com.memory.wq.beans.MovieCateInfo;
@@ -755,4 +756,7 @@ public class JsonParser {
         return msgList;
     }
 
+    public static ActorInfo actorProfileParser(JSONObject json) {
+        return null;
+    }
 }

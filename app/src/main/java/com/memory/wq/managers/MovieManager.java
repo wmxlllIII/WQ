@@ -291,7 +291,23 @@ public class MovieManager {
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getActorInfo #295");
+                        mHandler.post(() -> callback.onError(null));
+                        return;
+                    }
 
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            ActorInfo actor = JsonParser.actorProfileParser(json);
+                            mHandler.post(() -> callback.onSuccess(actor));
+                            return;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         });

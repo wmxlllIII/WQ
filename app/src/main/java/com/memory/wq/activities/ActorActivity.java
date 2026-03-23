@@ -44,6 +44,10 @@ public class ActorActivity extends BaseActivity<ActivityActorBinding> {
     private void initView() {
         Intent intent = getIntent();
         mActorId = intent.getIntExtra(AppProperties.ActorId, -1);
+        if (mActorId < 0) {
+            finish();
+            return;
+        }
 
         mBinding.rvCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         mBinding.rvCategories.setAdapter(mCateAdapter);
