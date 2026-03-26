@@ -141,10 +141,9 @@ public class MovieManager {
         });
     }
 
-    public void saveRoom(String token, long roomId, int movieId) {
-        String json = GenerateJson.getSaveRoomJson(roomId, movieId);
-
+    public void saveRoom(long roomId, int movieId) {
         ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getSaveRoomJson(roomId, movieId);
             HttpStreamOP.postJson(AppProperties.SAVE_ROOM, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -160,9 +159,9 @@ public class MovieManager {
 
     }
 
-    public void releaseRoom(String token, String roomId) {
-        String json = GenerateJson.getReleaseRoomJson(roomId);
+    public void releaseRoom(String roomId) {
         ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getReleaseRoomJson(roomId);
             HttpStreamOP.postJson(AppProperties.REMOVE_ROOM, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -301,10 +300,13 @@ public class MovieManager {
                         JSONObject json = new JSONObject(response.body().string());
                         int code = json.getInt("code");
                         if (code == 1) {
-                            ActorInfo actor = JsonParser.actorProfileParser(json);
+                            JSONObject data = json.getJSONObject("data");
+                            ActorInfo actor = JsonParser.actorProfileParser(data);
                             mHandler.post(() -> callback.onSuccess(actor));
                             return;
                         }
+                        Log.d(TAG, "[x] getActorInfo #309");
+                        mHandler.post(() -> callback.onError(null));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -335,10 +337,14 @@ public class MovieManager {
                         JSONObject json = new JSONObject(response.body().string());
                         int code = json.getInt("code");
                         if (code == 1) {
-                            MovieProfileInfo movieProfile = JsonParser.movieProfileParser(json);
+                            JSONObject data = json.getJSONObject("data");
+                            MovieProfileInfo movieProfile = JsonParser.movieProfileParser(data);
+                            Log.d(TAG, "onResponse: "+movieProfile);
                             mHandler.post(() -> callback.onSuccess(movieProfile));
                             return;
                         }
+                        Log.d(TAG, "[x] getMovieProfile #343");
+                        mHandler.post(() -> callback.onError(null));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

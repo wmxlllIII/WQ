@@ -9,5 +9,5 @@ public interface AgoraEventListener {
 
     void onFirstRemoteVideoFrame(int uid, int width, int height, int elapsed);
 
-    void onPlaybackProgress(int progress);
+    void onPlaybackProgress(int progressInSeconds);
 }

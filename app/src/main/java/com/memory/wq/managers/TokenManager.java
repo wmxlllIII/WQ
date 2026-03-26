@@ -27,7 +27,7 @@ public class TokenManager {
     public static final String TAG = "WQ_Agora_TokenManager";
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    public void getToken(long userId, String token, long roomId, int role, ResultCallback<RtcInfo> callback) {
+    public void getToken(long userId, long roomId, int role, ResultCallback<RtcInfo> callback) {
         //TODO 用户如果不是邮箱登录呢
         String json = GenerateJson.getRtcToken(roomId, role, userId);
 
@@ -35,18 +35,20 @@ public class TokenManager {
             HttpStreamOP.postJson(AppProperties.AGORA_TOKEN, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
+                    Log.d(TAG, "[x] getToken #38");
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getToken #44");
                         return;
                     }
+
                     try {
                         JSONObject json = new JSONObject(response.body().string());
                         int code = json.getInt("code");
-                        Log.d(TAG, "[test] getToken #49" + json.toString());
+                        Log.d(TAG, "[test] getToken #49" + json);
                         if (code == 1) {
                             JSONObject data = json.getJSONObject("data");
                             RtcInfo rtcInfo = JsonParser.rtcTokenParser(data);

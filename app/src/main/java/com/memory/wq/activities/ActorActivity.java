@@ -43,12 +43,13 @@ public class ActorActivity extends BaseActivity<ActivityActorBinding> {
 
     private void initView() {
         Intent intent = getIntent();
-        mActorId = intent.getIntExtra(AppProperties.ActorId, -1);
+        mActorId = intent.getIntExtra(AppProperties.ACTOR_ID, -1);
         if (mActorId < 0) {
             finish();
             return;
         }
 
+        mBinding.ivBack.setOnClickListener(view -> finish());
         mBinding.rvCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         mBinding.rvCategories.setAdapter(mCateAdapter);
         mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
@@ -95,6 +96,7 @@ public class ActorActivity extends BaseActivity<ActivityActorBinding> {
                 .centerCrop()
                 .into(mBinding.ivAvatar);
 
+        mBinding.tvGender.setText(actor.getGender() + "演员");
         mBinding.tvName.setText(actor.getActorName());
         mBinding.tvDesc.setText(actor.getIntroduction());
     }

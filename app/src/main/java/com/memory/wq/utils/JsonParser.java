@@ -684,7 +684,54 @@ public class JsonParser {
     }
 
     public static MovieProfileInfo movieProfileParser(JSONObject json) {
-        return null;
+        MovieProfileInfo movieProfile = null;
+        try {
+            movieProfile = new MovieProfileInfo();
+
+            // 解析基本字段
+            movieProfile.setMovieId(json.getInt("movieId"));
+            movieProfile.setMovieName(json.getString("movieName"));
+            movieProfile.setMovieCover(json.optString("movieCover", ""));  // 使用optString避免异常
+            movieProfile.setMovieUrl(json.optString("movieUrl", ""));
+            movieProfile.setMovieDesc(json.optString("movieDesc", ""));
+            movieProfile.setDuration(json.optInt("duration", 0)); // 使用默认值
+
+            // 解析演员列表
+            if (json.has("actorList")) {
+                JSONArray actorArray = json.getJSONArray("actorList");
+                List<ActorInfo> actorList = new ArrayList<>();
+                for (int i = 0; i < actorArray.length(); i++) {
+                    JSONObject actorJson = actorArray.getJSONObject(i);
+                    ActorInfo actor = new ActorInfo();
+                    actor.setActorId(actorJson.getInt("actorId"));
+                    actor.setActorName(actorJson.getString("actorName"));
+                    actor.setIntroduction(actorJson.getString("actorIntro"));
+                    actor.setGender(actorJson.getString("actorGender"));
+                    actor.setAvatarUrl(actorJson.getString("actorAvatar"));
+                    actorList.add(actor);
+                }
+                movieProfile.setActors(actorList);
+            }
+
+            // 解析类别列表
+            if (json.has("cateList")) {
+                JSONArray cateArray = json.getJSONArray("cateList");
+                List<MovieCateInfo> cateList = new ArrayList<>();
+                for (int i = 0; i < cateArray.length(); i++) {
+                    JSONObject cateJson = cateArray.getJSONObject(i);
+                    MovieCateInfo movieCate = new MovieCateInfo();
+                    movieCate.setCateId(cateJson.getInt("cateId"));
+                    movieCate.setCateName(cateJson.getString("cateName"));
+                    cateList.add(movieCate);
+                }
+                movieProfile.setCates(cateList);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, "[x] movieProfileParser #732" + e.getMessage());
+        }
+        return movieProfile;
     }
 
     public static List<OnlineInfo> onlineListParser(JSONObject json) {
@@ -757,6 +804,18 @@ public class JsonParser {
     }
 
     public static ActorInfo actorProfileParser(JSONObject json) {
+        ActorInfo actor = new ActorInfo();
+        try {
+            actor.setActorId(json.getInt("actorId"));
+            actor.setActorName(json.getString("actorName"));
+            actor.setGender(json.getInt("actorGender") == 1 ? "男" : "女");
+            actor.setIntroduction(json.getString("actorIntro"));
+            actor.setAvatarUrl(json.getString("actorAvatar"));
+            return actor;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.d(TAG, "[x] actorProfileParser #817" + e.getMessage());
+        }
         return null;
     }
 }

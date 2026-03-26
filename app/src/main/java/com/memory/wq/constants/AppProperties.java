@@ -71,6 +71,7 @@ public class AppProperties {
 
     public static final String ROLE_TYPE = "ROLE_TYPE";
     public static final String MOVIE_PATH = "MOVIE_PATH";
+    public static final String MOVIE_ID = "MOVIE_ID";
     public static final String ROOM_ID = "ROOM_ID";
 
     public static final String CHAT_ID = "ChatId";
@@ -78,7 +79,6 @@ public class AppProperties {
     public static final String PERSON_ID = "personId";
     public static final String SHARE_MESSAGE = "SHARE_MESSAGE";
     public static final String POSTID = "postId";
-    public static final String ActorId = "ActorId";
-    public static final String MovieId = "MovieId";
+    public static final String ACTOR_ID = "ActorId";
 
 }

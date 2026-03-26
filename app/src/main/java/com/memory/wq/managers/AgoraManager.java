@@ -1,12 +1,15 @@
 package com.memory.wq.managers;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.SurfaceView;
 
 import com.memory.wq.beans.RtcInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.interfaces.AgoraEventListener;
+import com.memory.wq.thread.ThreadPoolManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,6 +58,7 @@ public class AgoraManager {
     private String rtcToken;
 
     private AgoraEventListener eventListener;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
 
     public AgoraManager(Context context, long userId, long channelName, RtcInfo rtcInfo) {
@@ -83,7 +87,7 @@ public class AgoraManager {
 
             VideoEncoderConfiguration videoConfig = new VideoEncoderConfiguration(
                     VideoEncoderConfiguration.VD_640x360,
-                    VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_30,
+                    VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15,
                     VideoEncoderConfiguration.STANDARD_BITRATE,
                     VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_ADAPTIVE
             );
@@ -130,25 +134,29 @@ public class AgoraManager {
     public void playMedia(String path) {
         if (mediaPlayer != null) {
             int code = mediaPlayer.open(path, 0);
-            Log.d(TAG, "playMedia: ===电影地址" + AppProperties.HTTP_SERVER_ADDRESS + path);
+            Log.d(TAG, "playMedia: ===电影地址" + path);
             Log.d(TAG, "playMedia: ===播放码" + code);
             Log.d(TAG, "MediaPlayer state after open: " + mediaPlayer.getState());
         }
     }
 
     public void loginRtm(com.memory.wq.utils.ResultCallback<Boolean> callback) {
-        mRtmClient.login(rtcToken, new ResultCallback<Void>() {
-            @Override
-            public void onSuccess(Void responseInfo) {
-                Log.d(TAG, "onSuccess: ===rtm登陆成功");
-                subscribeRtmChannel(callback);
-            }
+        ThreadPoolManager.getInstance().execute(() -> {
+            mRtmClient.login(rtcToken, new ResultCallback<Void>() {
+                @Override
+                public void onSuccess(Void responseInfo) {
+                    mHandler.post(() -> {
+                        subscribeRtmChannel(callback);
+                    });
+                }
 
-            @Override
-            public void onFailure(ErrorInfo errorInfo) {
-                Log.d(TAG, "onFailure: ===rtm登录失败" + errorInfo.toString());
-            }
+                @Override
+                public void onFailure(ErrorInfo errorInfo) {
+                    Log.d(TAG, "[x] loginRtm #155" + errorInfo.toString());
+                }
+            });
         });
+
     }
 
     private void subscribeRtmChannel(com.memory.wq.utils.ResultCallback<Boolean> callback) {
@@ -369,7 +377,7 @@ public class AgoraManager {
         }
     };
 
-    private RtmEventListener rtmEventListener = new RtmEventListener() {
+    private final RtmEventListener rtmEventListener = new RtmEventListener() {
         @Override
         public void onLinkStateEvent(LinkStateEvent event) {
             Log.d(TAG, "onLinkStateEvent: ===rtm连接状态改变" + event.getCurrentState());
@@ -420,6 +428,20 @@ public class AgoraManager {
         }
     };
 
+    public long getCurrentPosition() {
+        if (mediaPlayer != null) {
+            return mediaPlayer.getPlayPosition(); // 返回当前播放位置（毫秒）
+        }
+        return 0;
+    }
+
+    public long getDuration() {
+        if (mediaPlayer != null) {
+            return mediaPlayer.getDuration(); // 返回视频总时长（毫秒）
+        }
+        return 0;
+    }
+
     private final IMediaPlayerObserver mediaPlayerObserver = new IMediaPlayerObserver() {
         @Override
         public void onPlayerStateChanged(io.agora.mediaplayer.Constants.MediaPlayerState state, io.agora.mediaplayer.Constants.MediaPlayerReason reason) {
@@ -437,14 +459,20 @@ public class AgoraManager {
 
         @Override
         public void onPositionChanged(long positionMs, long timestampMs) {
-
-            if (eventListener != null && mediaPlayer != null) {
-                long duration = mediaPlayer.getDuration();
-                if (duration > 0) {
-                    int progress = (int) ((positionMs * 100) / duration);
-                    eventListener.onPlaybackProgress(progress);
-                }
+            if (eventListener == null || mediaPlayer == null) {
+                Log.d(TAG, "[x] onPositionChanged #465");
+                return;
             }
+
+            long duration = mediaPlayer.getDuration();
+            if (duration <= 0) {
+                Log.d(TAG, "[x] onPositionChanged #471");
+                return;
+            }
+
+            int progressInSeconds = (int) (positionMs / 1000);
+            Log.d(TAG, "[test] onPositionChanged " + positionMs + "==" + duration);
+            eventListener.onPlaybackProgress(progressInSeconds);
         }
 
         @Override

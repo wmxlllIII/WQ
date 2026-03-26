@@ -237,13 +237,14 @@ public class PostManager {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        Log.d(TAG, "[x] getLikePost #238");
+                        Log.d(TAG, "[x] getLikePost #238"+response.code());
                         return;
                     }
 
                     try {
                         JSONObject json = new JSONObject(response.body().string());
                         if (json.getInt("code") == 1){
+                            Log.d(TAG, "onResponse: "+json);
                             List<PostInfo> postInfoList = JsonParser.likePostParser(json);
                             mHandler.post(() -> {
                                 callback.onSuccess(postInfoList);

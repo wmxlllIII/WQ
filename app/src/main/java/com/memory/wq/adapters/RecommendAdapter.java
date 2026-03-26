@@ -25,7 +25,7 @@ import com.memory.wq.interfaces.OnPostClickListener;
 public class RecommendAdapter extends ListAdapter<PostInfo, RecyclerView.ViewHolder> {
 
     public static final String TAG = "WQ_RecommendAdapter";
-    private OnPostClickListener postClickListener;
+    private final OnPostClickListener postClickListener;
 
 
     public RecommendAdapter(OnPostClickListener postClickListener) {

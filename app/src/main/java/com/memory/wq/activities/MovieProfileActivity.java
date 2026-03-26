@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.memory.wq.R;
-import com.memory.wq.adapters.MovieProfileAdapter;
+import com.memory.wq.adapters.ActorAdapter;
 import com.memory.wq.beans.MovieProfileInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.ActivityMovieProfileBinding;
-import com.memory.wq.interfaces.OnMovieProfileClickListener;
+import com.memory.wq.interfaces.OnActorClickListener;
 import com.memory.wq.managers.MovieManager;
 import com.memory.wq.utils.ResultCallback;
 
@@ -20,7 +20,7 @@ public class MovieProfileActivity extends BaseActivity<ActivityMovieProfileBindi
 
     public static final String TAG = "WQ_MovieProfileActivity";
     private final MovieManager mMovieManager = new MovieManager();
-    private final MovieProfileAdapter mMovieProfileAdapter = new MovieProfileAdapter(new OnMovieProfileClickListenerImpl());
+    private final ActorAdapter mActorAdapter = new ActorAdapter(new OnActorClickListenerImpl());
     private int mMovieId;
 
     @Override
@@ -55,30 +55,36 @@ public class MovieProfileActivity extends BaseActivity<ActivityMovieProfileBindi
         mBinding.tvMovieDuration.setText(String.valueOf(movieProfile.getDuration()));
 
         mBinding.tvDesc.setText(movieProfile.getMovieDesc());
+        mBinding.tvPlay.setOnClickListener(v -> {
+            Intent intent = new Intent(MovieProfileActivity.this, AudioActivity.class);
+            intent.putExtra(AppProperties.ROOM_ID, movieProfile.getMovieId());
+            startActivity(intent);
+        });
 
-        Glide.with(mBinding.getRoot().getContext())
-                .load(movieProfile.getMovieUrl())
+        Glide.with(this)
+                .load(movieProfile.getMovieCover())
                 .into(mBinding.ivMovieCover);
 
+        mActorAdapter.submitList(movieProfile.getActors());
     }
 
     private void initView() {
         Intent intent = getIntent();
-        mMovieId = intent.getIntExtra(AppProperties.MovieId, -1);
+        mMovieId = intent.getIntExtra(AppProperties.MOVIE_ID, -1);
+
+        mBinding.ivBack.setOnClickListener(v -> finish());
         mBinding.rvActors.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        mBinding.rvActors.setAdapter(mMovieProfileAdapter);
+        mBinding.rvActors.setAdapter(mActorAdapter);
     }
 
-    private class OnMovieProfileClickListenerImpl implements OnMovieProfileClickListener {
-
-        @Override
-        public void onCoverClick(int movieId) {
-
-        }
+    private class OnActorClickListenerImpl implements OnActorClickListener {
 
         @Override
         public void onActorClick(int actorId) {
-
+            Intent intent = new Intent(MovieProfileActivity.this, ActorActivity.class);
+            intent.putExtra(AppProperties.ACTOR_ID, actorId);
+            startActivity(intent);
         }
+
     }
 }

@@ -59,7 +59,8 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
     private AgoraManager mAgoraManager;
     private RoleType roleType;
     private long mRoomId;
-    private MovieManager mMovieManager;
+    private final MovieManager mMovieManager = new MovieManager();
+    ;
     private PermissionManager mPermissionManager;
     private long mUserId;
     private String token;
@@ -107,13 +108,12 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
 
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
             movieInfo = (MovieInfo) intent.getSerializableExtra(AppProperties.MOVIE_PATH);
-            mMovieManager = new MovieManager();
-            mMovieManager.saveRoom(token, mUserId, movieInfo.getMovieId());
+            mMovieManager.saveRoom(mUserId, movieInfo.getMovieId());
         }
 
         TokenManager tokenManager = new TokenManager();
         int role = roleType == RoleType.ROLE_TYPE_BROADCASTER ? 1 : 2;
-        tokenManager.getToken(mUserId, token, mRoomId, role, new ResultCallback<RtcInfo>() {
+        tokenManager.getToken(mUserId, mRoomId, role, new ResultCallback<RtcInfo>() {
             @Override
             public void onSuccess(RtcInfo result) {
                 initAgoraManager(result);
@@ -121,7 +121,6 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
 
             @Override
             public void onError(String err) {
-                Log.d(TAG, "onError: ===获取声网token失败" + err);
             }
         });
 
@@ -147,19 +146,17 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
         mAgoraManager.loginRtm(new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                runOnUiThread(() -> {
-                    if (roleType == RoleType.ROLE_TYPE_AUDIENCE) {
-                        mBinding.tvStatus.setText("等待主播视频流...");
-                        mAgoraManager.joinChannel(false);
-                    } else {
-                        mBinding.tvStatus.setText("媒体加载中...");
-                    }
-                });
+                if (roleType == RoleType.ROLE_TYPE_AUDIENCE) {
+                    mBinding.tvStatus.setText("等待主播视频流...");
+                    mAgoraManager.joinChannel(false);
+                } else {
+                    mBinding.tvStatus.setText("媒体加载中...");
+                }
             }
 
             @Override
             public void onError(String err) {
-                Log.d(TAG, "onError: ===登录rtm错误" + err);
+                Log.d(TAG, "[x] loginRtm #160" + err);
             }
         });
     }
@@ -171,16 +168,16 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
         mBinding.remoteVideoViewContainer.addView(localView);
         mAgoraManager.setupLocalVideo(localView);
 
-        mBinding.btnPlayPause.setEnabled(true);
+        mBinding.btnPlayPause.setVisibility(View.VISIBLE);
 
-        mBinding.seekBar.setEnabled(true);
+        mBinding.seekBar.setVisibility(View.VISIBLE);
     }
 
 
     private void setAudienceUI() {
 
-        mBinding.btnPlayPause.setEnabled(false);
-        mBinding.seekBar.setEnabled(false);
+        mBinding.btnPlayPause.setVisibility(View.GONE);
+        mBinding.seekBar.setVisibility(View.GONE);
 
         mBinding.tvStatus.setText("等待主播加入...");
     }
@@ -211,24 +208,34 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
 
         mBinding.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser && mAgoraManager != null) {
-                    mAgoraManager.seek(progress * 1000L);
-
-                    if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
-                        mAgoraManager.sendSyncCommand(progress, System.currentTimeMillis());
-                    }
-                }
-            }
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                int seekBarProgress = seekBar.getProgress(); // 这是 SeekBar 的进度 (0-max)
+                int seekBarMax = seekBar.getMax();
 
+                if (mAgoraManager == null) {
+                    Log.d(TAG, "[x] onStopTrackingTouch #231");
+                    return;
+                }
+
+                long duration = mAgoraManager.getDuration();
+                if (duration <= 0) {
+                    Log.d(TAG, "[x] onStopTrackingTouch #238");
+                    return;
+                }
+
+                long targetPosition = (duration * seekBarProgress) / seekBarMax;
+                mAgoraManager.seek(targetPosition);
+
+                if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
+                    // 发送实际的毫秒时间，而不是 SeekBar 的进度值
+                    mAgoraManager.sendSyncCommand((int) (targetPosition / 1000), System.currentTimeMillis());
+                }
             }
         });
     }
@@ -260,10 +267,12 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
             mAgoraManager.pause();
             mAgoraManager.sendControlCommand("pause");
             mBinding.tvStatus.setText("已暂停");
+            mBinding.btnPlayPause.setImageResource(R.mipmap.icon_play);
         } else {
             mAgoraManager.play();
             mAgoraManager.sendControlCommand("play");
             mBinding.tvStatus.setText("播放中");
+            mBinding.btnPlayPause.setImageResource(R.mipmap.icon_pause);
         }
     }
 
@@ -380,7 +389,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
             RelativeLayout.LayoutParams videoParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             mBinding.remoteVideoViewContainer.setLayoutParams(videoParams);
 
-            RelativeLayout.LayoutParams controllerParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            RelativeLayout.LayoutParams controllerParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             controllerParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
             mBinding.rlControllers.setLayoutParams(controllerParams);
 
@@ -414,8 +423,10 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
 
     private void switchOrientation() {
         if (isFullScreen) {
+            mBinding.ivLandscape.setImageResource(R.mipmap.icon_landscape);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
+            mBinding.ivLandscape.setImageResource(R.mipmap.icon_portrait);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
     }
@@ -435,7 +446,14 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+    }
+
+    @Override
     protected void onDestroy() {
+        //todo 直接退回桌面再清理应用后台不会触发
         if (movieInfo != null) {
             int currentProgress = mBinding.seekBar.getProgress();
             saveProgress(movieInfo.getMovieId(), currentProgress);
@@ -446,8 +464,8 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
             mAgoraManager.destroy();
         }
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
-            MovieManager movieManager = new MovieManager();
-            movieManager.releaseRoom(token, String.valueOf(mRoomId));
+            
+            mMovieManager.releaseRoom(String.valueOf(mRoomId));
         }
 
         super.onDestroy();
@@ -478,27 +496,34 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
 
                 switch (cmd) {
                     case "play":
-                        runOnUiThread(() -> mBinding.tvStatus.setText("播放中"));
+                        runOnUiThread(() -> {
+                            mBinding.tvStatus.setText("播放中");
+                            mBinding.btnPlayPause.setImageResource(R.mipmap.icon_pause);
+                        });
                         break;
                     case "pause":
-                        runOnUiThread(() -> mBinding.tvStatus.setText("已暂停"));
+                        runOnUiThread(() -> {
+                            mBinding.tvStatus.setText("已暂停");
+                            mBinding.btnPlayPause.setImageResource(R.mipmap.icon_play);
+                        });
                         break;
                     case "sync":
-                        int progress = json.getInt("progress");
-//                    long timestamp = json.getLong("timestamp");
+                        long progress = json.getLong("progress");
+                        long syncTimestamp = json.getLong("timestamp");
+                        Log.d(TAG, "[test] AgoraListenerImpl #492" + progress + "===" + syncTimestamp);
                         runOnUiThread(() -> {
                             if (Math.abs(mBinding.seekBar.getProgress() - progress) > 2) {
-                                mBinding.seekBar.setProgress(progress);
+                                mBinding.seekBar.setProgress((int) progress);
                             }
                         });
                         break;
                     case "comment":
                         String sender = json.getString("sender");
                         String content = json.getString("content");
-                        long timestamp = json.getLong("timestamp");
+                        long msgTimestamp = json.getLong("timestamp");
                         runOnUiThread(() -> {
                             if (!String.valueOf(mUserId).equals(sender)) {
-                                addComment(sender, content, timestamp);
+                                addComment(sender, content, msgTimestamp);
                             }
                         });
                         break;
@@ -512,13 +537,22 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
         @Override
         public void onMediaStateChanged(Constants.MediaPlayerState state) {
             Log.d(TAG, "onMediaStateChanged: ===媒体状态改变" + state);
-            if (roleType != RoleType.ROLE_TYPE_BROADCASTER)
+            if (roleType != RoleType.ROLE_TYPE_BROADCASTER) {
                 return;
+            }
+
             if (state == Constants.MediaPlayerState.PLAYER_STATE_OPEN_COMPLETED) {
                 runOnUiThread(() -> {
                     setBroadcasterUI();
                     mAgoraManager.joinChannel(true);
                     mBinding.tvStatus.setText("等待观众加入...");
+
+                    long durationMs = mAgoraManager.getDuration();
+                    if (durationMs > 0) {
+                        int durationSeconds = (int) (durationMs / 1000); // 转换为秒
+                        mBinding.seekBar.setMax(durationSeconds); // 设置最大值
+                        Log.d(TAG, "设置 SeekBar 最大值为: " + durationSeconds + " 秒");
+                    }
                 });
 
             }
@@ -531,12 +565,10 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
         }
 
         @Override
-        public void onPlaybackProgress(int progress) {
-            runOnUiThread(() -> {
-                if (Math.abs(mBinding.seekBar.getProgress() - progress) > 2) {
-                    mBinding.seekBar.setProgress(progress);
-                }
-            });
+        public void onPlaybackProgress(int progressInSeconds) {
+            if (Math.abs(mBinding.seekBar.getProgress() - progressInSeconds) > 1) {
+                mBinding.seekBar.setProgress(progressInSeconds);
+            }
         }
     }
 

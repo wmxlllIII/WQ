@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,6 +52,7 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
         mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         mBinding.rvMovies.setAdapter(mMovieAdapter);
 
+        mBinding.ivBack.setOnClickListener(v -> finish());
         mBinding.etSearchMovie.addTextChangedListener(mTextWatcher);
     }
 
@@ -81,6 +83,7 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
         mMovieManager.getMoviesByCate(cateId, new ResultCallback<List<MovieInfo>>() {
             @Override
             public void onSuccess(List<MovieInfo> result) {
+                mBinding.rvCategories.setVisibility(View.VISIBLE);
                 mMovieAdapter.submitList(result);
             }
 
@@ -122,7 +125,9 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
 
         @Override
         public void onNameClick(int movieId) {
-
+            Intent intent = new Intent(SearchMovieActivity.this, MovieProfileActivity.class);
+            intent.putExtra(AppProperties.MOVIE_ID, movieId);
+            startActivity(intent);
         }
     }
 
@@ -154,7 +159,7 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
     private class SearchMovieCallback implements ResultCallback<List<MovieInfo>> {
         @Override
         public void onSuccess(List<MovieInfo> result) {
-            //todo
+            mBinding.rvCategories.setVisibility(View.GONE);
             mMovieAdapter.submitList(result);
         }
 

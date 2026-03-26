@@ -5,7 +5,7 @@ import com.memory.wq.enumertions.Gender;
 public class ActorInfo {
     private int actorId;
     private String actorName;
-    private Gender gender;
+    private String gender;
     private String introduction;
     private String avatarUrl;
 
@@ -25,11 +25,11 @@ public class ActorInfo {
         this.actorName = actorName;
     }
 
-    public Gender getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(Gender gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 

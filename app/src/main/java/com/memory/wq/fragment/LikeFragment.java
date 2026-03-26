@@ -35,19 +35,24 @@ public class LikeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = FragmentLikeBinding.inflate(inflater, container, false);
+        initView();
+        initData();
         return mBinding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        initView();
-        initData();
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden){
+            loadLikePost();
+        }
     }
 
     private void initData() {
+       loadLikePost();
+    }
+    private void loadLikePost(){
         mPostManager.getLikePost(new ResultCallback<List<PostInfo>>() {
             @Override
             public void onSuccess(List<PostInfo> posts) {

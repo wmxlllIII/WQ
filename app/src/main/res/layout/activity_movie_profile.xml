@@ -4,7 +4,38 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_title_zone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/common_title_pad_hori"
+            android:paddingVertical="@dimen/common_title_vert"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="@dimen/common_back_size"
+                android:layout_height="@dimen/common_back_size"
+                android:src="@mipmap/icon_back_light"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="电影详情"
+                android:textColor="@color/white"
+                android:textSize="@dimen/common_medium_font_size"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <!-- 封面图 -->
         <ImageView
@@ -15,18 +46,7 @@
             android:src="@drawable/ic_launcher_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- 播放按钮 -->
-        <ImageView
-            android:id="@+id/iv_play"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="#00ff00"
-            app:layout_constraintBottom_toBottomOf="@id/iv_movieCover"
-            app:layout_constraintEnd_toEndOf="@id/iv_movieCover"
-            app:layout_constraintStart_toStartOf="@id/iv_movieCover"
-            app:layout_constraintTop_toTopOf="@id/iv_movieCover" />
+            app:layout_constraintTop_toBottomOf="@id/cl_title_zone" />
 
         <!-- 电影名称 -->
         <TextView
@@ -40,6 +60,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_movieCover" />
+
+        <TextView
+            android:id="@+id/tv_play"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="10dp"
+            android:text="立即播放"
+            android:textColor="@color/white"
+            android:background="#00ff00"
+            android:gravity="center"
+            android:textSize="18dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_movie_name"
+            app:layout_constraintBottom_toBottomOf="@id/tv_movie_name"/>
 
         <!-- 时长 & 分类 -->
         <TextView
@@ -71,12 +106,11 @@
         <!-- 演员列表 -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_actors"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="100dp"
+            android:layout_marginVertical="10dp"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvActorTitle" />
 
         <!-- 剧情标题 -->
