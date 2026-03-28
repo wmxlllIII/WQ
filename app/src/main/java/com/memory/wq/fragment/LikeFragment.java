@@ -7,11 +7,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.viewpager2.widget.ViewPager2;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.memory.wq.R;
 import com.memory.wq.activities.PostDetailActivity;
 import com.memory.wq.adapters.WorksAdapter;
 import com.memory.wq.beans.PostInfo;
@@ -25,6 +28,7 @@ import java.util.List;
 
 public class LikeFragment extends Fragment {
 
+    private static final String TAG = "WQ_LikeFragment";
     private FragmentLikeBinding mBinding;
     private final WorksAdapter mAdapter = new WorksAdapter(new OnPostClickListenerImpl());
     private final PostManager mPostManager = new PostManager();
@@ -43,15 +47,15 @@ public class LikeFragment extends Fragment {
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        if (!hidden){
-            loadLikePost();
-        }
+    public void onResume() {
+        super.onResume();
+        loadLikePost();
     }
 
     private void initData() {
        loadLikePost();
     }
+
     private void loadLikePost(){
         mPostManager.getLikePost(new ResultCallback<List<PostInfo>>() {
             @Override

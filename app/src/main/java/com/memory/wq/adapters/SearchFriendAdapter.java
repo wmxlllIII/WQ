@@ -1,71 +1,37 @@
 package com.memory.wq.adapters;
 
-import android.content.Context;
-import android.util.Log;
-import android.view.View;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.memory.wq.R;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ListAdapter;
+
+import com.memory.wq.adapters.diffcallbacks.FriDiffCallback;
+import com.memory.wq.adapters.viewholders.SearchUserViewHolder;
 import com.memory.wq.beans.FriendInfo;
+import com.memory.wq.databinding.ItemSearchFriendBinding;
+import com.memory.wq.interfaces.OnFriItemClickListener;
 
-import java.util.List;
+public class SearchFriendAdapter extends ListAdapter<FriendInfo, SearchUserViewHolder> {
 
-public class SearchFriendAdapter extends BaseAdapter {
     public static final String TAG = "WQ_SearchFriendAdapter";
+    private final OnFriItemClickListener mListener;
 
-    private Context context;
-    private List<FriendInfo> friendInfoList;
+    public SearchFriendAdapter(OnFriItemClickListener listener) {
+        super(new FriDiffCallback());
+        this.mListener = listener;
+    }
 
-    public SearchFriendAdapter(Context context, List<FriendInfo> friendInfoList) {
-        this.context = context;
-        this.friendInfoList = friendInfoList;
+    @NonNull
+    @Override
+    public SearchUserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ItemSearchFriendBinding binding = ItemSearchFriendBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new SearchUserViewHolder(binding);
     }
 
     @Override
-    public int getCount() {
-        return friendInfoList.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return friendInfoList.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
-        if (convertView == null) {
-            convertView = View.inflate(context, R.layout.item_search_friend, null);
-            viewHolder = new ViewHolder(convertView);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
-        FriendInfo friendInfo = friendInfoList.get(position);
-        Glide.with(parent.getContext())
-                .load(friendInfo.getAvatarUrl())
-                .into(viewHolder.iv_avatar);
-
-        viewHolder.tv_nickName.setText(friendInfo.getNickname());
-        return convertView;
-    }
-
-    static class ViewHolder {
-        ImageView iv_avatar;
-        TextView tv_nickName;
-
-        public ViewHolder(View view) {
-            iv_avatar = (ImageView) view.findViewById(R.id.iv_avatar_aaa);
-            tv_nickName = (TextView) view.findViewById(R.id.tv_nickName);
-        }
+    public void onBindViewHolder(@NonNull SearchUserViewHolder holder, int position) {
+        FriendInfo friendInfo = getItem(position);
+        holder.bind(friendInfo, mListener);
     }
 }

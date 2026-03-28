@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.memory.wq.R;
 import com.memory.wq.adapters.PostCommentAdapter;
 import com.memory.wq.adapters.PostImagesAdapter;
@@ -21,6 +22,7 @@ import com.memory.wq.databinding.ActivityPostInfoBinding;
 import com.memory.wq.interfaces.OnCommentActionListener;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.CommentManager;
+import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.PostManager;
 import com.memory.wq.managers.UserManager;
 import com.memory.wq.utils.MyToast;
@@ -41,6 +43,8 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
     private PostCommentInfo mComment;
     private int mCurrentPage = 1;
     private static final int PAGE_SIZE = 10;
+    private FriendInfo mPoster;
+    private final FriendManager mFriendManager = new FriendManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +67,11 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
         }
 
         mPostManager.saveFootprintPost(mPostId);
+        loadDetail();
+        loadComments(1, true);
+    }
+
+    private void loadDetail() {
         mPostManager.getPostDetail(mPostId, new ResultCallback<PostDetailInfo>() {
 
             @Override
@@ -72,6 +81,7 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
                 mUserManager.getUserById(postDetail.getPosterId(), new ResultCallback<FriendInfo>() {
                     @Override
                     public void onSuccess(FriendInfo user) {
+                        mPoster = user;
                         updatePosterUI(user);
                     }
 
@@ -88,8 +98,6 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
 
             }
         });
-
-        loadComments(1, true);
     }
 
     private void updatePosterUI(FriendInfo user) {
@@ -97,6 +105,7 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
                 .load(user.getAvatarUrl())
                 .placeholder(R.mipmap.loading_default)
                 .error(R.mipmap.loading_failure)
+                .transform(new RoundedCorners(12))
                 .into(mBinding.ivAvatar);
 
         mBinding.tvNickname.setText(user.getNickname());
@@ -115,6 +124,7 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
             Log.d(TAG, "[x] updateUI #106");
             return;
         }
+
         mBinding.tvPostTitle.setText(postDetail.getPostTitle());
         mBinding.tvPostContent.setText(postDetail.getPostContent());
 
@@ -169,12 +179,12 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
             mPostManager.likePostIfNeed(mPostId, new ResultCallback<Boolean>() {
                 @Override
                 public void onSuccess(Boolean result) {
-
+                    loadDetail();
                 }
 
                 @Override
                 public void onError(String err) {
-
+                    MyToast.showToast(PostDetailActivity.this, "点赞失败");
                 }
             });
         });
@@ -188,7 +198,32 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
         });
 
         mBinding.tvFollow.setOnClickListener(v -> {
+            if (mPoster == null) {
+                Log.d(TAG, "[x] initView #202");
+                return;
+            }
 
+            if (AccountManager.getUserId() == mPoster.getUuNumber()) {
+                mPostManager.deletePostById(mPostId, new ResultCallback<Boolean>() {
+
+                    @Override
+                    public void onSuccess(Boolean result) {
+                        MyToast.showToast(PostDetailActivity.this, "删除成功");
+                        finish();
+                    }
+
+                    @Override
+                    public void onError(String err) {
+                        MyToast.showToast(PostDetailActivity.this, "删除失败,请稍后再试");
+                    }
+                });
+            } else {
+                if (!mPoster.isFollow()) {
+                    followUser(mPoster.getUuNumber());
+                } else {
+                    unfollowUser(mPoster.getUuNumber());
+                }
+            }
         });
     }
 
@@ -263,6 +298,36 @@ public class PostDetailActivity extends BaseActivity<ActivityPostInfoBinding> {
                     }
                 }
         );
+    }
+
+    private void followUser(long userId) {
+        mFriendManager.followUser(userId, new ResultCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                mPoster.setFollow(true);
+                mBinding.tvFollow.setText("取消关注");
+            }
+
+            @Override
+            public void onError(String err) {
+                MyToast.showToast(PostDetailActivity.this, "关注失败");
+            }
+        });
+    }
+
+    private void unfollowUser(long userId) {
+        mFriendManager.unfollowUser(userId, new ResultCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                mPoster.setFollow(false);
+                mBinding.tvFollow.setText("关注");
+            }
+
+            @Override
+            public void onError(String err) {
+                MyToast.showToast(PostDetailActivity.this, "取消关注失败");
+            }
+        });
     }
 
     private class OnCommentActionListenerImpl implements OnCommentActionListener {

@@ -2,28 +2,30 @@ package com.memory.wq.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.memory.wq.R;
 import com.memory.wq.adapters.SearchFriendAdapter;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.databinding.SearchUserLayoutBinding;
 import com.memory.wq.enumertions.SearchUserType;
+import com.memory.wq.interfaces.OnFriItemClickListener;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.utils.ResultCallback;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SearchUserActivity extends BaseActivity<SearchUserLayoutBinding> {
 
     private static final String TAG = "WQ_SearchUserActivity";
-    private FriendManager mFriendManager;
-    private List<FriendInfo> mFriendList;
-    private SearchFriendAdapter mAdapter;
+    private final FriendManager mFriendManager = new FriendManager();
+    private final SearchFriendAdapter mAdapter = new SearchFriendAdapter(new OnFriItemClickListenerImpl());
+    private final OnTextWatcherImpl mTextWatcher = new OnTextWatcherImpl();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,55 +39,75 @@ public class SearchUserActivity extends BaseActivity<SearchUserLayoutBinding> {
         return R.layout.search_user_layout;
     }
 
+    @Override
+    protected void onDestroy() {
+        if (mAdapter != null) {
+            mBinding.etAccount.removeTextChangedListener(mTextWatcher);
+        }
+        super.onDestroy();
+    }
 
     private void initData() {
-        mFriendManager = new FriendManager();
-
-        FriendInfo friendInfo = new FriendInfo();
-        friendInfo.setNickname("Test");
-        mFriendList = new ArrayList<>();
-        mFriendList.add(friendInfo);
-
-
-        mAdapter = new SearchFriendAdapter(this, mFriendList);
-        mBinding.lvSearch.setAdapter(mAdapter);
 
     }
 
     private void initView() {
-        mBinding.tvTest.setOnClickListener(view -> {
-            String account = mBinding.etAccount.getText().toString().trim();
+        mBinding.ivBack.setOnClickListener(v -> finish());
 
-            mFriendManager.searchUser(SearchUserType.SEARCH_USER_TYPE_EMAIL, account, new ResultCallback<FriendInfo>() {
-                @Override
-                public void onSuccess(FriendInfo result) {
-                    mFriendList.clear();
-                    mFriendList.add(result);
-                    mAdapter.notifyDataSetChanged();
-                    Log.d(TAG, "[✓] initView searchUser #80" + result);
-                }
+        mBinding.rvSearch.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mBinding.rvSearch.setAdapter(mAdapter);
 
-                @Override
-                public void onError(String err) {
+        mBinding.etAccount.addTextChangedListener(mTextWatcher);
+    }
 
-                }
-            });
-        });
-
-        mBinding.lvSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    private void searchUser(String keyword) {
+        mFriendManager.searchUserVague(keyword, new ResultCallback<List<FriendInfo>>() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FriendInfo friendInfo = (FriendInfo) parent.getItemAtPosition(position);
-                Intent intent = new Intent(SearchUserActivity.this, PersonInfoActivity.class);
-                intent.putExtra(AppProperties.PERSON_ID, friendInfo.getUuNumber());
-                startActivity(intent);
-                Log.d(TAG, "onItemClick: " + friendInfo.getUuNumber());
+            public void onSuccess(List<FriendInfo> result) {
+                Log.d(TAG, "[✓] initView searchUser #80" + result);
+                mAdapter.submitList(result);
+            }
+
+            @Override
+            public void onError(String err) {
+
             }
         });
+    }
 
-        mBinding.tvCancel.setOnClickListener(view -> {
-            finish();
-        });
+    private class OnTextWatcherImpl implements TextWatcher {
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            String keyword = s.toString().trim();
+            searchUser(keyword);
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+    }
+
+    private class OnFriItemClickListenerImpl implements OnFriItemClickListener {
+
+        @Override
+        public void onItemClick(long targetId) {
+            Intent intent = new Intent(SearchUserActivity.this, PersonInfoActivity.class);
+            intent.putExtra(AppProperties.PERSON_ID, targetId);
+            startActivity(intent);
+        }
+
+        @Override
+        public void onItemLongClick() {
+        }
+
+        @Override
+        public void onUpdateClick(long targetId, boolean isAgree, String validMsg) {
+        }
     }
 
 }

@@ -6,11 +6,13 @@ import android.os.Bundle;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.memory.wq.R;
+import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.databinding.ActivityInfoBinding;
 import com.memory.wq.dialog.AddFriendDialog;
 import com.memory.wq.enumertions.UpdateInfoType;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.AuthManager;
+import com.memory.wq.managers.UserManager;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
@@ -18,6 +20,7 @@ public class ProfileActivity extends BaseActivity<ActivityInfoBinding> {
 
     private static final String TAG = "WQ_UserInfoActivity";
     private final AuthManager mAuthManager = new AuthManager();
+    private final UserManager mUserManager = new UserManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +35,27 @@ public class ProfileActivity extends BaseActivity<ActivityInfoBinding> {
     }
 
     private void initData() {
+        loadProfile();
+    }
 
+    private void loadProfile() {
+        mUserManager.getUserById(AccountManager.getUserId(), new ResultCallback<FriendInfo>() {
+            @Override
+            public void onSuccess(FriendInfo result) {
+                mBinding.clNickname.setValue(result.getNickname());
+                Glide.with(mBinding.getRoot().getContext())
+                        .load(result.getAvatarUrl())
+                        .placeholder(R.mipmap.icon_default_avatar)
+                        .error(R.mipmap.icon_default_avatar)
+                        .transform(new RoundedCorners(15))
+                        .into(mBinding.ivAvatar);
+            }
+
+            @Override
+            public void onError(String err) {
+
+            }
+        });
     }
 
     private void initView() {
@@ -44,7 +67,7 @@ public class ProfileActivity extends BaseActivity<ActivityInfoBinding> {
         mBinding.clQrcode.setTitle("我的二维码");
 
         mBinding.clId.setValue(String.valueOf(AccountManager.getUserId()));
-        mBinding.clNickname.setValue(AccountManager.getUserInfo().getUsername());
+
         mBinding.clEmail.setValue(AccountManager.getUserInfo().getEmail());
 
 
@@ -57,12 +80,7 @@ public class ProfileActivity extends BaseActivity<ActivityInfoBinding> {
             startActivity(new Intent(this, AvatarActivity.class));
         });
 
-        Glide.with(this)
-                .load(AccountManager.getUserInfo().getAvatarUrl())
-                .placeholder(R.mipmap.icon_default_avatar)
-                .error(R.mipmap.icon_default_avatar)
-                .transform(new RoundedCorners(15))
-                .into(mBinding.ivAvatar);
+
 
         mBinding.clNickname.setOnClickListener(view -> {
             AddFriendDialog dialog = new AddFriendDialog(mBinding.getRoot().getContext());
@@ -126,6 +144,7 @@ public class ProfileActivity extends BaseActivity<ActivityInfoBinding> {
         @Override
         public void onSuccess(Boolean result) {
             MyToast.showToast(ProfileActivity.this, "更新成功");
+            loadProfile();
         }
 
         @Override

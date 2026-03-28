@@ -237,14 +237,14 @@ public class PostManager {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        Log.d(TAG, "[x] getLikePost #238"+response.code());
+                        Log.d(TAG, "[x] getLikePost #238" + response.code());
                         return;
                     }
 
                     try {
                         JSONObject json = new JSONObject(response.body().string());
-                        if (json.getInt("code") == 1){
-                            Log.d(TAG, "onResponse: "+json);
+                        if (json.getInt("code") == 1) {
+                            Log.d(TAG, "onResponse: " + json);
                             List<PostInfo> postInfoList = JsonParser.likePostParser(json);
                             mHandler.post(() -> {
                                 callback.onSuccess(postInfoList);
@@ -343,10 +343,13 @@ public class PostManager {
                         int code = json.getInt("code");
                         if (code == 1) {
                             Log.d(TAG, "[✓] likePostIfNeed #340");
+                            mHandler.post(() -> callback.onSuccess(true));
+                            return;
                         }
+                        mHandler.post(() -> callback.onSuccess(false));
                     } catch (JSONException e) {
-                        e.printStackTrace();
                         Log.d(TAG, "[x] likePostIfNeed #344 " + e.getMessage());
+                        mHandler.post(() -> callback.onSuccess(false));
                     }
                 }
             });
@@ -382,6 +385,41 @@ public class PostManager {
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     Log.d(TAG, "[x] getPostDetail #373");
                     mHandler.post(() -> callback.onError(e.getMessage()));
+                }
+            });
+        });
+    }
+
+    public void deletePostById(int mPostId, ResultCallback<Boolean> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getDeletePostJson(mPostId);
+            HttpStreamOP.postJson(AppProperties.DELETE_POST_BY_ID, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] deletePostById #404");
+                        mHandler.post(() -> callback.onError("删除失败"));
+                        return;
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            Log.d(TAG, "[✓] deletePostById #415");
+                            mHandler.post(() -> callback.onSuccess(true));
+                            return;
+                        }
+                        mHandler.post(() -> callback.onError("删除失败"));
+                    } catch (JSONException e) {
+                        Log.d(TAG, "[x] deletePostById #420 " + e.getMessage());
+                        mHandler.post(() -> callback.onError("删除失败"));
+                    }
                 }
             });
         });

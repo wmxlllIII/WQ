@@ -82,9 +82,6 @@ public class WebService extends Service {
                 .url(AppProperties.WEB_SOCKET_SERVER_ADDRESS + uuNumber)
                 .addHeader("token", token)
                 .build();
-//        System.out.println("=======token" + token);
-//        Log.d(TAG, "[✓] connectWebSocket #85" + "token: " + token);
-//        Log.d(TAG, "[✓] connectWebSocket #85" + "userid: " + userid);
         webSocket = client.newWebSocket(request, new okhttp3.WebSocketListener() {
             @Override
             public void onClosed(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
@@ -97,8 +94,6 @@ public class WebService extends Service {
             public void onFailure(@NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable Response response) {
                 super.onFailure(webSocket, t, response);
                 reconnect();
-//                Log.d(TAG, "[x] onFailure ws连接失败 #99:" + t.getMessage());
-//                t.printStackTrace();
             }
 
             @Override

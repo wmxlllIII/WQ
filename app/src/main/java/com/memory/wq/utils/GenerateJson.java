@@ -162,7 +162,7 @@ public class GenerateJson {
     public static String getUpdateUserInfoJson(UpdateInfoType updateType, Object data) {
         JSONObject object = new JSONObject();
         try {
-            object.put("type", updateType);
+            object.put("type", updateType.toInt());
             switch (updateType) {
                 case USERNAME:
                 case EMAIL:
@@ -305,11 +305,11 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getSaveProgressJson(int movieId, int currentProgress) {
+    public static String getSaveProgressJson(int movieId, int currentSecondPosition) {
         JSONObject object = new JSONObject();
         try {
             object.put("movieId", movieId);
-            object.put("progress", currentProgress);
+            object.put("currentSecondPosition", currentSecondPosition);
         } catch (JSONException e) {
             Log.d(TAG, "[X] getSaveProgressJson #287" + e.getMessage());
         }
@@ -386,7 +386,7 @@ public class GenerateJson {
         return object.toString();
     }
 
-    public static String getBuildGroupJson(String groupName, String groupAvatar, Set<Long> selectedUsers) {
+    public static String getBuildGroupJson(String groupName, Set<Long> selectedUsers) {
         JSONObject object = new JSONObject();
         try {
             JSONArray memberIds = new JSONArray();
@@ -395,7 +395,7 @@ public class GenerateJson {
             }
             object.put("memberIds", memberIds);
             object.put("groupName", groupName);
-            object.put("groupAvatar", groupAvatar);
+            object.put("groupAvatar", "groupAvatar");
         } catch (JSONException e) {
             Log.d(TAG, "[X] getBuildGroupJson #394" + e.getMessage());
         }
@@ -434,10 +434,11 @@ public class GenerateJson {
         return jsonObject.toString();
     }
 
-    public static String getChatInfoByIdJson(Long chatId) {
+    public static String getChatInfoByIdJson(Long chatId, int chatType) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("chatId", chatId);
+            jsonObject.put("chatType", chatType);
         } catch (JSONException e) {
             Log.d(TAG, "[X] getChatInfoByIdJson #441" + e.getMessage());
         }
@@ -471,5 +472,51 @@ public class GenerateJson {
             Log.d(TAG, "[X] getSearchMovieJson #471" + e.getMessage());
         }
         return jsonObject.toString();
+    }
+
+    public static String getMovieOnlineMsgJson(String comment, long userId) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("cmd", "comment");
+            json.put("content", comment);
+            json.put("sender", userId);
+            json.put("timestamp", System.currentTimeMillis());
+        } catch (JSONException e) {
+            Log.d(TAG, "[x] getMovieOnlineMsgJson #485" + e.getMessage());
+        }
+
+        return json.toString();
+    }
+
+    public static String getRtmCommandJson(String key, String value) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put(key, value);
+            json.put("timestamp", System.currentTimeMillis());
+        } catch (JSONException e) {
+            Log.d(TAG, "[x] getRtmCommandJson #496" + e.getMessage());
+        }
+
+        return json.toString();
+    }
+
+    public static String getDeletePostJson(int postId) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("postId", postId);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getDeletePostJson #508" + e.getMessage());
+        }
+        return object.toString();
+    }
+
+    public static String getSearchUserVagueJson(String keyword) {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("keyword", keyword);
+        } catch (JSONException e) {
+            Log.d(TAG, "[X] getSearchUserVagueJson #518" + e.getMessage());
+        }
+        return object.toString();
     }
 }

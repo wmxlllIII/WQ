@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.content.FileProvider;
 
@@ -20,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 public class FileOP {
 
 
+    public static final String TAG = "WQ_FileOP";
     private final Context context;
 
     public FileOP(Context context) {
@@ -36,18 +38,16 @@ public class FileOP {
                 int height = bitmap.getHeight() / 2;
                 Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
 
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 scaledBitmap.recycle();
+                bitmap.recycle();
             }
-            bitmap.recycle();
-        }catch (Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.d(TAG, "[x] handleImage #46");
         }
-//        System.out.println("======压缩后大小:"+tempFile.length()/1024+"Kb");
+        Log.d(TAG, "[✓] handleImage 压缩后大小:" + tempFile.length() / 1024 + "Kb");
         return tempFile;
     }
-
-
 
 
     public File createTempImageFile() {
@@ -90,10 +90,12 @@ public class FileOP {
 
     public Uri file2Uri(Context context, File file) {
         Uri uri;
-        if (Build.VERSION.SDK_INT >= 24)
+        if (Build.VERSION.SDK_INT >= 24) {
             uri = FileProvider.getUriForFile(context, AppProperties.AUTHORITY, file);
-        else
+        } else {
             uri = Uri.fromFile(file);
+        }
+
         return uri;
     }
 }

@@ -9,8 +9,6 @@ import java.io.Serializable;
 import java.util.List;
 
 public class PostInfo implements Serializable {
-//    private String uuNumber;
-
     private int postId;
     private long poster;
     private String title;

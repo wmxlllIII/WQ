@@ -21,6 +21,7 @@ import com.memory.wq.beans.StsTokenInfo;
 import com.memory.wq.beans.TagInfo;
 import com.memory.wq.beans.UiChatInfo;
 import com.memory.wq.beans.UserInfo;
+import com.memory.wq.beans.WatchHistoryInfo;
 import com.memory.wq.enumertions.EventType;
 
 import org.json.JSONArray;
@@ -192,14 +193,16 @@ public class JsonParser {
             String username = friendVOJson.getString("username");
             long uuNumber = friendVOJson.getLong("uuNumber");
             long updateAt = friendVOJson.getLong("updateAt");
-            boolean isFriend = data.getBoolean("friend");
-            boolean inBlackList = data.getBoolean("inBlackList");
+            boolean isFriend = data.getBoolean("isFriend");
+            boolean isFollow = data.getBoolean("isFollow");
+            boolean inBlackList = data.getBoolean("isInBlackList");
 
             friendInfo.setAvatarUrl(avatarUrl);
             friendInfo.setNickname(username);
             friendInfo.setUuNumber(uuNumber);
             friendInfo.setUpdateAt(updateAt);
             friendInfo.setFriend(isFriend);
+            friendInfo.setFollow(isFollow);
             friendInfo.setBlack(inBlackList);
         } catch (JSONException e) {
             Log.d(TAG, "[x] searchFriendParser #148" + e.getMessage());
@@ -817,5 +820,50 @@ public class JsonParser {
             Log.d(TAG, "[x] actorProfileParser #817" + e.getMessage());
         }
         return null;
+    }
+
+    public static List<WatchHistoryInfo> watchHistoryParser(JSONArray data) throws JSONException {
+        List<WatchHistoryInfo> watchHistoryList = new ArrayList<>();
+        for (int i = 0; i < data.length(); i++) {
+            JSONObject item = data.getJSONObject(i);
+            WatchHistoryInfo watchHistoryInfo = new WatchHistoryInfo();
+            JSONObject movie = item.getJSONObject("movie");
+
+            MovieInfo movieInfo = new MovieInfo();
+            movieInfo.setMovieId(movie.getInt("id"));
+            movieInfo.setTitle(movie.getString("movieName"));
+            movieInfo.setMovieUrl(movie.getString("movieUrl"));
+            movieInfo.setLength(movie.getDouble("movieLength"));
+            movieInfo.setCoverUrl(movie.getString("movieCover"));
+
+            watchHistoryInfo.setMovieInfo(movieInfo);
+            watchHistoryInfo.setUserId(item.getLong("userId"));
+            watchHistoryInfo.setWatchCount(item.getInt("watchCount"));
+            watchHistoryInfo.setProgress(item.getInt("progress"));
+            watchHistoryInfo.setCreateAt(item.getLong("createAt"));
+            watchHistoryInfo.setUpdateAt(item.getLong("updateAt"));
+            watchHistoryList.add(watchHistoryInfo);
+        }
+        return watchHistoryList;
+    }
+
+    public static UserInfo updateAvatarParser(JSONObject json) {
+        UserInfo userInfo = new UserInfo();
+        try {
+            JSONObject data = json.getJSONObject("data");
+            String dataEmail = data.getString("email");
+            String userName = data.getString("username");
+            String avatarUrl = data.optString("avatarUrl");
+            long uuNumber = data.getLong("uuNumber");
+
+            userInfo.setEmail(dataEmail);
+            userInfo.setUsername(userName);
+            userInfo.setAvatarUrl(avatarUrl);
+            userInfo.setUuNumber(uuNumber);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return userInfo;
     }
 }

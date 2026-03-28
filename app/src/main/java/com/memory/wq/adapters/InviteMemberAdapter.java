@@ -30,6 +30,7 @@ public class InviteMemberAdapter extends ListAdapter<FriendInfo, InviteMemberVie
 
     public InviteMemberAdapter() {
         super(new MemberDiffCallback());
+        selectedUsers.add(AccountManager.getUserId());
     }
 
     @NonNull
@@ -38,8 +39,7 @@ public class InviteMemberAdapter extends ListAdapter<FriendInfo, InviteMemberVie
         ItemInviteMemberBinding binding = ItemInviteMemberBinding.inflate(
                 LayoutInflater.from(parent.getContext()), parent, false
         );
-        selectedUsers.add(AccountManager.getUserId());
-        return new InviteMemberViewHolder(binding, mListener);
+        return new InviteMemberViewHolder(binding, mListener,this);
     }
 
 
@@ -53,6 +53,18 @@ public class InviteMemberAdapter extends ListAdapter<FriendInfo, InviteMemberVie
 
     public Set<Long> getSelectedUsers() {
         return selectedUsers;
+    }
+
+    public void toggleUser(long userId, int position) {
+        if (selectedUsers.contains(userId)) {
+            selectedUsers.remove(userId);
+        } else {
+            selectedUsers.add(userId);
+        }
+
+        Log.d(TAG, "selectedUsers: " + selectedUsers);
+
+        notifyItemChanged(position);
     }
 
     private class OnInviteClickListenerImpl implements OnInviteClickListener {

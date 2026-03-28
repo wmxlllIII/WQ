@@ -4,18 +4,25 @@
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/tv_recent_view"
+        <LinearLayout
+            android:id="@+id/ll_recent_view_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="最近观看"
-            android:textSize="18dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="8dp"
-            android:textColor="@color/white_80"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:gravity="center_vertical">
+            <TextView
+                android:id="@+id/tv_recent_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="最近观看"
+                android:textSize="18dp"
+                android:textColor="@color/white_80" />
+
+        </LinearLayout>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_recent_view"
@@ -24,8 +31,9 @@
             app:layout_constraintHeight_percent="0.3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_recent_view"
-            android:layout_marginTop="5dp"/>
+            app:layout_constraintTop_toBottomOf="@id/ll_recent_view_title"
+            android:layout_marginTop="5dp"
+            android:layout_marginHorizontal="10dp"/>
 
         <LinearLayout
             android:id="@+id/ll_bars"
@@ -83,26 +91,13 @@
                     android:visibility="gone"/>
             </RelativeLayout>
 
-            <RelativeLayout
-                style="@style/history_bar">
-
-                <TextView
-                    android:id="@+id/tv_bar_D"
-                    style="@style/history_bar_tv"
-                    android:text="待定" />
-                <View
-                    android:id="@+id/tv_bar_indi_D"
-                    android:layout_below="@id/tv_bar_D"
-                    style="@style/history_bar_indicator"
-                    android:visibility="gone"/>
-            </RelativeLayout>
-
 
         </LinearLayout>
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/vp_history"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginHorizontal="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ll_bars"

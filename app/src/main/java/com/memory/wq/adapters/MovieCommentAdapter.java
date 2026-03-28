@@ -46,21 +46,18 @@ public class MovieCommentAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         MovieCommentInfo comment = commentList.get(position);
-        viewHolder.tv_sender.setText(comment.getSender());
+        viewHolder.tv_sender.setText(comment.getSender() + ":  ");
         viewHolder.tv_content.setText(comment.getContent());
-        viewHolder.tv_timestamp.setText(comment.getTimestamp() + "");
         return convertView;
     }
 
     class ViewHolder {
         private TextView tv_sender;
         private TextView tv_content;
-        private TextView tv_timestamp;
 
         public ViewHolder(View view) {
             tv_sender = (TextView) view.findViewById(R.id.tv_sender);
             tv_content = (TextView) view.findViewById(R.id.tv_content);
-            tv_timestamp = (TextView) view.findViewById(R.id.tv_timestamp);
 
         }
 

@@ -24,7 +24,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.material.navigation.NavigationView;
 import com.memory.wq.R;
 import com.memory.wq.activities.AvatarActivity;
-import com.memory.wq.activities.BaseActivity;
 import com.memory.wq.activities.LaunchActivity;
 import com.memory.wq.activities.ProfileActivity;
 import com.memory.wq.activities.UploadPostActivity;
@@ -169,17 +168,13 @@ public class DiscoverFragment extends Fragment {
         binding.tvRecommend.setOnClickListener(v -> {
             switchFragment(0);
             resetcolor();
-            binding.tvRecommend.setTextColor(getResources().getColor(R.color.light_blue_600));
+            binding.tvRecommend.setTextColor(getResources().getColor(R.color.tv_medium));
         });
 
         binding.tvConcern.setOnClickListener(v -> {
             switchFragment(1);
             resetcolor();
-            binding.tvConcern.setTextColor(getResources().getColor(R.color.light_blue_600));
-        });
-
-        tv_nickname.setOnClickListener(v -> {
-
+            binding.tvConcern.setTextColor(getResources().getColor(R.color.tv_medium));
         });
 
         iv_avatar.setOnClickListener(v -> {
@@ -193,8 +188,8 @@ public class DiscoverFragment extends Fragment {
     }
 
     private void resetcolor() {
-        binding.tvRecommend.setTextColor(getResources().getColor(R.color.white_80));
-        binding.tvConcern.setTextColor(getResources().getColor(R.color.white_80));
+        binding.tvRecommend.setTextColor(getResources().getColor(R.color.tv_hint));
+        binding.tvConcern.setTextColor(getResources().getColor(R.color.tv_hint));
     }
 
 }

@@ -9,21 +9,20 @@
         android:background="@drawable/bg_gradient_dark"
         android:fitsSystemWindows="true"
         android:orientation="vertical"
-        android:padding="20dp"
-        tools:context=".activities.UploadPostActivity">
+        android:padding="20dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="3dp"
+            android:paddingVertical="10dp"
             android:paddingHorizontal="5dp">
 
             <ImageView
                 android:id="@+id/iv_back"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_centerVertical="true"
-                android:layout_marginHorizontal="10dp"
+                android:layout_marginStart="15dp"
                 android:src="@mipmap/icon_cancel" />
 
             <TextView
@@ -32,7 +31,7 @@
                 android:layout_centerInParent="true"
                 android:text="发动态"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="20dp" />
 
             <TextView
                 android:id="@+id/tv_publish"
@@ -40,13 +39,12 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginHorizontal="10dp"
-                android:background="#323232"
-                android:paddingHorizontal="9dp"
-                android:paddingVertical="2dp"
+                android:layout_marginEnd="15dp"
+                android:gravity="center"
+                android:background="@drawable/bg_detail_follow"
                 android:text="发布"
                 android:textColor="@color/white"
-                android:textSize="15dp" />
+                android:textSize="16dp" />
         </RelativeLayout>
 
         <EditText
@@ -55,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="15dp"
-            android:background="@android:color/transparent"
+            android:background="@drawable/bg_upload_post_title"
             android:gravity="top"
             android:hint="此刻主题~"
             android:maxLength="30"
@@ -72,7 +70,7 @@
             android:layout_height="150dp"
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="15dp"
-            android:background="@android:color/transparent"
+            android:background="@drawable/bg_upload_post_title"
             android:gravity="top"
             android:hint="展示自我, 记录生活, 让更多的人认识你~"
             android:padding="8dp"
@@ -86,10 +84,12 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_select_images"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="360dp"
             android:layout_marginHorizontal="10dp"
             android:paddingHorizontal="10dp"
-            app:spanCount="4" />
+            android:paddingVertical="15dp"
+            android:background="@drawable/bg_upload_post_image"
+            android:nestedScrollingEnabled="false"/>
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -112,18 +112,21 @@ public class MovieManager {
 
     public void getRooms(ResultCallback<List<RoomInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
-
             HttpStreamOP.postJson(AppProperties.ROOMS, "{}", new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
+                    Log.d(TAG, "[x] getRooms #118");
+                    mHandler.post(() -> callback.onError("getRooms 出错了"));
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        mHandler.post(() -> callback.onError("getRooms出错了"));
+                        Log.d(TAG, "[x] getRooms #125");
+                        mHandler.post(() -> callback.onError("获取房间数据失败"));
+                        return;
                     }
+
                     try {
                         JSONObject json = new JSONObject(response.body().string());
                         int code = json.getInt("code");
@@ -131,11 +134,13 @@ public class MovieManager {
                             JSONArray roomList = json.getJSONArray("data");
                             List<RoomInfo> roomInfoList = JsonParser.roomParer(roomList);
                             mHandler.post(() -> callback.onSuccess(roomInfoList));
-
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, "[x] getRooms #139" + e.getMessage());
                     }
+                    mHandler.post(() -> {
+                        callback.onError("获取房间数据失败");
+                    });
                 }
             });
         });
@@ -244,9 +249,9 @@ public class MovieManager {
         });
     }
 
-    public void saveWatchProgress(int movieId, int currentProgress) {
+    public void saveWatchProgress(int movieId, int currentSecondPosition) {
         ThreadPoolManager.getInstance().execute(() -> {
-            String json = GenerateJson.getSaveProgressJson(movieId, currentProgress);
+            String json = GenerateJson.getSaveProgressJson(movieId, currentSecondPosition);
             HttpStreamOP.postJson(AppProperties.SAVE_WATCH_PROGRESS, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -261,7 +266,7 @@ public class MovieManager {
         });
     }
 
-    public void getWatchHistory(ResultCallback<WatchHistoryInfo> callback) {
+    public void getWatchHistory(ResultCallback<List<WatchHistoryInfo>> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.GET_WATCH_HISTORY, "{}", new Callback() {
                 @Override
@@ -272,7 +277,23 @@ public class MovieManager {
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] getWatchHistory #280");
+                        mHandler.post(() -> callback.onError(null));
+                        return;
+                    }
 
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        if (code == 1) {
+                            Log.d(TAG, "[test] getWatchHistory " + json);
+                            List<WatchHistoryInfo> watchHistoryList = JsonParser.watchHistoryParser(json.getJSONArray("data"));
+                            mHandler.post(() -> callback.onSuccess(watchHistoryList));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         });
@@ -339,7 +360,7 @@ public class MovieManager {
                         if (code == 1) {
                             JSONObject data = json.getJSONObject("data");
                             MovieProfileInfo movieProfile = JsonParser.movieProfileParser(data);
-                            Log.d(TAG, "onResponse: "+movieProfile);
+                            Log.d(TAG, "onResponse: " + movieProfile);
                             mHandler.post(() -> callback.onSuccess(movieProfile));
                             return;
                         }

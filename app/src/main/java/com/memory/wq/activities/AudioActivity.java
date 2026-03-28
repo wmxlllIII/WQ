@@ -27,7 +27,6 @@ import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.beans.RtcInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.ActivityAudioBinding;
-import com.memory.wq.enumertions.ContentType;
 import com.memory.wq.enumertions.RoleType;
 import com.memory.wq.interfaces.AgoraEventListener;
 import com.memory.wq.managers.AccountManager;
@@ -35,8 +34,8 @@ import com.memory.wq.managers.AgoraManager;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.MovieManager;
 import com.memory.wq.managers.PermissionManager;
-import com.memory.wq.managers.SPManager;
 import com.memory.wq.managers.TokenManager;
+import com.memory.wq.managers.UserManager;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.utils.ShareFunctionMenu;
@@ -63,15 +62,16 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
     ;
     private PermissionManager mPermissionManager;
     private long mUserId;
-    private String token;
     private MovieCommentAdapter mAdapter;
     private boolean isFullScreen = false;
 
-    private ViewGroup.LayoutParams rl_video_containerParams;
     private ViewGroup.LayoutParams rl_controllersParams;
     private ViewGroup.LayoutParams remote_video_view_containerParams;
     private MovieInfo movieInfo;
     private final AgoraListenerImpl mAgoraListener = new AgoraListenerImpl();
+    private final TokenManager mRtcTokenManager = new TokenManager();
+    private final UserManager mUserManager = new UserManager();
+    private final SeekBarChangeListenerImpl mSeekBarListener = new SeekBarChangeListenerImpl();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +86,32 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
         return R.layout.activity_audio;
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+    }
+
+    @Override
+    protected void onDestroy() {
+        //todo 直接退回桌面再清理应用后台不会触发
+        if (movieInfo != null) {
+            long currentMsPosition = mAgoraManager.getCurrentPosition();
+            saveProgress(movieInfo.getMovieId(), (int) currentMsPosition/1000);
+        }
+
+        if (mAgoraManager != null) {
+            mAgoraManager.leaveChannel();
+            mAgoraManager.destroy();
+        }
+        if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
+
+            mMovieManager.releaseRoom(String.valueOf(mRoomId));
+        }
+
+        super.onDestroy();
+    }
+
     private void initCommentList() {
         mAdapter = new MovieCommentAdapter(this, commentList);
         mBinding.lvComment.setAdapter(mAdapter);
@@ -98,36 +124,37 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
 
     private void initData() {
 
-        token = AccountManager.getUserInfo().getToken();
         mUserId = AccountManager.getUserId();
 
         Intent intent = getIntent();
         roleType = (RoleType) intent.getSerializableExtra(AppProperties.ROLE_TYPE);
-        mRoomId = roleType == RoleType.ROLE_TYPE_BROADCASTER ? mUserId : intent.getLongExtra(AppProperties.ROOM_ID, -1L);
-
+        mRoomId = roleType == RoleType.ROLE_TYPE_BROADCASTER ? mUserId
+                : intent.getLongExtra(AppProperties.ROOM_ID, -1L);
 
         if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
-            movieInfo = (MovieInfo) intent.getSerializableExtra(AppProperties.MOVIE_PATH);
+            movieInfo = (MovieInfo) intent.getSerializableExtra(AppProperties.MOVIE);
             mMovieManager.saveRoom(mUserId, movieInfo.getMovieId());
         }
 
-        TokenManager tokenManager = new TokenManager();
         int role = roleType == RoleType.ROLE_TYPE_BROADCASTER ? 1 : 2;
-        tokenManager.getToken(mUserId, mRoomId, role, new ResultCallback<RtcInfo>() {
+
+
+        mRtcTokenManager.getToken(mUserId, mRoomId, role, new ResultCallback<RtcInfo>() {
             @Override
             public void onSuccess(RtcInfo result) {
+                Log.d(TAG, "[test] initData #141" + result);
                 initAgoraManager(result);
             }
 
             @Override
             public void onError(String err) {
+                Log.d(TAG, "[x] getRtcToken #147" + err);
             }
         });
 
     }
 
     private void initAgoraManager(RtcInfo rtcInfo) {
-        Log.d(TAG, "===initAgoraManager");
         mAgoraManager = new AgoraManager(this, mUserId, mRoomId, rtcInfo);
         mAgoraManager.setEventListener(mAgoraListener);
 
@@ -146,12 +173,15 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
         mAgoraManager.loginRtm(new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                if (roleType == RoleType.ROLE_TYPE_AUDIENCE) {
-                    mBinding.tvStatus.setText("等待主播视频流...");
-                    mAgoraManager.joinChannel(false);
-                } else {
-                    mBinding.tvStatus.setText("媒体加载中...");
-                }
+                //不可删除主线程运行!!!!!!!!!!!!!!!!!!!!!
+                runOnUiThread(()->{
+                    if (roleType == RoleType.ROLE_TYPE_AUDIENCE) {
+                        mBinding.tvStatus.setText("等待主播视频流...");
+                        mAgoraManager.joinChannel(false);
+                    } else {
+                        mBinding.tvStatus.setText("媒体加载中...");
+                    }
+                });
             }
 
             @Override
@@ -175,17 +205,14 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
 
 
     private void setAudienceUI() {
-
         mBinding.btnPlayPause.setVisibility(View.GONE);
         mBinding.seekBar.setVisibility(View.GONE);
-
         mBinding.tvStatus.setText("等待主播加入...");
     }
 
     private void initView() {
         remote_video_view_containerParams = mBinding.remoteVideoViewContainer.getLayoutParams();
         rl_controllersParams = mBinding.rlControllers.getLayoutParams();
-        rl_video_containerParams = mBinding.rlVideoContainer.getLayoutParams();
         mBinding.rlControllers.setVisibility(View.GONE);
 
         mBinding.remoteVideoViewContainer.setOnClickListener(V -> {
@@ -201,43 +228,9 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
         mBinding.ivLandscape.setOnClickListener(V -> {
             switchOrientation();
         });
-        mBinding.ivMenu.setOnClickListener(V -> {
-            showOptions();
-        });
 
 
-        mBinding.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                int seekBarProgress = seekBar.getProgress(); // 这是 SeekBar 的进度 (0-max)
-                int seekBarMax = seekBar.getMax();
-
-                if (mAgoraManager == null) {
-                    Log.d(TAG, "[x] onStopTrackingTouch #231");
-                    return;
-                }
-
-                long duration = mAgoraManager.getDuration();
-                if (duration <= 0) {
-                    Log.d(TAG, "[x] onStopTrackingTouch #238");
-                    return;
-                }
-
-                long targetPosition = (duration * seekBarProgress) / seekBarMax;
-                mAgoraManager.seek(targetPosition);
-
-                if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
-                    // 发送实际的毫秒时间，而不是 SeekBar 的进度值
-                    mAgoraManager.sendSyncCommand((int) (targetPosition / 1000), System.currentTimeMillis());
-                }
-            }
-        });
+        mBinding.seekBar.setOnSeekBarChangeListener(mSeekBarListener);
     }
 
 
@@ -378,7 +371,6 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
             Log.d(TAG, "enterFullScreenMode: ===进入全屏");
             isFullScreen = true;
             mBinding.rlPortraitLayout.setVisibility(View.GONE);
-            mBinding.rlTitle.setVisibility(View.GONE);
 
 
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -405,7 +397,6 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
             Log.d(TAG, "exitFullScreenMode: ===退出全屏");
             isFullScreen = false;
             mBinding.rlPortraitLayout.setVisibility(View.VISIBLE);
-            mBinding.rlTitle.setVisibility(View.VISIBLE);
 
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -432,44 +423,33 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
     }
 
     private void addComment(String userId, String comment, long timestamp) {
-        MovieCommentInfo movieCommentInfo = new MovieCommentInfo();
-        movieCommentInfo.setContent(comment);
-        movieCommentInfo.setSender(userId);
-        movieCommentInfo.setTimestamp(timestamp);
-        commentList.add(movieCommentInfo);
-        mAdapter.notifyDataSetChanged();
-        mBinding.lvComment.smoothScrollToPosition(commentList.size() - 1);
+
+        mUserManager.getUserById(Long.parseLong(userId), new ResultCallback<FriendInfo>() {
+
+            @Override
+            public void onSuccess(FriendInfo result) {
+                MovieCommentInfo movieCommentInfo = new MovieCommentInfo();
+                movieCommentInfo.setContent(comment);
+                movieCommentInfo.setSender(result.getNickname());
+                movieCommentInfo.setTimestamp(timestamp);
+                commentList.add(movieCommentInfo);
+                mAdapter.notifyDataSetChanged();
+                mBinding.lvComment.smoothScrollToPosition(commentList.size() - 1);
+            }
+
+            @Override
+            public void onError(String err) {
+
+            }
+        });
+
     }
 
-    private void saveProgress(int movieId, int currentProgress) {
-        mMovieManager.saveWatchProgress(movieId, currentProgress);
+    private void saveProgress(int movieId, int currentSecondPosition) {
+        Log.d(TAG, "[test] saveProgress "+currentSecondPosition);
+        mMovieManager.saveWatchProgress(movieId, currentSecondPosition);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause: ");
-    }
-
-    @Override
-    protected void onDestroy() {
-        //todo 直接退回桌面再清理应用后台不会触发
-        if (movieInfo != null) {
-            int currentProgress = mBinding.seekBar.getProgress();
-            saveProgress(movieInfo.getMovieId(), currentProgress);
-        }
-
-        if (mAgoraManager != null) {
-            mAgoraManager.leaveChannel();
-            mAgoraManager.destroy();
-        }
-        if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
-            
-            mMovieManager.releaseRoom(String.valueOf(mRoomId));
-        }
-
-        super.onDestroy();
-    }
 
     private class AgoraListenerImpl implements AgoraEventListener {
 
@@ -477,9 +457,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
         public void onRemoteUserJoined(int uid) {
             runOnUiThread(() -> {
                 if (roleType == RoleType.ROLE_TYPE_AUDIENCE) {
-
-                    mBinding.tvStatus.setText("已连接房主: " + uid);
-
+                    mBinding.tvStatus.setText("");
                     SurfaceView remoteView = new SurfaceView(AudioActivity.this);
                     mBinding.remoteVideoViewContainer.removeAllViews();
                     mBinding.remoteVideoViewContainer.addView(remoteView);
@@ -538,6 +516,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
         public void onMediaStateChanged(Constants.MediaPlayerState state) {
             Log.d(TAG, "onMediaStateChanged: ===媒体状态改变" + state);
             if (roleType != RoleType.ROLE_TYPE_BROADCASTER) {
+                Log.d(TAG, "[x] onMediaStateChanged #507");
                 return;
             }
 
@@ -545,7 +524,7 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
                 runOnUiThread(() -> {
                     setBroadcasterUI();
                     mAgoraManager.joinChannel(true);
-                    mBinding.tvStatus.setText("等待观众加入...");
+                    mBinding.tvStatus.setText("");
 
                     long durationMs = mAgoraManager.getDuration();
                     if (durationMs > 0) {
@@ -568,6 +547,44 @@ public class AudioActivity extends BaseActivity<ActivityAudioBinding> {
         public void onPlaybackProgress(int progressInSeconds) {
             if (Math.abs(mBinding.seekBar.getProgress() - progressInSeconds) > 1) {
                 mBinding.seekBar.setProgress(progressInSeconds);
+            }
+        }
+    }
+
+    private class SeekBarChangeListenerImpl implements SeekBar.OnSeekBarChangeListener{
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            int seekBarProgress = seekBar.getProgress(); // 这是 SeekBar 的进度 (0-max)
+            int seekBarMax = seekBar.getMax();
+
+            if (mAgoraManager == null) {
+                Log.d(TAG, "[x] onStopTrackingTouch #231");
+                return;
+            }
+
+            long duration = mAgoraManager.getDuration();
+            if (duration <= 0) {
+                Log.d(TAG, "[x] onStopTrackingTouch #238");
+                return;
+            }
+
+            long targetPosition = (duration * seekBarProgress) / seekBarMax;
+            mAgoraManager.seek(targetPosition);
+
+            if (roleType == RoleType.ROLE_TYPE_BROADCASTER) {
+                // 发送实际的毫秒时间，而不是 SeekBar 的进度值
+                mAgoraManager.sendSyncCommand((int) (targetPosition / 1000), System.currentTimeMillis());
             }
         }
     }

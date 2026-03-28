@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.beans.OnlineInfo;
 import com.memory.wq.beans.UiChatInfo;
+import com.memory.wq.beans.UserInfo;
 import com.memory.wq.enumertions.SelectImageType;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.FileOP;
@@ -40,7 +41,6 @@ import okhttp3.Response;
 public class UserManager {
 
     public static final String TAG = "WQ_UserManager";
-    private final FileOP mFileOP = new FileOP(WqApplication.getInstance());
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     public static final int REQUEST_CAMERA_CODE = 10;
@@ -72,50 +72,25 @@ public class UserManager {
                             Log.d(TAG, "[test] upLoadAvatar #70" + json);
                             int code = json.getInt("code");
                             if (code == 1) {
-                                String avatar = JsonParser.avatarParse(json);
-                                if (!TextUtils.isEmpty(avatar)) {
-                                    callback.onSuccess(avatar);
-                                } else
-                                    callback.onError("=====头像地址为空");
+                                UserInfo userInfo = JsonParser.updateAvatarParser(json);
+                                if (!TextUtils.isEmpty(userInfo.getAvatarUrl())) {
+                                    callback.onSuccess(userInfo.getAvatarUrl());
+                                } else{
+                                    callback.onError("[x] 头像地址为空");
+                                }
+                                return;
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
 
-                        callback.onError("我也不知道啥错误");
+                        callback.onError("上传错误");
                     });
                 }
             });
         });
     }
 
-
-    public void open(Context context, SelectImageType type) {
-        switch (type) {
-            case IMAGE_FROM_ALBUM:
-                openAlbum(context);
-                break;
-            case IMAGE_FROM_CAMERA:
-                openCamera(context);
-                break;
-
-        }
-    }
-
-    private void openAlbum(Context context) {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        ((Activity) context).startActivityForResult(intent, REQUEST_ALBUM_CODE);
-    }
-
-    private void openCamera(Context context) {
-        tempImageFile = mFileOP.createTempImageFile();
-        Uri uriForFile = mFileOP.file2Uri(context, tempImageFile);
-
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
-        ((Activity) context).startActivityForResult(intent, REQUEST_CAMERA_CODE);
-    }
 
     public void deleteFriend(long friendId, ResultCallback<Boolean> callback) {
         String json = GenerateJson.getDeleteFriendJson(friendId);
@@ -252,9 +227,9 @@ public class UserManager {
         });
     }
 
-    public void getChatInfoById(Long chatId, ResultCallback<UiChatInfo> resultCallback) {
+    public void getChatInfoById(Long chatId, int chatType, ResultCallback<UiChatInfo> resultCallback) {
         ThreadPoolManager.getInstance().execute(() -> {
-            String json = GenerateJson.getChatInfoByIdJson(chatId);
+            String json = GenerateJson.getChatInfoByIdJson(chatId,chatType);
             HttpStreamOP.postJson(AppProperties.GET_CHAT_INFO_BY_ID, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -272,7 +247,7 @@ public class UserManager {
 
                     try {
                         JSONObject json = new JSONObject(response.body().string());
-                        Log.d(TAG, "[test] onResponse: " + json);
+                        Log.d(TAG, "[test] getChatInfoById: " + json);
                         if (json.getInt("code") == 1) {
                             UiChatInfo uiChatInfo = JsonParser.chatInfoByIdParser(json);
                             mHandler.post(() -> resultCallback.onSuccess(uiChatInfo));

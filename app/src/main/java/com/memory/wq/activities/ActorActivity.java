@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.memory.wq.R;
 import com.memory.wq.adapters.MovieCateAdapter;
 import com.memory.wq.adapters.MoviesAdapter;
@@ -30,7 +29,6 @@ public class ActorActivity extends BaseActivity<ActivityActorBinding> {
     public static final String TAG = "WQ_ActorActivity";
 
     private final MoviesAdapter mMovieAdapter = new MoviesAdapter(new OnMovieClickImpl());
-    private final MovieCateAdapter mCateAdapter = new MovieCateAdapter(new OnMovieCateClickImpl());
     private final MovieManager mMovieManager = new MovieManager();
     private int mActorId;
 
@@ -50,34 +48,20 @@ public class ActorActivity extends BaseActivity<ActivityActorBinding> {
         }
 
         mBinding.ivBack.setOnClickListener(view -> finish());
-        mBinding.rvCategories.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        mBinding.rvCategories.setAdapter(mCateAdapter);
         mBinding.rvMovies.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         mBinding.rvMovies.setAdapter(mMovieAdapter);
     }
 
     private void initData() {
+        loadActorInfo();
+        loadMoviesByActorId(mActorId);
+    }
+
+    private void loadActorInfo() {
         mMovieManager.getActorInfo(mActorId, new ResultCallback<ActorInfo>() {
             @Override
             public void onSuccess(ActorInfo result) {
                 setActorUI(result);
-            }
-
-            @Override
-            public void onError(String err) {
-
-            }
-        });
-
-        mMovieManager.getCates(new ResultCallback<List<MovieCateInfo>>() {
-
-            @Override
-            public void onSuccess(List<MovieCateInfo> result) {
-                mCateAdapter.submitList(result);
-
-                if (!result.isEmpty()) {
-                    loadMoviesByCate(result.get(0).getCateId());
-                }
             }
 
             @Override
@@ -106,8 +90,8 @@ public class ActorActivity extends BaseActivity<ActivityActorBinding> {
         return R.layout.activity_actor;
     }
 
-    private void loadMoviesByCate(int cateId) {
-        mMovieManager.getMoviesByCate(cateId, new ResultCallback<List<MovieInfo>>() {
+    private void loadMoviesByActorId(int actorId) {
+        mMovieManager.getMoviesByActor(actorId, new ResultCallback<List<MovieInfo>>() {
             @Override
             public void onSuccess(List<MovieInfo> result) {
                 mMovieAdapter.submitList(result);
@@ -125,21 +109,13 @@ public class ActorActivity extends BaseActivity<ActivityActorBinding> {
         public void onCoverClick(MovieInfo movie) {
             Intent intent = new Intent(ActorActivity.this, AudioActivity.class);
             intent.putExtra(AppProperties.ROLE_TYPE, RoleType.ROLE_TYPE_BROADCASTER);
-            intent.putExtra(AppProperties.MOVIE_PATH, movie);
+            intent.putExtra(AppProperties.MOVIE, movie);
             startActivity(intent);
         }
 
         @Override
         public void onNameClick(int movieId) {
 
-        }
-    }
-
-    private class OnMovieCateClickImpl implements OnCateClickListener {
-
-        @Override
-        public void onCateClick(int cateId) {
-            loadMoviesByCate(cateId);
         }
     }
 }

@@ -3,6 +3,7 @@ package com.memory.wq.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -12,9 +13,11 @@ import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.ActivityPersonalBinding;
 import com.memory.wq.dialog.AddFriendDialog;
+import com.memory.wq.dialog.DeleteFriendDialog;
 import com.memory.wq.enumertions.SearchUserType;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.FriendManager;
+import com.memory.wq.managers.UserManager;
 import com.memory.wq.provider.HttpStreamOP;
 import com.memory.wq.thread.ThreadPoolManager;
 import com.memory.wq.utils.GenerateJson;
@@ -34,6 +37,7 @@ public class PersonInfoActivity extends BaseActivity<ActivityPersonalBinding> {
 
     private static final String TAG = "WQ_PersonalActivity";
     private final FriendManager mFriendManager = new FriendManager();
+    private final UserManager mUserManager = new UserManager();
     private long mFriendId;
     private FriendInfo mFriendInfo;
 
@@ -56,6 +60,7 @@ public class PersonInfoActivity extends BaseActivity<ActivityPersonalBinding> {
         mBinding.ivBack.setOnClickListener(view -> finish());
 
         mBinding.ivAdd.setOnClickListener(view -> showAddDialog());
+        mBinding.ivDelete.setOnClickListener(view -> showDeleteDialog());
 
         mBinding.ivChat.setOnClickListener(v -> {
             Intent intent = new Intent(mBinding.getRoot().getContext(), ChatActivity.class);
@@ -73,20 +78,11 @@ public class PersonInfoActivity extends BaseActivity<ActivityPersonalBinding> {
     }
 
     private void loadPersonalInfo() {
-        mFriendManager.searchUser(SearchUserType.SEARCH_USER_TYPE_UUNUM, String.valueOf(mFriendId), new ResultCallback<FriendInfo>() {
+        mFriendManager.searchUserAccurate(SearchUserType.SEARCH_USER_TYPE_UUNUM, String.valueOf(mFriendId), new ResultCallback<FriendInfo>() {
             @Override
             public void onSuccess(FriendInfo friend) {
                 mFriendInfo = friend;
-                Glide.with(mBinding.getRoot().getContext())
-                        .load(friend.getAvatarUrl())
-                        .placeholder(R.mipmap.icon_default_avatar)
-                        .error(R.mipmap.icon_default_avatar)
-                        .circleCrop()
-                        .into(mBinding.ivAvatar);
-
-                mBinding.pivId.setValue(String.valueOf(mFriendId));
-                mBinding.pivName.setValue(friend.getNickname());
-                mBinding.tvFollow.setText(friend.isFollow() ? "取消关注" : "关注");
+                updateUi(friend);
             }
 
             @Override
@@ -141,7 +137,8 @@ public class PersonInfoActivity extends BaseActivity<ActivityPersonalBinding> {
         mFriendManager.followUser(mFriendId, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                MyToast.showToast(PersonInfoActivity.this, "关注成功");
+                mFriendInfo.setFollow(true);
+                mBinding.tvFollow.setText("取消关注");
             }
 
             @Override
@@ -155,12 +152,13 @@ public class PersonInfoActivity extends BaseActivity<ActivityPersonalBinding> {
         mFriendManager.unfollowUser(mFriendId, new ResultCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
-                MyToast.showToast(PersonInfoActivity.this, "取关成功");
+                mFriendInfo.setFollow(false);
+                mBinding.tvFollow.setText("关注");
             }
 
             @Override
             public void onError(String err) {
-                MyToast.showToast(PersonInfoActivity.this, "取关失败");
+                MyToast.showToast(PersonInfoActivity.this, "取消关注失败");
             }
         });
     }
@@ -189,6 +187,53 @@ public class PersonInfoActivity extends BaseActivity<ActivityPersonalBinding> {
             }
         });
         dialog.show();
+    }
+
+
+    private void showDeleteDialog() {
+        DeleteFriendDialog deleteFriendDialog = new DeleteFriendDialog(mBinding.getRoot().getContext());
+        deleteFriendDialog.setOnConfirmListener(new DeleteFriendDialog.OnConfirmListener() {
+            @Override
+            public void onConfirm() {
+                deleteFriend();
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+        deleteFriendDialog.show();
+    }
+
+    private void deleteFriend() {
+        mUserManager.deleteFriend(mFriendId, new ResultCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                loadPersonalInfo();
+                MyToast.showToast(PersonInfoActivity.this, "已删除该好友");
+            }
+
+            @Override
+            public void onError(String err) {
+                MyToast.showToast(PersonInfoActivity.this, "删除好友失败");
+            }
+        });
+    }
+
+    private void updateUi(FriendInfo friend) {
+        Glide.with(mBinding.getRoot().getContext())
+                .load(friend.getAvatarUrl())
+                .placeholder(R.mipmap.icon_default_avatar)
+                .error(R.mipmap.icon_default_avatar)
+                .circleCrop()
+                .into(mBinding.ivAvatar);
+
+        mBinding.pivId.setValue(String.valueOf(mFriendId));
+        mBinding.pivName.setValue(friend.getNickname());
+        mBinding.tvFollow.setText(friend.isFollow() ? "取消关注" : "关注");
+        mBinding.ivAdd.setVisibility(friend.isFriend() ? View.GONE : View.VISIBLE);
+        mBinding.ivDelete.setVisibility(friend.isFriend() ? View.VISIBLE : View.GONE);
     }
 
 }

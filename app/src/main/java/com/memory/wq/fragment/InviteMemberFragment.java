@@ -18,6 +18,7 @@ import com.memory.wq.adapters.InviteMemberAdapter;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.databinding.FragmentInviteMemberBinding;
 import com.memory.wq.managers.FriendManager;
+import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 import com.memory.wq.vm.ChatViewModel;
 
@@ -76,8 +77,24 @@ public class InviteMemberFragment extends Fragment {
             }
 
             Set<Long> selectedUsers = mInviteMemberAdapter.getSelectedUsers();
-            Log.d(TAG, "[test] initView: "+selectedUsers);
-            mChatVM.buildGroup("群名称","群头像", selectedUsers);
+            Log.d(TAG, "[test] initView: " + selectedUsers);
+            String groupName = mBinding.etGroupName.getText().toString().trim();
+            if (groupName.isEmpty()) {
+                MyToast.showToast(getContext(), "请输入群聊名称");
+                return;
+            }
+
+            mChatVM.buildGroup(groupName, selectedUsers, new ResultCallback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean result) {
+                    MyToast.showToast(getContext(), "成功创建群聊");
+                }
+
+                @Override
+                public void onError(String err) {
+                    MyToast.showToast(getContext(), "创建群聊失败");
+                }
+            });
         });
     }
 

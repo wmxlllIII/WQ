@@ -7,6 +7,7 @@ public class AppProperties {
     public static final String TABLE_NAME_USER = "users";
     public static final String TABLE_NAME_FRIEND = "friends";
     public static final String TABLE_NAME_MESSAGE = "message";
+    public static final String CREATE_TABLE_GROUP = "group";
     public static final String AUTHORITY = "com.memory.wq.albumprovider";
     public static final String AVATAR_RECEIVER_ACTION = "setCurrentAvatar";
 
@@ -57,20 +58,22 @@ public class AppProperties {
     public static final String GET_MOVIE_DETAIL = HTTP_SERVER_ADDRESS + "/auth/getMovieDetail";
     public static final String GET_USER_LIST_BY_ID_LIST = HTTP_SERVER_ADDRESS + "/auth/getUserListByIdList";
     public static final String GET_CHAT_INFO_BY_ID = HTTP_SERVER_ADDRESS + "/auth/getChatInfoById";
+    public static final String DELETE_POST_BY_ID = HTTP_SERVER_ADDRESS + "/auth/deletePostById";
 
     public static final String AGORA_TOKEN = HTTP_SERVER_ADDRESS + "/api/token";
     public static final String STS_TOKEN = HTTP_SERVER_ADDRESS + "/auth/getStsPermission";
     public static final String FOLLOW_USER = HTTP_SERVER_ADDRESS + "/auth/followUser";
-    public static final String UNFOLLOW_USER = HTTP_SERVER_ADDRESS + "/auth/unfollowUser";
+    public static final String UNFOLLOW_USER = HTTP_SERVER_ADDRESS + "/auth/unFollowUser";
     public static final String POST_LIKE = HTTP_SERVER_ADDRESS + "/auth/likePost";
     public static final String BUILD_GROUP = HTTP_SERVER_ADDRESS + "/auth/buildGroup";
     public static final String GET_IS_ONLINE = HTTP_SERVER_ADDRESS + "/auth/getFriendIsOnline";
     public static final String GET_MSG_LIST_BY_CHAI_ID = HTTP_SERVER_ADDRESS + "/auth/getMsgListByChatId";
     public static final String SEARCH_MOVIE = HTTP_SERVER_ADDRESS + "/auth/searchMovie";
+    public static final String SEARCH_USER_VAGUE = HTTP_SERVER_ADDRESS + "/auth/searchUserVague";
 
 
     public static final String ROLE_TYPE = "ROLE_TYPE";
-    public static final String MOVIE_PATH = "MOVIE_PATH";
+    public static final String MOVIE = "MOVIE";
     public static final String MOVIE_ID = "MOVIE_ID";
     public static final String ROOM_ID = "ROOM_ID";
 

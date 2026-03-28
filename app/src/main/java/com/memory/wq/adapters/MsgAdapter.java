@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.memory.wq.R;
 import com.memory.wq.beans.MsgInfo;
 import com.memory.wq.enumertions.ContentType;
@@ -126,6 +127,14 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
             holder.ll_left.setVisibility(View.GONE);
             holder.ll_right.setVisibility(View.VISIBLE);
             holder.tv_rightMsg.setText(msgInfo.getContent());
+            holder.tv_rightMsg.setOnLongClickListener(v -> {
+                if (listener == null){
+                    return false;
+                }
+
+                listener.onMsgLongClick(msgInfo);
+                return true;
+            });
         } else {
             Log.d(TAG, "===handleTextMessage== 别人的");
             holder.ll_left.setVisibility(View.VISIBLE);
@@ -141,10 +150,14 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
         );
         Glide.with(holder.iv_friend_avatar.getContext())
                 .load(msgInfo.getSenderAvatar())
+                .error(R.mipmap.icon_default_avatar)
+                .transform(new RoundedCorners(12))
                 .into(holder.iv_friend_avatar);
 
         Glide.with(holder.iv_my_avatar.getContext())
                 .load(msgInfo.getSenderAvatar())
+                .error(R.mipmap.icon_default_avatar)
+                .transform(new RoundedCorners(12))
                 .into(holder.iv_my_avatar);
     }
 

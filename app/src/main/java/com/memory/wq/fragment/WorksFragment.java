@@ -2,6 +2,7 @@ package com.memory.wq.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.memory.wq.R;
 import com.memory.wq.activities.PostDetailActivity;
 import com.memory.wq.adapters.WorksAdapter;
 import com.memory.wq.beans.PostInfo;
@@ -30,10 +33,10 @@ import java.util.List;
 
 public class WorksFragment extends Fragment {
 
+    public static final String TAG = "WQ_WorksFragment";
     private FragmentWorksLayoutBinding mBinding;
     private final WorksAdapter mAdapter = new WorksAdapter(new OnPostClickListenerImpl());
     private final PostManager mPostManager = new PostManager();
-    ;
 
     private int currentPage = 1;
     private final int pageSize = 15;
@@ -54,10 +57,9 @@ public class WorksFragment extends Fragment {
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        if (!hidden){
-            loadNextPage();
-        }
+    public void onResume() {
+        super.onResume();
+        loadNextPage();
     }
 
     private void initData() {

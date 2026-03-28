@@ -1,5 +1,6 @@
 package com.memory.wq.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,17 +9,22 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.memory.wq.activities.AudioActivity;
 import com.memory.wq.adapters.VpHistoryAdapter;
-import com.memory.wq.beans.PostInfo;
-import com.memory.wq.beans.QueryPostInfo;
+import com.memory.wq.adapters.WatchHistoryAdapter;
+import com.memory.wq.beans.MovieInfo;
 import com.memory.wq.beans.WatchHistoryInfo;
+import com.memory.wq.constants.AppProperties;
 import com.memory.wq.databinding.HistoryLayoutBinding;
+import com.memory.wq.enumertions.RoleType;
+import com.memory.wq.interfaces.OnMovieClickListener;
 import com.memory.wq.managers.MovieManager;
-import com.memory.wq.managers.PostManager;
-import com.memory.wq.utils.PageResult;
 import com.memory.wq.utils.ResultCallback;
+
+import java.util.List;
 
 public class HistoryFragment extends Fragment {
     private static final String TAG = "HistoryFragment";
@@ -27,9 +33,8 @@ public class HistoryFragment extends Fragment {
     private static final int PAGE_LIKE = 1;
     private static final int PAGE_TRACE = 2;
     private final MovieManager mMovieManager = new MovieManager();
-    private final PostManager mPostManager = new PostManager();
     private final GetWatchHistoryCallback mWatchHistoryCallback = new GetWatchHistoryCallback();
-    private final GetMyPostCallback mGetMyPostCallback = new GetMyPostCallback();
+    private final WatchHistoryAdapter mWatchHistoryAdapter = new WatchHistoryAdapter(new OnMovieClickListenerImpl());
 
     @Nullable
     @Override
@@ -44,12 +49,31 @@ public class HistoryFragment extends Fragment {
         initData();
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden) {
+            loadWatchHistory();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadWatchHistory();
+    }
+
     private void initData() {
+        loadWatchHistory();
+    }
+
+    private void loadWatchHistory() {
         mMovieManager.getWatchHistory(mWatchHistoryCallback);
-        mPostManager.getMyPost(new QueryPostInfo(), mGetMyPostCallback);
     }
 
     private void initView() {
+        mBinding.rvRecentView.setLayoutManager(new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false));
+        mBinding.rvRecentView.setAdapter(mWatchHistoryAdapter);
+
         VpHistoryAdapter mAdapter = new VpHistoryAdapter(this);
         mBinding.vpHistory.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
         mBinding.vpHistory.setAdapter(mAdapter);
@@ -89,11 +113,11 @@ public class HistoryFragment extends Fragment {
         return shouldShow ? View.VISIBLE : View.GONE;
     }
 
-    private class GetWatchHistoryCallback implements ResultCallback<WatchHistoryInfo> {
+    private class GetWatchHistoryCallback implements ResultCallback<List<WatchHistoryInfo>> {
 
         @Override
-        public void onSuccess(WatchHistoryInfo watchHistory) {
-
+        public void onSuccess(List<WatchHistoryInfo> watchHistoryList) {
+            mWatchHistoryAdapter.submitList(watchHistoryList);
         }
 
         @Override
@@ -102,14 +126,18 @@ public class HistoryFragment extends Fragment {
         }
     }
 
-    private class GetMyPostCallback implements ResultCallback<PageResult<PostInfo>> {
-        @Override
-        public void onSuccess(PageResult<PostInfo> result) {
+    private class OnMovieClickListenerImpl implements OnMovieClickListener {
 
+        @Override
+        public void onCoverClick(MovieInfo movieInfo) {
+            Intent intent = new Intent(getActivity(), AudioActivity.class);
+            intent.putExtra(AppProperties.ROLE_TYPE, RoleType.ROLE_TYPE_BROADCASTER);
+            intent.putExtra(AppProperties.MOVIE, movieInfo);
+            startActivity(intent);
         }
 
         @Override
-        public void onError(String err) {
+        public void onNameClick(int movieId) {
 
         }
     }

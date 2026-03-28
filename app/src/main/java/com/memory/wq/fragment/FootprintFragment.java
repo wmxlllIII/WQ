@@ -38,25 +38,20 @@ public class FootprintFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mBinding = FragmentFootprintBinding.inflate(inflater, container, false);
+        initView();
+        initData();
         return mBinding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        initData();
+        loadData();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         initView();
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        if (!hidden){
-            loadData();
-        }
     }
 
     private void loadData() {

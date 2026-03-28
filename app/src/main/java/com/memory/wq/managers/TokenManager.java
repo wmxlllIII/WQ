@@ -31,35 +31,34 @@ public class TokenManager {
         //TODO 用户如果不是邮箱登录呢
         String json = GenerateJson.getRtcToken(roomId, role, userId);
 
-        ThreadPoolManager.getInstance().execute(() -> {
-            HttpStreamOP.postJson(AppProperties.AGORA_TOKEN, json, new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    Log.d(TAG, "[x] getToken #38");
+        HttpStreamOP.postJson(AppProperties.AGORA_TOKEN, json, new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.d(TAG, "[x] getToken #38");
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    Log.d(TAG, "[x] getToken #44");
+                    return;
                 }
 
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    if (!response.isSuccessful()) {
-                        Log.d(TAG, "[x] getToken #44");
+                try {
+                    JSONObject json = new JSONObject(response.body().string());
+                    int code = json.getInt("code");
+                    Log.d(TAG, "[test] getToken #49" + json);
+                    if (code == 1) {
+                        JSONObject data = json.getJSONObject("data");
+                        RtcInfo rtcInfo = JsonParser.rtcTokenParser(data);
+                        mHandler.post(() -> callback.onSuccess(rtcInfo));
                         return;
                     }
-
-                    try {
-                        JSONObject json = new JSONObject(response.body().string());
-                        int code = json.getInt("code");
-                        Log.d(TAG, "[test] getToken #49" + json);
-                        if (code == 1) {
-                            JSONObject data = json.getJSONObject("data");
-                            RtcInfo rtcInfo = JsonParser.rtcTokenParser(data);
-                            mHandler.post(()->callback.onSuccess(rtcInfo));
-
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    mHandler.post(() -> callback.onError("[x] getToken #56"));
+                } catch (JSONException e) {
+                    Log.d(TAG, "[x] getToken #58" + e.getMessage());
                 }
-            });
+            }
         });
     }
 }

@@ -79,6 +79,7 @@ public class RecommendAdapter extends ListAdapter<PostInfo, RecyclerView.ViewHol
                 .load(postInfo.getPosterAvatar())
                 .placeholder(R.mipmap.loading_default)
                 .error(R.mipmap.loading_failure)
+                .circleCrop()
                 .into(holder.iv_avatar);
 
 

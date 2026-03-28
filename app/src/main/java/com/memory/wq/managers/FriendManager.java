@@ -24,10 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import okhttp3.Call;
@@ -39,7 +37,7 @@ public class FriendManager {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final UserManager mUserManager = new UserManager();
 
-    public void searchUser(SearchUserType type, String account, ResultCallback<FriendInfo> callback) {
+    public void searchUserAccurate(SearchUserType type, String account, ResultCallback<FriendInfo> callback) {
         String json = GenerateJson.getSearchUserJson(type, account);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.SEARCH_USER, json, new Callback() {
@@ -63,9 +61,12 @@ public class FriendManager {
                         if (code == 1) {
                             FriendInfo friendInfo = JsonParser.searchFriendParser(json);
                             mHandler.post(() -> callback.onSuccess(friendInfo));
+                            return;
                         }
+
+                        mHandler.post(() -> callback.onError("服务器繁忙"));
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, "[x] searchUser 71" + e.getMessage());
                     }
                 }
             });
@@ -184,7 +185,7 @@ public class FriendManager {
     public void unfollowUser(long userId, ResultCallback<Boolean> callback) {
         ThreadPoolManager.getInstance().execute(() -> {
             String json = GenerateJson.getFollowJson(userId);
-            HttpStreamOP.postJson(AppProperties.FOLLOW_USER, json, new Callback() {
+            HttpStreamOP.postJson(AppProperties.UNFOLLOW_USER, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     Log.d(TAG, "[x] followUser #190 " + e.getMessage());
@@ -201,13 +202,59 @@ public class FriendManager {
                     try {
                         JSONObject json = new JSONObject(response.body().string());
                         int code = json.getInt("code");
+                        Log.d(TAG, "[test] unfollowUser: " + json);
                         if (code == 1) {
                             mHandler.post(() -> callback.onSuccess(true));
+                            return;
                         }
+
+                        mHandler.post(() -> {
+                            callback.onError("取消关注失败");
+                        });
                     } catch (JSONException e) {
-                        Log.d(TAG, "");
+                        Log.d(TAG, "[x] unfollowUser #211" + e.getMessage());
                     }
 
+                }
+            });
+        });
+    }
+
+    public void searchUserVague(String keyword, ResultCallback<List<FriendInfo>> callback) {
+        ThreadPoolManager.getInstance().execute(() -> {
+            String json = GenerateJson.getSearchUserVagueJson(keyword);
+            HttpStreamOP.postJson(AppProperties.SEARCH_USER_VAGUE, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.d(TAG, "[x] searchUserVague #229");
+                    mHandler.post(() -> {
+                        callback.onError("网络繁忙");
+                    });
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        Log.d(TAG, "[x] searchUserVague #238 " + response.code());
+                        mHandler.post(() -> callback.onError("网络繁忙"));
+                    }
+
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        int code = json.getInt("code");
+                        Log.d(TAG, "[test] searchUserVague: " + json);
+                        if (code == 1) {
+                            JSONArray data = json.getJSONArray("data");
+                            List<FriendInfo> friendInfoList = JsonParser.friendInfoListParser(data);
+                            mHandler.post(() -> callback.onSuccess(friendInfoList));
+                            return;
+                        }
+
+                        mHandler.post(() -> callback.onError("搜索失败"));
+                    } catch (Exception e) {
+                        Log.d(TAG, "[x] searchUserVague #245 " + e.getMessage());
+                        mHandler.post(() -> callback.onError("网络繁忙"));
+                    }
                 }
             });
         });

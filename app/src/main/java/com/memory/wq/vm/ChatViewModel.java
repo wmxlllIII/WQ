@@ -19,12 +19,14 @@ import com.memory.wq.beans.UiMessageState;
 import com.memory.wq.enumertions.ChatPage;
 import com.memory.wq.enumertions.ChatType;
 import com.memory.wq.enumertions.ContentType;
+import com.memory.wq.fragment.MessageFragment;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.MsgManager;
 import com.memory.wq.managers.UserManager;
 import com.memory.wq.provider.MsgProvider;
 import com.memory.wq.provider.WqApplication;
 import com.memory.wq.repository.MsgRepository;
+import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 
 import java.util.ArrayList;
@@ -37,10 +39,10 @@ public class ChatViewModel extends ViewModel {
     private static final String TAG = "WQ_ChatVM";
     private final MsgRepository mRepository = new MsgRepository();
     private ContentObserver observer;
-    private final MutableLiveData<Long> _chatId = new MutableLiveData<>();
+    private final MutableLiveData<Long> _chatId = new MutableLiveData<>(-1L);
     public LiveData<Long> chatId = _chatId;
 
-    private final MutableLiveData<Integer> _chatType = new MutableLiveData<>();
+    private final MutableLiveData<Integer> _chatType = new MutableLiveData<>(-1);
     public LiveData<Integer> chatType = _chatType;
 
     private final MutableLiveData<UiChatInfo> _uiChatInfo = new MutableLiveData<>();
@@ -89,6 +91,7 @@ public class ChatViewModel extends ViewModel {
             Log.d(TAG, "[x] reloadMessagesFromDB #82");
             return;
         }
+
         if (_chatType.getValue() == null || _chatType.getValue() < 0) {
             Log.d(TAG, "[x] reloadMessagesFromDB #86");
             return;
@@ -109,7 +112,7 @@ public class ChatViewModel extends ViewModel {
     }
 
     private void loadChatInfo() {
-        mUserManager.getChatInfoById(_chatId.getValue(), new ResultCallback<UiChatInfo>() {
+        mUserManager.getChatInfoById(_chatId.getValue(), _chatType.getValue(), new ResultCallback<UiChatInfo>() {
             @Override
             public void onSuccess(UiChatInfo chatInfo) {
                 if (chatInfo == null) {
@@ -155,8 +158,8 @@ public class ChatViewModel extends ViewModel {
 
     }
 
-    public void sendMsg(ChatType chatType, String msg, ContentType msgType, Consumer<Boolean> callback) {
-        mMsgManager.sendMsg(_chatId.getValue(), chatType, msg, msgType, new ResultCallback<Boolean>() {
+    public void sendMsg(String msg, ContentType msgType, Consumer<Boolean> callback) {
+        mMsgManager.sendMsg(_chatId.getValue(), ChatType.fromInt(_chatType.getValue()), msg, msgType, new ResultCallback<Boolean>() {
 
             @Override
             public void onSuccess(Boolean result) {
@@ -203,8 +206,8 @@ public class ChatViewModel extends ViewModel {
 
     }
 
-    public void buildGroup(String groupName, String groupAvatar, Set<Long> selectedUsers) {
-        if (selectedUsers == null || selectedUsers.isEmpty() || TextUtils.isEmpty(groupName) || TextUtils.isEmpty(groupAvatar)) {
+    public void buildGroup(String groupName, Set<Long> selectedUsers, ResultCallback<Boolean> callback) {
+        if (selectedUsers == null || selectedUsers.isEmpty() || TextUtils.isEmpty(groupName) ) {
             Log.d(TAG, "[x] buildGroupOrChat: #159");
             return;
         }
@@ -214,7 +217,7 @@ public class ChatViewModel extends ViewModel {
             return;
         }
 
-        mMsgManager.buildGroup(groupName, groupAvatar, selectedUsers);
+        mMsgManager.buildGroup(groupName, selectedUsers, callback);
     }
 }
 

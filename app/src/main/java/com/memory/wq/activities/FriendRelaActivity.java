@@ -24,7 +24,6 @@ import com.memory.wq.interfaces.IWebSocketListener;
 import com.memory.wq.interfaces.OnFriItemClickListener;
 import com.memory.wq.managers.FriendManager;
 import com.memory.wq.managers.MsgManager;
-import com.memory.wq.managers.UserManager;
 import com.memory.wq.service.IWebSocketService;
 import com.memory.wq.service.WebService;
 import com.memory.wq.service.WebSocketMessage;
@@ -166,7 +165,7 @@ public class FriendRelaActivity extends BaseActivity<ActivityTestWsactivityBindi
     }
 
     private void enterPersonalHome(SearchUserType type, String targetAccount) {
-        mFriendManager.searchUser(type, targetAccount, new ResultCallback<FriendInfo>() {
+        mFriendManager.searchUserAccurate(type, targetAccount, new ResultCallback<FriendInfo>() {
             @Override
             public void onSuccess(FriendInfo result) {
                 Intent intent = new Intent(FriendRelaActivity.this, PersonInfoActivity.class);

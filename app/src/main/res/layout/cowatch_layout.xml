@@ -5,42 +5,54 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingHorizontal="@dimen/common_title_pad_hori">
+        android:paddingHorizontal="@dimen/common_title_pad_hori"
+        android:paddingVertical="@dimen/common_title_vert">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_func_zone"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginHorizontal="10dp"
-            app:layout_constraintHeight_percent="0.2"
+            app:layout_constraintHeight_percent="0.11"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/tv_create_room"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:background="@mipmap/icon_reply"
+                android:background="@drawable/bg_room_card_create"
                 android:gravity="center"
                 android:padding="5dp"
                 android:text="创建房间"
+                android:textSize="20dp"
                 android:textColor="@color/white_80"
+                android:layout_marginEnd="15dp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.5" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_join_random"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:background="@mipmap/icon_reply"
+                android:background="@drawable/bg_room_card_join"
                 android:gravity="center"
                 android:padding="5dp"
                 android:text="随机加入"
+                android:textSize="20dp"
                 android:textColor="@color/white_80"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.5" />
+                android:layout_marginStart="15dp"
+                app:layout_constraintStart_toEndOf="@+id/guideline"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- 垂直参考线，在中间 -->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

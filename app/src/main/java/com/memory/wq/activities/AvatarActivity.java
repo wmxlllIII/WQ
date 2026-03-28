@@ -6,13 +6,14 @@ import static com.memory.wq.managers.UserManager.REQUEST_CAMERA_CODE;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.MultiTransformation;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.memory.wq.R;
@@ -28,9 +30,8 @@ import com.memory.wq.enumertions.SelectImageType;
 import com.memory.wq.managers.PermissionManager;
 import com.memory.wq.managers.AccountManager;
 import com.memory.wq.managers.UserManager;
-import com.memory.wq.constants.AppProperties;
 import com.memory.wq.provider.FileOP;
-import com.memory.wq.provider.WqApplication;
+import com.memory.wq.utils.FileUtil;
 import com.memory.wq.utils.MyToast;
 import com.memory.wq.utils.ResultCallback;
 import com.yalantis.ucrop.UCrop;
@@ -45,7 +46,7 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
     private File tempCameraFile;
     private final PermissionManager mPermissionManager = new PermissionManager(this);
     public static final int REQUEST_CROP_CODE = 30;
-    private final FileOP fileOP = new FileOP(this);
+    private final FileOP mFileOP = new FileOP(this);
 
 
     @Override
@@ -105,8 +106,42 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
         });
 
         mBinding.tvSaveAvatar.setOnClickListener(view -> {
+            mBinding.ivAvatarDetail.setDrawingCacheEnabled(true);
+            mBinding.ivAvatarDetail.buildDrawingCache();
 
+            Bitmap bitmap = mBinding.ivAvatarDetail.getDrawable() != null
+                    ? ((BitmapDrawable) mBinding.ivAvatarDetail.getDrawable()).getBitmap()
+                    : null;
+
+            if (bitmap == null) {
+                MyToast.showToast(this, "头像获取失败");
+                return;
+            }
+
+            String fileName = FileUtil.generateUniqueObjectKey("avatar.png");
+
+            boolean success = FileUtil.saveBitmapToGallery(this, bitmap, fileName);
+
+            if (success) {
+                MyToast.showToast(this, "已保存到相册");
+            } else {
+                MyToast.showToast(this, "保存失败");
+            }
         });
+    }
+
+    private void updateUI(){
+        Glide.with(this)
+                .load(AccountManager.getUserInfo().getAvatarUrl())
+                .placeholder(R.mipmap.icon_default_avatar)
+                .error(R.mipmap.icon_default_avatar)
+                .transform(
+                        new MultiTransformation<>(
+                                new CenterCrop(),
+                                new RoundedCorners(12)
+                        )
+                )
+                .into(mBinding.ivAvatarDetail);
     }
 
     public void showImageSourceDialog() {
@@ -126,7 +161,7 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
 
                             isPermit = mPermissionManager.isPermitPermission(albumPermissions[0]);
                             if (isPermit) {
-                                mUserManager.open(AvatarActivity.this, SelectImageType.IMAGE_FROM_ALBUM);
+                                openAlbum();
                             } else {
                                 mPermissionManager.requestPermission(albumPermissions, REQUEST_ALBUM_CODE);
                             }
@@ -134,7 +169,7 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
                         case 1:
                             isPermit = mPermissionManager.isPermitPermission(Manifest.permission.CAMERA);
                             if (isPermit) {
-                                mUserManager.open(AvatarActivity.this, SelectImageType.IMAGE_FROM_CAMERA);
+                                openCamera();
                             } else {
                                 mPermissionManager.requestPermission(new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_CODE);
                             }
@@ -153,7 +188,7 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
             case REQUEST_ALBUM_CODE:
                 isGranted = mPermissionManager.isPermissionGranted(grantResults);
                 if (isGranted) {
-                    mUserManager.open(AvatarActivity.this, SelectImageType.IMAGE_FROM_ALBUM);
+                    openAlbum();
                 } else {
                     MyToast.showToast(this, "相册权限被拒绝");
 
@@ -163,7 +198,7 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
             case REQUEST_CAMERA_CODE:
                 isGranted = mPermissionManager.isPermissionGranted(grantResults);
                 if (isGranted) {
-                    mUserManager.open(AvatarActivity.this, SelectImageType.IMAGE_FROM_CAMERA);
+                    openCamera();
                 } else {
                     MyToast.showToast(this, "noPermit Camera");
                 }
@@ -176,47 +211,103 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        Log.d(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+
         if (resultCode != Activity.RESULT_OK) {
-            // 如果是相机拍摄失败，清理临时文件
+            Log.d(TAG, "用户取消或操作失败");
             if (requestCode == UserManager.REQUEST_CAMERA_CODE && tempCameraFile != null) {
-                fileOP.deleteTempCameraFile();
+                mFileOP.deleteTempCameraFile();
                 tempCameraFile = null;
+                Log.d(TAG, "已清理相机临时文件");
             }
             return;
         }
 
-        Uri resultUri = null;
-
-        if (requestCode == UserManager.REQUEST_ALBUM_CODE && data != null) {
-            Uri albumUri = data.getData();
-            if (albumUri != null) {
-                startCrop(albumUri);
-            }
+        if (requestCode == UserManager.REQUEST_ALBUM_CODE) {
+            handleAlbumResult(data);
         } else if (requestCode == UserManager.REQUEST_CAMERA_CODE) {
-            // 相机拍摄成功，tempCameraFile 应已存在
-            if (tempCameraFile != null && tempCameraFile.exists()) {
-                Uri cameraUri = fileOP.file2Uri(this, tempCameraFile);
-                startCrop(cameraUri);
-            }
+            handleCameraResult();
         } else if (requestCode == UserManager.REQUEST_CROP_CODE) {
-            if (data != null) {
-                resultUri = UCrop.getOutput(data);
-                // 清理相机临时文件（裁剪后不再需要原始相机文件）
-                if (tempCameraFile != null) {
-                    fileOP.deleteTempCameraFile();
-                    tempCameraFile = null;
-                }
-            }
+            handleCropResult(data);
+        }
+    }
+
+    private void handleAlbumResult(@Nullable Intent data) {
+        if (data == null) {
+            Log.d(TAG, "[x] handleAlbumResult #266");
+            return;
         }
 
-        if (resultUri != null) {
-            File croppedFile = fileOP.handleImage(resultUri);
-            if (croppedFile != null && croppedFile.exists()) {
-                uploadAvatar(croppedFile);
-            } else {
-                MyToast.showToast(this, "裁剪后的图片无效");
-            }
+        Uri albumUri = data.getData();
+        if (albumUri == null) {
+            Log.d(TAG, "[x] handleAlbumResult #272");
+            MyToast.showToast(this, "未选择图片");
+            return;
         }
+
+        startCrop(albumUri);
+    }
+
+    private void handleCameraResult() {
+        if (tempCameraFile == null || !tempCameraFile.exists()) {
+            MyToast.showToast(this, "拍摄失败，请重试");
+            return;
+        }
+
+        if (tempCameraFile.length() <= 0) {
+            MyToast.showToast(this, "拍摄的图片无效");
+            return;
+        }
+
+        Uri cameraUri = mFileOP.file2Uri(this, tempCameraFile);
+        startCrop(cameraUri);
+    }
+
+    private void handleCropResult(@Nullable Intent data) {
+        if (data == null) {
+            MyToast.showToast(this, "裁剪失败");
+            return;
+        }
+
+        Throwable error = UCrop.getError(data);
+        if (error != null) {
+            MyToast.showToast(this, "裁剪错误");
+            return;
+        }
+
+        Uri resultUri = UCrop.getOutput(data);
+        if (resultUri == null) {
+            MyToast.showToast(this, "裁剪失败");
+            return;
+        }
+
+        processCroppedImage(resultUri);
+    }
+
+    private void processCroppedImage(@NonNull Uri imageUri) {
+        File croppedFile = mFileOP.handleImage(imageUri);
+
+        if (croppedFile == null || !croppedFile.exists() || croppedFile.length() <= 0) {
+            MyToast.showToast(this, "图片处理失败");
+            return;
+        }
+
+        uploadAvatar(croppedFile);
+    }
+
+    private void openAlbum() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, REQUEST_ALBUM_CODE);
+    }
+
+    private void openCamera() {
+        tempCameraFile  = mFileOP.createTempImageFile();
+        Uri uriForFile = mFileOP.file2Uri(this, tempCameraFile);
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
+        startActivityForResult(intent, REQUEST_CAMERA_CODE);
     }
 
     private void uploadAvatar(File file) {
@@ -224,24 +315,22 @@ public class AvatarActivity extends BaseActivity<AvatarDetailLayoutBinding> {
             @Override
             public void onSuccess(String path) {
                 Log.d(TAG, "[test] uploadAvatar #190");
-                Glide.with(AvatarActivity.this)
-                        .load(path)
-                        .error(R.mipmap.icon_default_avatar)
-                        .into(mBinding.ivAvatarDetail);
-
-                fileOP.deleteTempCameraFile();
+                updateUI();
+                mFileOP.deleteTempCameraFile();
+                MyToast.showToast(AvatarActivity.this, "头像已更新");
             }
 
             @Override
             public void onError(String err) {
                 Log.d(TAG, "[x] uploadAvatar #202 " + err);
+                MyToast.showToast(AvatarActivity.this, "头像更新失败");
             }
         });
     }
 
     private void startCrop(@NonNull Uri sourceUri) {
-        File cropFile = fileOP.createTempImageFile();
-        Uri destinationUri = fileOP.file2Uri(this, cropFile);
+        File cropFile = mFileOP.createTempImageFile();
+        Uri destinationUri = mFileOP.file2Uri(this, cropFile);
 
         UCrop uCrop = UCrop.of(sourceUri, destinationUri);
         uCrop.withAspectRatio(1, 1);

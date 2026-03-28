@@ -52,7 +52,7 @@ public class MovieProfileActivity extends BaseActivity<ActivityMovieProfileBindi
     private void updateUI(MovieProfileInfo movieProfile) {
         mBinding.tvMovieName.setText(movieProfile.getMovieName());
 
-        mBinding.tvMovieDuration.setText(String.valueOf(movieProfile.getDuration()));
+        mBinding.tvMovieDuration.setText("电影时长： " + movieProfile.getDuration() + "分钟");
 
         mBinding.tvDesc.setText(movieProfile.getMovieDesc());
         mBinding.tvPlay.setOnClickListener(v -> {

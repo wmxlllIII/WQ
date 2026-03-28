@@ -189,7 +189,7 @@ public class MsgManager {
         });
     }
 
-    public void buildGroup(String groupName, String groupAvatar, Set<Long> selectedUsers) {
+    public void buildGroup(String groupName, Set<Long> selectedUsers,ResultCallback<Boolean> callback) {
         if (selectedUsers == null || selectedUsers.isEmpty()) {
             Log.d(TAG, "[x] buildGroupOrChat: #195");
             return;
@@ -199,27 +199,34 @@ public class MsgManager {
             return;
         }
 
-        String json = GenerateJson.getBuildGroupJson(groupName, groupAvatar, selectedUsers);
+        String json = GenerateJson.getBuildGroupJson(groupName, selectedUsers);
         ThreadPoolManager.getInstance().execute(() -> {
             HttpStreamOP.postJson(AppProperties.BUILD_GROUP, json, new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
+                    mHandler.post(() -> callback.onError("网络异常"));
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        Log.d(TAG, "[x] buildGroupOrChat #193 " + response.code());
+                        Log.d(TAG, "[x] buildGroupOrChat #213 " + response.code());
+                        mHandler.post(() -> callback.onError("创建失败"));
                         return;
                     }
 
                     try {
-                        String resp = response.body().string();
-                        Log.d(TAG, "[✓] buildGroupOrChat #199" + resp);
-                        JSONObject json = new JSONObject();
+                        JSONObject json = new JSONObject(response.body().string());
+                        Log.d(TAG, "[✓] buildGroupOrChat #199" + json);
+                        if (json.getInt("code") == 1) {
+                            mHandler.post(() -> callback.onSuccess(true));
+                            return;
+                        }
+
+                        mHandler.post(() -> callback.onError("创建失败"));
                     } catch (Exception e) {
                         Log.d(TAG, "[x] buildGroupOrChat #205" + e.getMessage());
+                        mHandler.post(() -> callback.onError("创建失败"));
                     }
                 }
             });

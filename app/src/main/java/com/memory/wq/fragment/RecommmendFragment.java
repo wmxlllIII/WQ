@@ -54,7 +54,7 @@ public class RecommmendFragment extends Fragment {
 
     private void _proPostUpdate(List<PostInfo> postInfos) {
         if (postInfos == null || postInfos.isEmpty()) {
-            Log.d(TAG, "[x] _proPostUpdate #57");
+            Log.d(TAG, "[✓] _proPostUpdate #57");
             return;
         }
 
@@ -73,17 +73,11 @@ public class RecommmendFragment extends Fragment {
         setBanner();
     }
 
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mPostVM = new ViewModelProvider(this).get(PostViewModel.class);
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = RecommendLayoutBinding.inflate(inflater, container, false);
+        mPostVM = new ViewModelProvider(this).get(PostViewModel.class);
         initView();
         initObserver();
         initData();
@@ -92,7 +86,7 @@ public class RecommmendFragment extends Fragment {
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
+        Log.d(TAG, "onHiddenChanged: ");
         if (!hidden) {
             mPostVM.refreshRecPosts();
         }
@@ -217,6 +211,7 @@ public class RecommmendFragment extends Fragment {
         if (manager != null) {
             manager.startAutoScroll();
         }
+        mPostVM.refreshRecPosts();
     }
 
     @Override

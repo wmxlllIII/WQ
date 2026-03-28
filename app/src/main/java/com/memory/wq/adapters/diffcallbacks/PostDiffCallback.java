@@ -15,11 +15,15 @@ public class PostDiffCallback extends DiffUtil.ItemCallback<PostInfo>{
 
     @Override
     public boolean areContentsTheSame(@NonNull PostInfo oldItem, @NonNull PostInfo newItem) {
-        if (oldItem.getLikeCount() != newItem.getLikeCount()) return false;
-        if (!TextUtils.equals(oldItem.getTitle(), newItem.getTitle())) return false;
-        if (!TextUtils.equals(oldItem.getCommentCoverUrl(), newItem.getCommentCoverUrl())) return false;
-        if (!TextUtils.equals(oldItem.getPosterAvatar(), newItem.getPosterAvatar())) return false;
-
-        return true;//没变化
+        return oldItem.getPostId() == newItem.getPostId() &&
+                oldItem.getPoster() == newItem.getPoster() &&
+                TextUtils.equals(oldItem.getTitle(), newItem.getTitle()) &&
+                TextUtils.equals(oldItem.getCommentCoverUrl(), newItem.getCommentCoverUrl()) &&
+                TextUtils.equals(oldItem.getPosterAvatar(), newItem.getPosterAvatar()) &&
+                TextUtils.equals(oldItem.getContent(), newItem.getContent()) &&
+                oldItem.getLikeCount() == newItem.getLikeCount() &&
+                oldItem.isLiked() == newItem.isLiked() &&
+                oldItem.getTimestamp() == newItem.getTimestamp() &&
+                oldItem.getContentImagesUrlList().equals(newItem.getContentImagesUrlList());
     }
 }

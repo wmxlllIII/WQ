@@ -104,7 +104,7 @@ public class QrCodeActivity extends BaseActivity<ActivityMyQrCodeBinding> {
     }
 
     private void enterPersonalHome(SearchUserType type, String targetAccount) {
-        mFriendManager.searchUser(type, targetAccount, new ResultCallback<FriendInfo>() {
+        mFriendManager.searchUserAccurate(type, targetAccount, new ResultCallback<FriendInfo>() {
             @Override
             public void onSuccess(FriendInfo result) {
                 Intent intent = new Intent(QrCodeActivity.this, PersonInfoActivity.class);

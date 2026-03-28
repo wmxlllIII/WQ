@@ -107,7 +107,7 @@ public class ChatFragment extends Fragment {
     private void _proUiMessageInfoUpdate(UiMessageState state) {
         Log.d(TAG, "_proUiMessageInfoUpdate #144" + state);
         if (!(state instanceof UiMessageState.DisPlay)) {
-            Log.d(TAG, "[x] _proUiMessageInfoUpdate #144");
+            Log.d(TAG, "[✓] _proUiMessageInfoUpdate #144");
             return;
         }
 
@@ -125,7 +125,7 @@ public class ChatFragment extends Fragment {
         }
 
         //TODO 聊天类型，消息类型
-        mChatVM.sendMsg(ChatType.CHAT_TYPE_INDIVIDUAL, msg, ContentType.TYPE_TEXT, success -> {
+        mChatVM.sendMsg(msg, ContentType.TYPE_TEXT, success -> {
             if (success) {
                 mBinding.etInputText.setText("");
             }
@@ -175,7 +175,7 @@ public class ChatFragment extends Fragment {
 
         @Override
         public void onMsgLongClick(MsgInfo msgInfo) {
-
+            //todo 删除消息
         }
 
         @Override

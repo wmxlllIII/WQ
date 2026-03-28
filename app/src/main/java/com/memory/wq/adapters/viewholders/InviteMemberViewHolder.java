@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.memory.wq.R;
+import com.memory.wq.adapters.InviteMemberAdapter;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.databinding.ItemInviteMemberBinding;
 import com.memory.wq.interfaces.OnInviteClickListener;
@@ -18,11 +19,13 @@ public class InviteMemberViewHolder extends RecyclerView.ViewHolder {
     public static final String TAG = "WQ_IMVH";
     private final ItemInviteMemberBinding binding;
     private final OnInviteClickListener listener;
+    private  InviteMemberAdapter adapter;
 
-    public InviteMemberViewHolder(ItemInviteMemberBinding binding, OnInviteClickListener listener) {
+    public InviteMemberViewHolder(ItemInviteMemberBinding binding, OnInviteClickListener listener,  InviteMemberAdapter adapter) {
         super(binding.getRoot());
         this.binding = binding;
         this.listener = listener;
+        this.adapter = adapter;
     }
 
     public void bind(FriendInfo friend, boolean checked) {
@@ -33,13 +36,26 @@ public class InviteMemberViewHolder extends RecyclerView.ViewHolder {
                 .transform(new RoundedCorners(12))
                 .into(binding.ivAvatar);
 
+        binding.cbSelect.setOnCheckedChangeListener(null);
+        binding.cbSelect.setChecked(checked);
+        binding.cbSelect.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int position = getAdapterPosition();
+            if (position == RecyclerView.NO_POSITION) return;
+
+            adapter.toggleUser(friend.getUuNumber(), position);
+        });
+
         binding.getRoot().setOnClickListener(v -> {
             if (listener == null) {
                 Log.d(TAG, "[X] bind #35");
                 return;
             }
 
-            listener.onCheckedChanged(friend.getUuNumber());
+            int position = getAdapterPosition();
+            if (position == RecyclerView.NO_POSITION) return;
+
+            adapter.toggleUser(friend.getUuNumber(), position);
+
         });
 
         binding.cbSelect.setChecked(checked);

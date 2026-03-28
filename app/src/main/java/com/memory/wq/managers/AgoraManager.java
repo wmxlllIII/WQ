@@ -10,6 +10,7 @@ import com.memory.wq.beans.RtcInfo;
 import com.memory.wq.constants.AppProperties;
 import com.memory.wq.interfaces.AgoraEventListener;
 import com.memory.wq.thread.ThreadPoolManager;
+import com.memory.wq.utils.GenerateJson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,14 +69,13 @@ public class AgoraManager {
 
         this.appId = rtcInfo.getAppId();
         this.rtcToken = rtcInfo.getToken();
-
         initRtcEngine();
         initRtmClient();
     }
 
 
     private void initRtcEngine() {
-        Log.d(TAG, "===initRtcEngine");
+        Log.d(TAG, "[test] initRtcEngine");
         try {
             RtcEngineConfig config = new RtcEngineConfig();
             config.mContext = context;
@@ -96,13 +96,12 @@ public class AgoraManager {
             mRtcEngine.setVideoEncoderConfiguration(videoConfig);
 
         } catch (Exception e) {
-            Log.d(TAG, "initRtcEngine: ===rtc初始化异常" + e.getMessage());
-            e.printStackTrace();
+            Log.d(TAG, "[x] initRtcEngine #100" + e.getMessage());
         }
     }
 
     private void initRtmClient() {
-        Log.d(TAG, "===initRtcEngine");
+        Log.d(TAG, "[test] initRtmClient");
         RtmConfig rtmConfig = new RtmConfig.Builder(appId, String.valueOf(userId))
                 .eventListener(rtmEventListener)
                 .build();
@@ -110,7 +109,7 @@ public class AgoraManager {
         try {
             mRtmClient = RtmClient.create(rtmConfig);
         } catch (Exception e) {
-            Log.d(TAG, "initRtmClient:=== RTM初始化异常:" + e.getMessage());
+            Log.d(TAG, "[x] initRtmClient #113" + e.getMessage());
         }
     }
 
@@ -145,6 +144,7 @@ public class AgoraManager {
             mRtmClient.login(rtcToken, new ResultCallback<Void>() {
                 @Override
                 public void onSuccess(Void responseInfo) {
+                    Log.d(TAG, "[test] loginRtm "+ responseInfo);
                     mHandler.post(() -> {
                         subscribeRtmChannel(callback);
                     });
@@ -177,7 +177,7 @@ public class AgoraManager {
     }
 
     public void joinChannel(boolean isBroadcaster) {
-        Log.d(TAG, "joinChannel: ===加入频道" + isBroadcaster);
+        Log.d(TAG, "[test] joinChannel enter" + isBroadcaster);
         this.isBroadcaster = isBroadcaster;
 
         ChannelMediaOptions options = new ChannelMediaOptions();
@@ -188,36 +188,39 @@ public class AgoraManager {
         options.autoSubscribeVideo = true;
 
         if (isBroadcaster && mediaPlayer != null && isMediaOpened) {
-            Log.d(TAG, "joinChannel: ===主播端加入 频道");
+            Log.d(TAG, "[test] joinChannel 主播端 enter");
             options.publishMediaPlayerId = mediaPlayer.getMediaPlayerId();
             options.publishMediaPlayerAudioTrack = true;
             options.publishMediaPlayerVideoTrack = true;
             options.publishCameraTrack = false;
             options.publishMicrophoneTrack = false;
-            Log.d(TAG, "joinChannel: ===发布id" + mediaPlayer.getMediaPlayerId());
+            Log.d(TAG, "[test] joinChannel  发布id" + mediaPlayer.getMediaPlayerId());
         } else {
-            Log.d(TAG, "joinChannel: ===观众端加入频道");
+            Log.d(TAG, "[test] joinChannel 观众端 enter");
             options.publishMediaPlayerVideoTrack = false;
             options.publishMediaPlayerAudioTrack = false;
             options.publishCameraTrack = false;
             options.publishMicrophoneTrack = false;
         }
         int code = mRtcEngine.joinChannelWithUserAccount(rtcToken, channelName, String.valueOf(userId), options);
-        Log.d(TAG, "joinChannel: ===加入rtc频道返回码" + code);
-        Log.d(TAG, "===发布媒体ID: " + options.publishMediaPlayerId);
-        Log.d(TAG, "===媒体状态: " + isMediaOpened);
+        Log.d(TAG, "[test] joinChannel: ===加入rtc频道返回码" + code);
+        Log.d(TAG, "[test] 发布媒体ID: " + options.publishMediaPlayerId);
+        Log.d(TAG, "[test] 媒体状态: " + isMediaOpened);
     }
 
     public void setupLocalVideo(SurfaceView surfaceView) {
-        if (mediaPlayer != null) {
-            Log.d(TAG, "setupLocalVideo: ===设置本地视图");
-            mediaPlayer.setView(surfaceView);
-            mediaPlayer.setRenderMode(Constants.RENDER_MODE_FIT);
+        if (mediaPlayer == null) {
+            Log.d(TAG, "[x]  setupLocalVideo #213");
+            return;
         }
+
+        Log.d(TAG, "[test] setupLocalVideo 217 设置本地视图");
+        mediaPlayer.setView(surfaceView);
+        mediaPlayer.setRenderMode(Constants.RENDER_MODE_FIT);
     }
 
     public void setupRemoteVideo(int uid, SurfaceView surfaceView) {
-        Log.d(TAG, "setupRemoteVideo: ===设置远端试图");
+        Log.d(TAG, "[test] setupRemoteVideo  223 设置远端试图");
         VideoCanvas canvas = new VideoCanvas(surfaceView, Constants.RENDER_MODE_FIT, uid);
         mRtcEngine.setupRemoteVideo(canvas);
     }
@@ -262,46 +265,34 @@ public class AgoraManager {
     }
 
     public void sendComment(String comment) {
-        JSONObject json = new JSONObject();
-        try {
-            json.put("cmd", "comment");
-            json.put("content", comment);
-            json.put("sender", userId);
-            json.put("timestamp", System.currentTimeMillis());
-            publishRtmMessage(json.toString());
-        } catch (JSONException e) {
-            Log.d(TAG, "sendComment: ===评论消息异常" + e.getMessage());
-        }
+        String msg = GenerateJson.getMovieOnlineMsgJson(comment, userId);
+        publishRtmMessage(msg);
     }
 
 
     private void sendRtmCommand(String key, String value) {
-        JSONObject json = new JSONObject();
-        try {
-            json.put(key, value);
-            json.put("timestamp", System.currentTimeMillis());
-            publishRtmMessage(json.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.d(TAG, "sendRtmCommand: ===创建RTM命令失败");
-        }
+        String command = GenerateJson.getRtmCommandJson(key, value);
+        publishRtmMessage(command);
     }
 
     private void publishRtmMessage(String message) {
-        if (mRtmClient == null)
+        if (mRtmClient == null) {
+            Log.d(TAG, "[x] publishRtmMessage #278");
             return;
+        }
+
         PublishOptions options = new PublishOptions();
         options.setCustomType("");
 
         mRtmClient.publish(channelName, message, options, new ResultCallback<Void>() {
             @Override
             public void onSuccess(Void responseInfo) {
-                Log.d(TAG, "onSuccess: ===rtm消息发送成功" + message);
+                Log.d(TAG, "[✓] publishRtmMessage #285 " + message);
             }
 
             @Override
             public void onFailure(ErrorInfo errorInfo) {
-                Log.d(TAG, "onFailure: ===rtm消息发送失败" + errorInfo.getErrorCode());
+                Log.d(TAG, "[x] publishRtmMessage #290" + errorInfo.getErrorCode());
             }
         });
     }
@@ -341,15 +332,19 @@ public class AgoraManager {
     private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() {
         @Override
         public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
-            Log.d(TAG, "onJoinChannelSuccess: ===用户加入频道" + uid + "频道:" + channel);
+            Log.d(TAG, "isMediaOpened=" + isMediaOpened);
+            Log.d(TAG, "[✓] onJoinChannelSuccess 用户" + uid + "加入频道:" + channel);
         }
 
         @Override
         public void onUserJoined(int uid, int elapsed) {
-            Log.d(TAG, "onUserJoined: ===远程用户加入:" + uid);
-            if (eventListener != null) {
-                eventListener.onRemoteUserJoined(uid);
+            Log.d(TAG, "[✓] onUserJoined 远程用户加入:" + uid);
+            if (eventListener == null) {
+                Log.d(TAG, "[x] onUserJoined #342");
+                return;
             }
+
+            eventListener.onRemoteUserJoined(uid);
         }
 
         @Override
@@ -368,7 +363,7 @@ public class AgoraManager {
         @Override
         public void onError(int err) {
             super.onError(err);
-            Log.d(TAG, "onError: ===rtc事件错误" + err);
+            Log.d(TAG, "[x] onRtcEvent onError #365" + err);
         }
 
         @Override
@@ -403,28 +398,6 @@ public class AgoraManager {
                 Log.d(TAG, "onMessageEvent:=== RTM消息异常" + e.getMessage());
                 e.printStackTrace();
             }
-//
-//            try {
-//                String messageText;
-//                Object data = event.getMessage().getData();
-//
-//                if (data instanceof String) {
-//                    messageText = (String) data;
-//                } else if (data instanceof byte[]) {
-//                    messageText = new String((byte[]) data, StandardCharsets.UTF_8);
-//                } else {
-//                    Log.w(TAG, "未知的RTM消息类型");
-//                    return;
-//                }
-//
-//                Log.d(TAG, "收到RTM消息: " + messageText);
-//
-//                if (eventListener != null) {
-//                    eventListener.onRtmMessageReceived(messageText);
-//                }
-//            } catch (Exception e) {
-//                Log.e(TAG, "处理RTM消息异常: " + e.getMessage());
-//            }
         }
     };
 
@@ -471,7 +444,6 @@ public class AgoraManager {
             }
 
             int progressInSeconds = (int) (positionMs / 1000);
-            Log.d(TAG, "[test] onPositionChanged " + positionMs + "==" + duration);
             eventListener.onPlaybackProgress(progressInSeconds);
         }
 

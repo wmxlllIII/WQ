@@ -36,7 +36,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
                     android:layout_toRightOf="@id/iv_back"
-                    android:src="#666666" />
+                    android:src="#ffffff" />
 
                 <TextView
                     android:id="@+id/tv_nickname"
@@ -54,20 +54,22 @@
 
                 <ImageView
                     android:id="@+id/iv_share"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
                     android:layout_centerVertical="true"
-                    android:src="#666666" />
+                    android:src="@mipmap/icon_share" />
 
                 <TextView
                     android:id="@+id/tv_follow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="15dp"
                     android:layout_toLeftOf="@id/iv_share"
-                    android:background="@color/white_80"
+                    android:background="@drawable/bg_detail_follow"
+                    android:gravity="center"
                     android:text="关注"
                     android:textSize="18dp" />
 

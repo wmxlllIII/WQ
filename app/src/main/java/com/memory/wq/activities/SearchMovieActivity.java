@@ -119,7 +119,7 @@ public class SearchMovieActivity extends BaseActivity<ActivityChooseMovieBinding
         public void onCoverClick(MovieInfo movie) {
             Intent intent = new Intent(SearchMovieActivity.this, AudioActivity.class);
             intent.putExtra(AppProperties.ROLE_TYPE, RoleType.ROLE_TYPE_BROADCASTER);
-            intent.putExtra(AppProperties.MOVIE_PATH, movie);
+            intent.putExtra(AppProperties.MOVIE, movie);
             startActivity(intent);
         }
 

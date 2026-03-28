@@ -42,4 +42,19 @@ public class TimeUtils {
         return formatter.format(instant);
     }
 
+    public static String formatSecond(int seconds) {
+        if (seconds < 0) {
+            return "00:00";
+        }
+
+        int hours = seconds / 3600;
+        int minutes = (seconds % 3600) / 60;
+        int remainingSeconds = seconds % 60;
+
+        if (hours > 0) {
+            return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds);
+        } else {
+            return String.format("%02d:%02d", minutes, remainingSeconds);
+        }
+    }
 }
