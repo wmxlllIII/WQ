@@ -226,6 +226,32 @@ public class JsonParser {
         return friendList;
     }
 
+    public static List<FriendInfo> searchUserVagueParser(JSONArray jsonArray){
+        List<FriendInfo> friendList = new ArrayList<>();
+        try {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject item = jsonArray.getJSONObject(i);
+                FriendInfo friendInfo = JsonParser.searchVagueParser(item);
+                friendList.add(friendInfo);
+            }
+        } catch (JSONException e) {
+            Log.d(TAG, "[x] friendInfoListParser #218" + e.getMessage());
+        }
+        return friendList;
+    }
+
+    private static FriendInfo searchVagueParser(JSONObject item) throws JSONException {
+        FriendInfo friendInfo = new FriendInfo();
+
+        JSONObject friendInfoVO = item.getJSONObject("friendInfoVO");
+
+        friendInfo.setUuNumber(friendInfoVO.getLong("uuNumber"));
+        friendInfo.setNickname(friendInfoVO.getString("username"));
+        friendInfo.setAvatarUrl(friendInfoVO.getString("avatarUrl"));
+
+        return friendInfo;
+    }
+
     private static FriendInfo friendInfoParser(JSONObject item) throws JSONException {
         FriendInfo friendInfo = new FriendInfo();
         friendInfo.setUuNumber(item.getLong("uuNumber"));

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ListAdapter;
 
 import com.memory.wq.adapters.diffcallbacks.FriDiffCallback;
+import com.memory.wq.adapters.diffcallbacks.SearchUserDiffCallback;
 import com.memory.wq.adapters.viewholders.SearchUserViewHolder;
 import com.memory.wq.beans.FriendInfo;
 import com.memory.wq.databinding.ItemSearchFriendBinding;
@@ -18,7 +19,7 @@ public class SearchFriendAdapter extends ListAdapter<FriendInfo, SearchUserViewH
     private final OnFriItemClickListener mListener;
 
     public SearchFriendAdapter(OnFriItemClickListener listener) {
-        super(new FriDiffCallback());
+        super(new SearchUserDiffCallback());
         this.mListener = listener;
     }
 

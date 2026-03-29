@@ -48,7 +48,7 @@ public class SearchUserActivity extends BaseActivity<SearchUserLayoutBinding> {
     }
 
     private void initData() {
-
+        loadUsers();
     }
 
     private void initView() {
@@ -60,6 +60,9 @@ public class SearchUserActivity extends BaseActivity<SearchUserLayoutBinding> {
         mBinding.etAccount.addTextChangedListener(mTextWatcher);
     }
 
+    private void loadUsers(){
+        searchUser("");
+    }
     private void searchUser(String keyword) {
         mFriendManager.searchUserVague(keyword, new ResultCallback<List<FriendInfo>>() {
             @Override

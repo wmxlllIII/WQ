@@ -50,15 +50,8 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = FragmentChatBinding.inflate(inflater, container, false);
         initView();
-        initRecyclerView();
         initData();
         return mBinding.getRoot();
-    }
-
-    private void initRecyclerView() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
-        layoutManager.setStackFromEnd(true);
-        mBinding.rvMsg.setLayoutManager(layoutManager);
     }
 
     @Override
@@ -80,9 +73,13 @@ public class ChatFragment extends Fragment {
     }
 
     private void initView() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
+        layoutManager.setStackFromEnd(true);
+        mBinding.rvMsg.setLayoutManager(layoutManager);
         initObserver();
         mBinding.ivBack.setOnClickListener(v -> getActivity().finish());
         mBinding.btnSend.setOnClickListener(v -> sendMsg());
+
         mBinding.ivDetail.setOnClickListener(view -> {
             mChatVM.navigateTo(ChatPage.CHAT_DETAIL);
         });
@@ -92,6 +89,12 @@ public class ChatFragment extends Fragment {
     private void initObserver() {
         mChatVM.uiChatInfo.observe(getViewLifecycleOwner(), mUiChatInfoObserver);
         mChatVM.uiMessageState.observe(getViewLifecycleOwner(), mUiMessageInfoObserver);
+        mChatVM.chatType.observe(getViewLifecycleOwner(), this::chatTypeUpdate);
+    }
+
+    private void chatTypeUpdate(int chatType) {
+        boolean isGroup = chatType == ChatType.CHAT_TYPE_GROUP.toInt();
+        mBinding.ivDetail.setVisibility(isGroup ? View.GONE : View.VISIBLE);
     }
 
     private void _proUiChatInfoUpdate(UiChatInfo uiChatInfo) {
@@ -175,7 +178,7 @@ public class ChatFragment extends Fragment {
 
         @Override
         public void onMsgLongClick(MsgInfo msgInfo) {
-            //todo 删除消息
+
         }
 
         @Override

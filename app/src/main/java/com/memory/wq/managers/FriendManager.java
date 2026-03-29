@@ -245,7 +245,7 @@ public class FriendManager {
                         Log.d(TAG, "[test] searchUserVague: " + json);
                         if (code == 1) {
                             JSONArray data = json.getJSONArray("data");
-                            List<FriendInfo> friendInfoList = JsonParser.friendInfoListParser(data);
+                            List<FriendInfo> friendInfoList = JsonParser.searchUserVagueParser(data);
                             mHandler.post(() -> callback.onSuccess(friendInfoList));
                             return;
                         }

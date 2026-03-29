@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -169,14 +170,14 @@ public class MsgAdapter extends ListAdapter<MsgInfo, RecyclerView.ViewHolder> {
 
 
     static class TextViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout ll_left, ll_right;
+        RelativeLayout ll_left,ll_right;
         TextView tv_leftMsg, tv_rightMsg;
         ImageView iv_friend_avatar, iv_my_avatar;
 
         public TextViewHolder(@NonNull View view) {
             super(view);
-            ll_left = (LinearLayout) view.findViewById(R.id.ll_left);
-            ll_right = (LinearLayout) view.findViewById(R.id.ll_right);
+            ll_left = (RelativeLayout) view.findViewById(R.id.ll_left);
+            ll_right = (RelativeLayout) view.findViewById(R.id.ll_right);
             tv_leftMsg = (TextView) view.findViewById(R.id.tv_leftMsg);
             tv_rightMsg = (TextView) view.findViewById(R.id.tv_rightMsg);
             iv_friend_avatar = (ImageView) view.findViewById(R.id.iv_friend_avatar);
