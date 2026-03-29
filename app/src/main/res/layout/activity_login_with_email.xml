@@ -102,20 +102,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
-                    android:layout_toStartOf="@id/tv_forget_pwd"
+                    android:layout_alignParentEnd="true"
                     android:text="@string/register"
+                    android:layout_marginEnd="20dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
                     android:textColor="@color/white"
                     android:textSize="@dimen/common_junior_font_size" />
 
-                <TextView
-                    android:id="@+id/tv_forget_pwd"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginHorizontal="20dp"
-                    android:text="@string/tv_forgetpassword"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/common_junior_font_size" />
             </RelativeLayout>
 
 

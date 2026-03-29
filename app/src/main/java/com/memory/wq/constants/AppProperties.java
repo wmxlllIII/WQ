@@ -7,7 +7,6 @@ public class AppProperties {
     public static final String TABLE_NAME_USER = "users";
     public static final String TABLE_NAME_FRIEND = "friends";
     public static final String TABLE_NAME_MESSAGE = "message";
-    public static final String CREATE_TABLE_GROUP = "group";
     public static final String AUTHORITY = "com.memory.wq.albumprovider";
     public static final String AVATAR_RECEIVER_ACTION = "setCurrentAvatar";
 
